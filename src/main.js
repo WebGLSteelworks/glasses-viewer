@@ -39,8 +39,8 @@ let animationId = null;
 
 let currentConfig = {
 
-  glbLow: '/models/Standard_Vanguard_low.glb',
-  glbHigh: '/models/Standard_Vanguard_low.glb',
+  glbLow: 'models/Standard_Vanguard_low.glb',
+  glbHigh: 'models/Standard_Vanguard_low.glb',
 
   startCamera: 'Cam_Front',
 
@@ -688,7 +688,7 @@ let controls;
 // ─────────────────────────────────────────────
 function setupEnvironment() {
 
-	new EXRLoader().load('/studio.exr', (hdr) => {
+	new EXRLoader().load('studio.exr', (hdr) => {
 
 	  hdr.mapping = THREE.EquirectangularReflectionMapping;
 
