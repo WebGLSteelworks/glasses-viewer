@@ -1,26 +1,12 @@
 import * as THREE from 'three';
 
-import { WebGPURenderer, MeshPhysicalNodeMaterial } from 'three/webgpu';
+import { WebGPURenderer } from 'three/webgpu';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
 
 import { FRESNEL_VARIANTS } from './utils/fresnelVariants.js';
 import { CAMERAS } from './utils/cameras.js';
-
-import {
-  uniform,
-  vec3,
-  float,
-  mix,
-  dot,
-  add,
-  sub,
-  pow,
-  normalView,
-  positionViewDirection,
-  smoothstep,
-} from 'three/tsl';
 
 
 
@@ -57,7 +43,7 @@ let animationId = null;
 let currentConfig = {
 
   glbLow: 'models/Standard_Vanguard_low.glb',
-  glbHigh: 'models/Standard_Vanguard_high.glb',
+  glbHigh: 'models/Standard_Vanguard_low.glb',
 
   startCamera: 'Cam_Front',
 
@@ -79,109 +65,6 @@ let activeCameraName = null;
 const glassAnimateCamera = "Cam_Lenses";
 let wasAnimatingGlass = false;
 
-
-// ── cache Fresnel WebGPU ─────────────────────────────
-const fresnelMatCache = new Map();
-
-function getOrBuildFresnelMat(originalMaterial, fresnelCfg) {
-  const key = originalMaterial.name.toLowerCase();
-  if (fresnelMatCache.has(key)) return fresnelMatCache.get(key);
-  const nodeMat = injectFresnelNode(originalMaterial, fresnelCfg);
-  fresnelMatCache.set(key, nodeMat);
-  return nodeMat;
-}
-
-function updateFresnelVariant(variantKey) {
-  const cfg = FRESNEL_VARIANTS[variantKey];
-  if (!cfg) return;
-  fresnelMatCache.forEach((nodeMat) => {
-    const u = nodeMat.userData.fresnelUniforms;
-    if (!u) return;
-    u.colorFront.value.set(...cfg.colorFront);
-    u.colorMid.value.set(...cfg.colorMid);
-    u.colorEdge.value.set(...cfg.colorEdge);
-    u.intensity.value   = cfg.intensity   ?? 2.0;
-    u.chromaBoost.value = cfg.chromaBoost ?? 1.0;
-  });
-}
-
-function injectFresnelNode(material, fresnelCfg) {
-
-  const nodeMat = new MeshPhysicalNodeMaterial();
-
-  // ── copiar propiedades del material original ──────────
-  nodeMat.color.copy(material.color);
-  nodeMat.roughness          = material.roughness ?? 0.0;
-  nodeMat.metalness          = material.metalness ?? 0.0;
-  nodeMat.ior                = material.ior ?? 1.5;
-  nodeMat.envMapIntensity    = material.envMapIntensity ?? 3.5;
-  nodeMat.clearcoat          = 1.0;
-  nodeMat.clearcoatRoughness = 0.05;
-  nodeMat.transmission       = 0;
-
-  // ── transparencia desde el GLB ────────────────────────
-  const rawOpacity = material.userData.originalOpacity ?? material.opacity;
-  nodeMat.opacity     = rawOpacity < 0.999 ? rawOpacity : 0.7;
-  nodeMat.transparent = true;
-  nodeMat.depthWrite  = false;
-  nodeMat.side        = THREE.FrontSide;
-
-  // ── uniforms — THREE.Vector3 para colores ─────────────
-  const colorFront  = uniform(new THREE.Vector3(...fresnelCfg.colorFront));
-  const colorMid    = uniform(new THREE.Vector3(...fresnelCfg.colorMid));
-  const colorEdge   = uniform(new THREE.Vector3(...fresnelCfg.colorEdge));
-  const intensity   = uniform(float(fresnelCfg.intensity   ?? 2.0));
-  const chromaBoost = uniform(float(fresnelCfg.chromaBoost ?? 1.0));
-
-  // ── coeficiente Fresnel en view space ─────────────────
-  // Equivalente exacto a: pow(1.0 - dot(geometryNormal, vViewPosition), 0.5)
-  const NdotV = dot(normalView, positionViewDirection);
-  const f     = pow(sub(1.0, NdotV).clamp(0.0, 1.0), float(0.5));
-
-  // ── 3 zonas — umbrales ampliados para más colores laterales ──
-  // frontMix más estrecho → zona morada más pequeña
-  // edgeMix más temprano → rojo/amarillo empieza antes
-  const frontMix = smoothstep(float(0.05), float(0.25), f);
-  const edgeMix  = smoothstep(float(0.55), float(0.85), f);
-
-  const fresnelColor = mix(
-    colorFront,
-    mix(colorMid, colorEdge, edgeMix),
-    frontMix
-  );
-
-  // ── chroma boost ──────────────────────────────────────
-  const lum = add(
-    fresnelColor.x.mul(0.299),
-    fresnelColor.y.mul(0.587),
-    fresnelColor.z.mul(0.114)
-  );
-  // chromaBoost con factor extra para compensar la pérdida de saturación en WebGPU
-  // GPU_CHROMA_BOOST: ajusta este valor para más (>1) o menos (<1) saturación
-  const GPU_CHROMA_BOOST = 4.0;
-  const lumVec       = vec3(lum, lum, lum);
-  const boostedColor = add(lumVec, sub(fresnelColor, lumVec).mul(chromaBoost.mul(float(GPU_CHROMA_BOOST))));
-
-  // ── emissiveNode = += sobre indirectSpecular del WebGL ─
-  // Separamos saturación de intensidad:
-  // 1. Normalizamos el color a su luminancia máxima (preserva saturación)
-  // 2. Controlamos la intensidad de forma independiente
-  const colorLum = add(
-    boostedColor.x.mul(0.299),
-    boostedColor.y.mul(0.587),
-    boostedColor.z.mul(0.114)
-  ).max(0.001);
-  const saturatedColor  = boostedColor.div(colorLum); // color normalizado, saturación máxima
-  const fresnelStrength = pow(f, float(1.5)).mul(intensity).mul(float(0.15));
-  nodeMat.emissiveNode  = saturatedColor.mul(fresnelStrength);
-
-  // ── guardar refs para updateFresnelVariant ────────────
-  nodeMat.userData.fresnelUniforms = {
-    colorFront, colorMid, colorEdge, intensity, chromaBoost
-  };
-
-  return nodeMat;
-}
 
 // ─────────────────────────────
 // SELECT VARIANT
@@ -211,7 +94,6 @@ function selectVariant(scene, variantName) {
 
 			obj.material = material;
 			rebuildGlassMaterials();
-			updateFresnelVariant(activeVariantName);
 
 		  });
 
@@ -225,7 +107,6 @@ function selectVariant(scene, variantName) {
 
   setTimeout(() => {
     rebuildGlassMaterials();
-    updateFresnelVariant(activeVariantName);
   }, 0);
 
 }
@@ -275,15 +156,6 @@ function rebuildGlassMaterials() {
 			  m.transparent  = true;
 			  m.side         = THREE.FrontSide;
 			  m.needsUpdate  = true;
-
-			  // ── Fresnel WebGPU ──
-			  const matName = m.name?.toLowerCase();
-			  const typeRaw = matName.split("lenses.front.")[1];
-			  const type    = typeRaw?.split(".")[0];
-			  if (FRESNEL_VARIANTS[type]) {
-				const fresnelCfg = { enabled: true, ...FRESNEL_VARIANTS[type] };
-				obj.material = getOrBuildFresnelMat(m, fresnelCfg);
-			  }
 
 			} else if (name.includes("lenses.back.")) {
 			  obj.renderOrder = 1;
@@ -521,14 +393,6 @@ function loadModel(config) {
   glassAnim.state = 'waitGreen';
   glassAnim.timer = 0;
   Object.keys(cameraTargets).forEach(k => delete cameraTargets[k]);
-
-  // limpiar cache Fresnel WebGPU solo si hay entradas
-  if (fresnelMatCache.size > 0) {
-    fresnelMatCache.forEach(mat => {
-      try { mat.dispose(); } catch(e) {}
-    });
-    fresnelMatCache.clear();
-  }
 
 	const isWebGPU = renderer.isWebGPURenderer;
 
