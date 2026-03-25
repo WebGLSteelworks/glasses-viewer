@@ -19,8 +19,13 @@ echo   COMMIT LOCAL CHANGES...
 echo ================================
 
 git add .
-git commit -m "update viewer"
-git push
+git diff --cached --quiet
+if %errorlevel% equ 0 (
+  echo No changes to commit.
+) else (
+  git commit -m "update viewer"
+  git push
+)
 
 echo.
 echo ================================
@@ -42,6 +47,6 @@ echo ================================
 
 timeout /t 2 > nul
 
-start "" https://github.com/WebGLSteelworks/Vanguard04.git
+start "" https://github.com/WebGLSteelworks/glasses-viewer.git
 
 pause
