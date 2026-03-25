@@ -4,7 +4,7 @@ export const FRESNEL_VARIANTS = {
 
   "road": {
     intensity: 1.0,
-    chromaBoost: 1.5,
+    chromaBoost: 1.0,
     colorFront: [0.5, 0.02, 0.6],
     colorMid:   [1.0, 0.0, 0.0],
     colorEdge:  [0.97, 0.84, 0.09]
@@ -12,7 +12,7 @@ export const FRESNEL_VARIANTS = {
 
   "sapphire": {
     intensity: 1.0,
-    chromaBoost: 1.5,
+    chromaBoost: 1.8,
     colorFront: [0.47, 0.77, 0.79],
     colorMid:   [0.09, 0.11, 0.30],
     colorEdge:  [0.42, 0.12, 0.4]

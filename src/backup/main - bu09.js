@@ -109,7 +109,7 @@ function injectFresnelNode(material, fresnelCfg) {
 
   const nodeMat = new MeshPhysicalNodeMaterial();
 
-  // ── copy properties from original material ──────────
+  // ── copiar propiedades del material original ──────────
   nodeMat.color.copy(material.color);
   nodeMat.roughness          = material.roughness ?? 0.0;
   nodeMat.metalness          = material.metalness ?? 0.0;
@@ -119,28 +119,28 @@ function injectFresnelNode(material, fresnelCfg) {
   nodeMat.clearcoatRoughness = 0.05;
   nodeMat.transmission       = 0;
 
-  // ── transparency from GLB ────────────────────────────
+  // ── transparencia desde el GLB ────────────────────────
   const rawOpacity = material.userData.originalOpacity ?? material.opacity;
   nodeMat.opacity     = rawOpacity < 0.999 ? rawOpacity : 0.7;
   nodeMat.transparent = true;
   nodeMat.depthWrite  = false;
   nodeMat.side        = THREE.FrontSide;
 
-  // ── uniforms — THREE.Vector3 for colors ──────────────
+  // ── uniforms — THREE.Vector3 para colores ─────────────
   const colorFront  = uniform(new THREE.Vector3(...fresnelCfg.colorFront));
   const colorMid    = uniform(new THREE.Vector3(...fresnelCfg.colorMid));
   const colorEdge   = uniform(new THREE.Vector3(...fresnelCfg.colorEdge));
   const intensity   = uniform(float(fresnelCfg.intensity   ?? 2.0));
   const chromaBoost = uniform(float(fresnelCfg.chromaBoost ?? 1.0));
 
-  // ── Fresnel coefficient in view space ─────────────────
-  // Exact equivalent of: pow(1.0 - dot(geometryNormal, vViewPosition), 0.5)
+  // ── coeficiente Fresnel en view space ─────────────────
+  // Equivalente exacto a: pow(1.0 - dot(geometryNormal, vViewPosition), 0.5)
   const NdotV = dot(normalView, positionViewDirection);
   const f     = pow(sub(1.0, NdotV).clamp(0.0, 1.0), float(0.5));
 
-  // ── 3 zones — wider thresholds for more lateral colors ──
-  // frontMix narrower → smaller center color zone
-  // edgeMix earlier → red/yellow starts sooner
+  // ── 3 zonas — umbrales ampliados para más colores laterales ──
+  // frontMix más estrecho → zona morada más pequeña
+  // edgeMix más temprano → rojo/amarillo empieza antes
   const frontMix = smoothstep(float(0.05), float(0.25), f);
   const edgeMix  = smoothstep(float(0.55), float(0.85), f);
 
@@ -159,17 +159,17 @@ function injectFresnelNode(material, fresnelCfg) {
   const lumVec       = vec3(lum, lum, lum);
   const boostedColor = add(lumVec, sub(fresnelColor, lumVec).mul(chromaBoost.mul(float(3.0))));
 
-  // ── colorNode: blend Fresnel with base material color ──────────────────
-  // More predictable than emissiveNode with ACES — PBR manages brightness
-  // and Fresnel tints the base color based on the viewing angle.
+  // ── colorNode: mezcla Fresnel con color base del material ─────────────
+  // Más predecible que emissiveNode con ACES — el PBR gestiona el brillo
+  // y el Fresnel tinta el color base según el ángulo de visión.
   //
-  // FRESNEL_MIX: how much Fresnel blends with the base color
-  //   0.0 = base color only (no Fresnel)
-  //   1.0 = Fresnel only (no base color)
-  //   Start at 0.85 and adjust
+  // FRESNEL_MIX: cuánto del Fresnel se mezcla con el color base
+  //   0.0 = solo color base (sin Fresnel)
+  //   1.0 = solo Fresnel (sin color base)
+  //   Empieza con 0.85 y ajusta
   //
-  // FRESNEL_DARK: darkens the Fresnel before blending
-  //   1.0 = no change, 0.5 = quite dark, 0.3 = very dark
+  // FRESNEL_DARK: oscurece el Fresnel antes de mezclarlo
+  //   1.0 = sin cambio, 0.5 = bastante oscuro, 0.3 = muy oscuro
   const FRESNEL_MIX  = float(1.5);
   const FRESNEL_DARK = float(0.5);
 
@@ -186,7 +186,7 @@ function injectFresnelNode(material, fresnelCfg) {
   nodeMat.colorNode    = finalColor;
   nodeMat.emissiveNode = null;
 
-  // ── save refs for updateFresnelVariant ────────────────
+  // ── guardar refs para updateFresnelVariant ────────────
   nodeMat.userData.fresnelUniforms = {
     colorFront, colorMid, colorEdge, intensity, chromaBoost
   };
@@ -305,16 +305,16 @@ function rebuildGlassMaterials() {
 			  m.side          = THREE.FrontSide;
 			  m.needsUpdate   = true;
 			}
-			// LensesEdge, Lenses, Inner_Lenses → leave untouched, use GLB values
+			// LensesEdge, Lenses, Inner_Lenses → no tocar, dejar como vienen del GLB
 
 		  } else {
-			// WebGL: leave material as it comes from the GLB
+			// WebGL: dejar el material tal como viene del GLB
 			m.transparent = true;
 			m.depthWrite  = true;
 			m.needsUpdate = true;
 		  }
 
-		  // WebGL Fresnel — WebGL only
+		  // WebGL Fresnel — solo en WebGL
 		  const matName = m.name?.toLowerCase();
 		  let fresnelCfg = null;
 
@@ -352,32 +352,38 @@ function rebuildGlassMaterials() {
 // ─────────────────────────────
 
 function injectFresnel(material, fresnelCfg) {
-
+	
+	
+	
   material.userData.fresnel = {
-    intensity:   fresnelCfg.intensity   ?? 2.0,
-    chromaBoost: fresnelCfg.chromaBoost ?? 0.8,
-    colorFront:  new THREE.Color(...fresnelCfg.colorFront),
-    colorMid:    new THREE.Color(...fresnelCfg.colorMid),
-    colorEdge:   new THREE.Color(...fresnelCfg.colorEdge)
+    intensity: fresnelCfg.intensity ?? 2.0,
+	chromaBoost: fresnelCfg.chromaBoost ?? 0.8, 
+    colorFront: new THREE.Color(...fresnelCfg.colorFront),
+    colorMid:   new THREE.Color(...fresnelCfg.colorMid),
+    colorEdge:  new THREE.Color(...fresnelCfg.colorEdge)
   };
 
   material.onBeforeCompile = (shader) => {
 
     shader.uniforms.fresnelIntensity = { value: material.userData.fresnel.intensity };
-    shader.uniforms.colorFront       = { value: material.userData.fresnel.colorFront };
-    shader.uniforms.colorMid         = { value: material.userData.fresnel.colorMid };
-    shader.uniforms.colorEdge        = { value: material.userData.fresnel.colorEdge };
-    shader.uniforms.chromaBoost      = { value: material.userData.fresnel.chromaBoost };
+    shader.uniforms.colorFront = { value: material.userData.fresnel.colorFront };
+    shader.uniforms.colorMid   = { value: material.userData.fresnel.colorMid };
+    shader.uniforms.colorEdge  = { value: material.userData.fresnel.colorEdge };
+	shader.uniforms.chromaBoost = { value: material.userData.fresnel.chromaBoost };
+	shader.uniforms.baseChromaBoost = { value: material.userData.baseChromaBoost ?? 1.0 };
 
     shader.fragmentShader = shader.fragmentShader.replace(
       '#include <common>',
       `
       #include <common>
+
       uniform float fresnelIntensity;
-      uniform vec3  colorFront;
-      uniform vec3  colorMid;
-      uniform vec3  colorEdge;
-      uniform float chromaBoost;
+      uniform vec3 colorFront;
+      uniform vec3 colorMid;
+      uniform vec3 colorEdge;
+	  uniform float chromaBoost;
+	  uniform float baseChromaBoost;
+
       `
     );
 
@@ -386,46 +392,50 @@ function injectFresnel(material, fresnelCfg) {
       `
       #include <lights_fragment_end>
 
-      // ── Fresnel coefficient ──────────────────────────────
+		// ---- BOOST COLOR BASE (diffuse + specular tint) ----
+		float baseLum = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+		vec3 baseChroma = diffuseColor.rgb - vec3(baseLum);
+		vec3 boostedBase = vec3(baseLum) + baseChroma * baseChromaBoost;
+
+		diffuseColor.rgb = boostedBase;
+
+		// también tintamos ligeramente el specular indirecto
+		reflectedLight.indirectSpecular.rgb *= boostedBase;
+
       float f = pow(
-        clamp(1.0 - dot(normalize(geometryNormal), normalize(vViewPosition)), 0.0, 1.0),
-        0.5
-      );
+		  1.0 - dot(normalize(geometryNormal), normalize(vViewPosition)),
+		  0.5
+		);
 
-      // ── 3 zones — same thresholds as WebGPU ───────────────
-      float frontMix = smoothstep(0.05, 0.25, f);
-      float edgeMix  = smoothstep(0.55, 0.85, f);
+		float frontMix = smoothstep(0.1, 0.35, f);
+		float edgeMix  = smoothstep(0.6, 0.98, f);
 
-      vec3 fresnelColor = mix(
-        colorFront,
-        mix(colorMid, colorEdge, edgeMix),
-        frontMix
-      );
+		vec3 fresnelColor = mix(
+		  colorFront,
+		  mix(colorMid, colorEdge, edgeMix),
+		  frontMix
+		);
 
-      // ── chroma boost — no extra factor (WebGL does not need to compensate ACES)
-      float lum    = dot(fresnelColor, vec3(0.299, 0.587, 0.114));
-      vec3  chroma = fresnelColor - vec3(lum);
-      fresnelColor = vec3(lum) + chroma * chromaBoost;
+		// ---- SATURACIÓN INTELIGENTE ----
 
-      // ── FRESNEL_DARK: mix toward black to darken ───────────
-      float FRESNEL_DARK = 0.5;
-      vec3  darkFresnel  = mix(vec3(0.0), fresnelColor, FRESNEL_DARK);
+		// 1. Extraer luminancia
+		float lum = dot(fresnelColor, vec3(0.299, 0.587, 0.114));
 
-      // ── apply Fresnel on final output ────────────────────
-      // In lights_fragment_end we mix over indirectSpecular
-      // same as original system, but with new color controls
-      float FRESNEL_MIX     = 1.5;
-      float fresnelStrength = clamp(pow(f, 1.5), 0.0, 1.0);
-      reflectedLight.indirectSpecular.rgb = mix(
-        reflectedLight.indirectSpecular.rgb,
-        darkFresnel,
-        fresnelStrength * FRESNEL_MIX
-      );
-      `
+		// 2. Separar cromaticidad
+		vec3 chroma = fresnelColor - vec3(lum);
+
+		// 3. Reforzar solo la cromaticidad
+		fresnelColor = vec3(lum) + chroma * chromaBoost;
+
+		// ---- Aplicación controlada ----
+		reflectedLight.indirectSpecular.rgb +=
+		  fresnelColor * pow(f, 1.5) * fresnelIntensity;
+			  `
     );
+		material.userData.shader = shader;
 
-    material.userData.shader = shader;
   };
+
 
   material.needsUpdate = true;
 }
@@ -437,7 +447,7 @@ function injectFresnel(material, fresnelCfg) {
 
 function createVariantButtons(variants) {
 
-  // remove previous UI
+  // borrar UI anterior
   const old = document.getElementById("variantsUI");
   if (old) old.remove();
 
@@ -493,7 +503,7 @@ function loadModel(config) {
   glassAnimationEnabled = config.glass?.animate === true;
 
 
-  // ───── clean previous model
+  // ───── clean last model
   if (currentModel) {
     scene.remove(currentModel);
 	const isWebGPU = renderer.isWebGPURenderer;
@@ -502,7 +512,7 @@ function loadModel(config) {
 
 	  if (obj.geometry) obj.geometry.dispose();
 
-	  // ⚠️ WebGL only
+	  // ⚠️ SOLO WebGL
 	  if (!isWebGPU && obj.material) {
 
 		if (Array.isArray(obj.material)) {
@@ -523,7 +533,7 @@ function loadModel(config) {
   glassAnim.timer = 0;
   Object.keys(cameraTargets).forEach(k => delete cameraTargets[k]);
 
-  // clear WebGPU Fresnel cache if not empty
+  // limpiar cache Fresnel WebGPU solo si hay entradas
   if (fresnelMatCache.size > 0) {
     fresnelMatCache.forEach(mat => {
       try { mat.dispose(); } catch(e) {}
@@ -642,12 +652,12 @@ function loadModel(config) {
 
 	  const isWebGPU = renderer.isWebGPURenderer;
 
-	  // 🔥 REFLECTION BOOST
+	  // 🔥 REFLECTION BOOST 
 	  if (mat.envMapIntensity !== undefined) {
 		mat.envMapIntensity *= isWebGPU ? 1.5 : 1.0;
 	  }
 
-	  // 🔥 MICRO ROUGHNESS ADJUSTMENT
+	  // 🔥 MICRO ROUGHNESS ADJ
 	  if (mat.roughness !== undefined) {
 		mat.roughness *= 0.95;
 	  }
@@ -777,7 +787,7 @@ async function restartApp() {
 
   console.log("Restarting app with mode:", renderMode);
 
-  // 🧹 clean renderer
+  // 🧹 clean renderer 
   if (renderer) {
     renderer.dispose();
     renderer.domElement.remove();
@@ -789,7 +799,7 @@ async function restartApp() {
 	  currentModel = null;
 	}
 
-  // 🧹 reset scene
+  // 🧹 reset scene 
   scene = new THREE.Scene();
 
   await initRenderer();
@@ -800,10 +810,10 @@ async function restartApp() {
 	  isWebGPU ? 0xffffff : 0xcccccc
 	);
 
-	// ambient lighting
+	// ambient LIGHTING
 	//scene.add(new THREE.AmbientLight(0xffffff, 0.0));
 
-  // 🎮 controls
+  // 🎮 controls 
   controls = new OrbitControls(camera, renderer.domElement);
 
   controls.enabled = false;
@@ -841,12 +851,12 @@ function setupEnvironment() {
 
 	  if (renderer.isWebGPURenderer) {
 
-		// ✅ WebGPU → use directly
+		// ✅ WebGPU → usar directamente
 		scene.environment = hdr;
 
 	  } else {
 
-		// ✅ WebGL → use PMREM
+		// ✅ WebGL → usar PMREM
 		const pmrem = new THREE.PMREMGenerator(renderer);
 		pmrem.compileEquirectangularShader();
 
@@ -874,7 +884,7 @@ function smoothSwitchCamera(name) {
   const camData = cameraTargets[name];
   if (!camData) return;
 
-  // ───── CAM_FREE (no transition)
+  // ───── CAM_FREE (NO TRANSITION)
   if (name === 'Cam_Free') {
 
     transition.active = false;
@@ -891,7 +901,7 @@ function smoothSwitchCamera(name) {
     return;
   }
 
-  // ───── camera transition
+  // ───── CAMERA TRANSITION
   controls.enabled = false; 
   
   if (camData.fov !== undefined) {
@@ -939,7 +949,7 @@ function animate(time) {
   animationId = requestAnimationFrame(animate);
 
   // ─────────────────────────────────────────
-  // CAMERA TRANSITIONS (still cameras)
+  // CAMERA TRANSITIONS (Still Cameras)
   // ─────────────────────────────────────────
   if (transition.active) {
 
@@ -1058,7 +1068,7 @@ function animate(time) {
 
   } else {
 
-    // reset ONLY when leaving animation
+    // Reset ONLY when leave animate
     if (wasAnimatingGlass) {
       glassMaterials.forEach((mat, i) => {
         mat.color.copy(originalGlassColors[i]);
@@ -1206,7 +1216,7 @@ async function init() {
 	  isWebGPU ? 0xffffff : 0xffffff
 	);
 
-  // CONTROLS (now that renderer exists)
+  // CONTROLS (ahora que renderer existe)
   controls = new OrbitControls(camera, renderer.domElement);
 
   controls.enabled = false;
@@ -1218,7 +1228,7 @@ async function init() {
   controls.minDistance = 0.5;
   controls.maxDistance = 1.2;
 
-  // ENVIRONMENT (important → depends on renderer)
+  // ENVIRONMENT (IMPORTANTE → depende de renderer)
   setupEnvironment();
 
   loadModel(currentConfig);
