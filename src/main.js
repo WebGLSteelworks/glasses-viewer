@@ -797,7 +797,7 @@ async function restartApp() {
   const isWebGPU = renderer.isWebGPURenderer;
 
 	scene.background = new THREE.Color(
-	  isWebGPU ? 0xffffff : 0xcccccc
+	  isWebGPU ? 0xffffff : 0xdddddd
 	);
 
 	// ambient lighting
