@@ -601,9 +601,13 @@ function loadModel(config) {
 
 let currentHdr = null;
 
-function setupEnvironment() {
+function setupEnvironment(config) {
 
-  new RGBELoader().load(currentConfig.hdri, (hdr) => {
+  // snapshot config at call time — avoids race condition if
+  // currentConfig changes before the async RGBELoader callback fires
+  const { hdri, hdriIntensity } = config;
+
+  new RGBELoader().load(hdri, (hdr) => {
 
     // dispose previous HDR
     if (currentHdr) {
@@ -625,7 +629,7 @@ function setupEnvironment() {
     }
 
     scene.environmentRotation  = new THREE.Euler(0, Math.PI * 0, 0);
-    scene.environmentIntensity = currentConfig.hdriIntensity ?? 1.0;
+    scene.environmentIntensity = hdriIntensity ?? 1.0;
 
     currentHdr = renderer.isWebGPURenderer ? hdr : null;
   });
@@ -649,7 +653,7 @@ async function switchModel(modelKey) {
 
   console.log('Switching model to:', modelKey);
 
-  setupEnvironment();
+  setupEnvironment(currentConfig);
   loadModel(currentConfig);
 
   // update active state on model buttons
@@ -735,7 +739,7 @@ async function restartApp() {
   controls.minDistance   = 0.5;
   controls.maxDistance   = 1.2;
 
-  setupEnvironment();
+  setupEnvironment(currentConfig);
   loadModel(currentConfig);
   animate();
 }
@@ -1027,7 +1031,7 @@ async function init() {
   controls.minDistance   = 0.5;
   controls.maxDistance   = 1.2;
 
-  setupEnvironment();
+  setupEnvironment(currentConfig);
   loadModel(currentConfig);
   animate();
 }
