@@ -1,12 +1,14 @@
 export const CAMERAS = {
 
+  // ⚠️  Replace these placeholder values with Wayfarer's real camera positions
+
   Cam_Front: {
     position: [0.00, 0.00, 0.8],
     fov: 14.4263
   },
 
   Cam_Lenses: {
-	position: [0.00, 0.00, -0.8],
+    position: [0.00, 0.00, -0.8],
     quaternion: [0.0, -1.0, 0.0, 1.608e-16],
     fov: 14.4263
   },

@@ -1,5 +1,3 @@
-// utils/fresnelVariants.js
-
 export const FRESNEL_VARIANTS = {
 
   "road": {
