@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { WebGPURenderer, MeshPhysicalNodeMaterial } from 'three/webgpu';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js';
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js';
 
 import { FRESNEL_VARIANTS } from './utils/fresnelVariants.js';
 import { CAMERAS } from './utils/cameras.js';
@@ -54,18 +54,29 @@ let renderMode = 'auto'; // 'auto' | 'webgpu' | 'webgl'
 let isRendererReady = false;
 let animationId = null;
 
-let currentConfig = {
+const MODELS = {
 
-  glbLow: 'models/Standard_Vanguard_low.glb',
-  glbHigh: 'models/Standard_Vanguard_high.glb',
-
-  startCamera: 'Cam_Front',
-
-  glass: {
-    animate: true
+  VANGUARD: {
+    glbLow: 'models/Standard_Vanguard_low.glb',
+    glbHigh: 'models/Standard_Vanguard_high.glb',
+	hdri: 'studio_vanguard_2k.hdr',
+	hdriIntensity: 1.0,
+    startCamera: 'Cam_Front',
+    glass: { animate: true }
   },
 
+  WAYFARER: {
+    glbLow: 'models/Standard_Wayfarer_loow.glb',
+    glbHigh: 'models/Standard_Wayfarer_loow.glb',
+	hdri: 'studio_wayfarer_2k.hdr',
+	hdriIntensity: 2.0,
+    startCamera: 'Cam_Front',
+    glass: { animate: false }
+  }
+
 };
+
+let currentConfig = MODELS.vanguard;
 
 let currentModel = null;
 let gltfData = null;
@@ -767,6 +778,9 @@ async function initRenderer() {
   isRendererReady = true;
 }
 
+// ─────────────────────────────────────────────
+// RESTART APP
+// ─────────────────────────────────────────────
 
 async function restartApp() {
 	
@@ -800,9 +814,6 @@ async function restartApp() {
 	  isWebGPU ? 0xffffff : 0xdddddd
 	);
 
-	// ambient lighting
-	//scene.add(new THREE.AmbientLight(0xffffff, 0.0));
-
   // 🎮 controls
   controls = new OrbitControls(camera, renderer.domElement);
 
@@ -821,21 +832,35 @@ async function restartApp() {
 }
 
 // ─────────────────────────────────────────────
+// SWITCHING MODELS
+// ─────────────────────────────────────────────
+
+async function switchModel(modelKey) {
+
+  if (!MODELS[modelKey]) {
+    console.warn("Model NOT FOUND:", modelKey);
+    return;
+  }
+
+  currentConfig = MODELS[modelKey];
+
+  console.log("Switching model to:", modelKey);
+
+  await restartApp();
+}
+
+// ─────────────────────────────────────────────
 // CONTROLS
 // ─────────────────────────────────────────────
 let controls;
 
-// ─────────────────────────────────────────────
-// AMBIENT LIGHTING
-// ─────────────────────────────────────────────
-// scene.add(new THREE.AmbientLight(0xffffff, 5.0));
 
 // ─────────────────────────────────────────────
 // ENVIRONMENT
 // ─────────────────────────────────────────────
 function setupEnvironment() {
 
-	new EXRLoader().load('studio.exr', (hdr) => {
+	new RGBELoader().load(currentConfig.hdri, (hdr) => {
 
 	  hdr.mapping = THREE.EquirectangularReflectionMapping;
 
@@ -860,7 +885,7 @@ function setupEnvironment() {
 	  scene.environmentRotation = new THREE.Euler(0, Math.PI * 0, 0);
 	  const isWebGPU = renderer.isWebGPURenderer;
 
-	  scene.environmentIntensity = isWebGPU ? 1.0 : 1.0;
+	  scene.environmentIntensity = currentConfig.hdriIntensity ?? 1.0;
 
 	});
 }
@@ -1168,6 +1193,39 @@ modeUI.style.gap = '6px';
 modeUI.style.zIndex = '100';
 
 document.body.appendChild(modeUI);
+
+const modelUI = document.createElement('div');
+
+modelUI.style.position = 'fixed';
+modelUI.style.top = '140px';
+modelUI.style.left = '20px';
+modelUI.style.display = 'flex';
+modelUI.style.flexDirection = 'column';
+modelUI.style.gap = '6px';
+modelUI.style.zIndex = '100';
+
+document.body.appendChild(modelUI);
+
+Object.keys(MODELS).forEach((name) => {
+
+  const btn = document.createElement('button');
+
+  btn.textContent = name;
+
+	btn.style.padding = '8px 14px';
+	btn.style.fontSize = '13px';
+	btn.style.fontWeight = '500';
+	btn.style.borderRadius = '6px';
+	btn.style.background = '#333';
+	btn.style.color = '#fff';
+	btn.style.cursor = 'pointer';
+	btn.style.minWidth = '110px';
+	btn.style.textAlign = 'center';
+
+  btn.onclick = () => switchModel(name);
+
+  modelUI.appendChild(btn);
+});
 
 const modes = [
   { label: 'AUTO', value: 'auto' },
