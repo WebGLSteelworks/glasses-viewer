@@ -32,7 +32,7 @@ export const MODELS = {
     glbLow:        'models/Standard_Wayfarer_loow.glb',
     glbHigh:       'models/Standard_Wayfarer_loow.glb',
     hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.5,
+    hdriIntensity: 1.2,
     startCamera:   'Cam_Front',
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,
@@ -41,4 +41,4 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'VANGUARD';
+export const DEFAULT_MODEL = 'WAYFARER';

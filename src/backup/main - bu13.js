@@ -5,12 +5,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader }    from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RGBELoader }    from 'three/examples/jsm/loaders/RGBELoader.js';
 
-// ── Postprocessing — WebGL only (incompatible con WebGPURenderer) ────────────
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass }     from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { SSAOPass }       from 'three/examples/jsm/postprocessing/SSAOPass.js';
-import { OutputPass }     from 'three/examples/jsm/postprocessing/OutputPass.js';
-
 import {
   uniform,
   vec3,
@@ -75,8 +69,8 @@ const glassAnim = {
 const camera = new THREE.PerspectiveCamera(
   80,
   window.innerWidth / window.innerHeight,
-  0.05,   // subido: mejora precisión depth buffer para SSAO
-  100
+  0.01,
+  1000
 );
 
 const cameraTargets = {};
@@ -95,17 +89,6 @@ let transition = {
 // ── Renderer ─────────────────────────────────
 let renderer;
 let controls;
-
-// ── Postprocessing — WebGL only ───────────────
-let composer = null;
-
-// Tuneable — ajustar según escala del modelo
-const SSAO_CONFIG = {
-  kernelRadius: 0.008,
-  minDistance:  0.0001,
-  maxDistance:  0.003,  // bajado: zonas de oclusión más ajustadas y contrastadas
-  kernelSize:   64,     // default 32 → más denso y oscuro
-};
 
 // ── Fresnel cache (WebGPU) ───────────────────
 const fresnelMatCache = new Map();
@@ -545,9 +528,6 @@ function loadModel(config) {
     const box         = new THREE.Box3().setFromObject(currentModel);
     const modelCenter = new THREE.Vector3();
     box.getCenter(modelCenter);
-	
-	// TEMPORAL — borrar después
-	console.log('Model size:', box.getSize(new THREE.Vector3()));
 
     // ── load cameras from model config ────
     Object.entries(config.cameras).forEach(([name, cam]) => {
@@ -648,7 +628,7 @@ function setupEnvironment(config) {
       hdr.dispose();
     }
 
-    scene.environmentRotation  = new THREE.Euler(0, Math.PI * 0.2, 0);
+    scene.environmentRotation  = new THREE.Euler(0, Math.PI * 0, 0);
     scene.environmentIntensity = hdriIntensity ?? 1.0;
 
     currentHdr = renderer.isWebGPURenderer ? hdr : null;
@@ -718,42 +698,7 @@ async function initRenderer() {
 
   document.body.appendChild(renderer.domElement);
 
-  // SSAO solo en WebGL — WebGPURenderer no es compatible con EffectComposer
-  if (!renderer.isWebGPURenderer) {
-    setupSSAO();
-  }
-
   isRendererReady = true;
-}
-
-
-// ─────────────────────────────────────────────
-// SSAO SETUP — WebGL only
-// ─────────────────────────────────────────────
-
-function setupSSAO() {
-
-  if (composer) { composer.dispose(); composer = null; }
-
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-
-  composer = new EffectComposer(renderer);
-
-  const renderPass = new RenderPass(scene, camera);
-  composer.addPass(renderPass);
-
-  const ssaoPass = new SSAOPass(scene, camera, w, h);
-  ssaoPass.kernelRadius = SSAO_CONFIG.kernelRadius;
-  ssaoPass.minDistance  = SSAO_CONFIG.minDistance;
-  ssaoPass.maxDistance  = SSAO_CONFIG.maxDistance;
-  ssaoPass.kernelSize   = SSAO_CONFIG.kernelSize;
-  ssaoPass.output       = SSAOPass.OUTPUT.Default;
-  //ssaoPass.output = SSAOPass.OUTPUT.SSAO; // debug — black and white
-  composer.addPass(ssaoPass);
-
-  const outputPass = new OutputPass();
-  composer.addPass(outputPass);
 }
 
 
@@ -769,8 +714,6 @@ async function restartApp() {
   }
 
   console.log('Restarting app with mode:', renderMode);
-
-  if (composer) { composer.dispose(); composer = null; }
 
   if (renderer) {
     renderer.dispose();
@@ -947,14 +890,7 @@ function animate(time) {
 
   // ── render ────────────────────────────────
   if (!isRendererReady) return;
-
-  // WebGPU: render directo (EffectComposer no compatible)
-  // WebGL:  composer con SSAO
-  if (composer) {
-    composer.render();
-  } else {
-    renderer.render(scene, camera);
-  }
+  renderer.render(scene, camera);
 }
 
 
@@ -964,13 +900,10 @@ function animate(time) {
 
 window.addEventListener('resize', () => {
   if (!renderer) return;
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  camera.aspect = w / h;
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(w, h);
-  if (composer) composer.setSize(w, h);
+  renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
 
