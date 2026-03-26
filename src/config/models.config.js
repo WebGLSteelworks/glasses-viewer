@@ -29,10 +29,10 @@ export const MODELS = {
 
   WAYFARER: {
     label:         'Wayfarer',
-    glbLow:        'models/Standard_Wayfarer_low.glb',
-    glbHigh:       'models/Standard_Wayfarer_high.glb',
+    glbLow:        'models/Standard_Wayfarer_loow.glb',
+    glbHigh:       'models/Standard_Wayfarer_loow.glb',
     hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 2.0,
+    hdriIntensity: 1.5,
     startCamera:   'Cam_Front',
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,
