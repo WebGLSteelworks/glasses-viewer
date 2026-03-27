@@ -32,7 +32,7 @@ export const MODELS = {
     glbLow:        'models/Standard_Wayfarer_low.glb',
     glbHigh:       'models/Standard_Wayfarer_low.glb',
     hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.2,
+    hdriIntensity: 1.4,
     startCamera:   'Cam_Front',
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,

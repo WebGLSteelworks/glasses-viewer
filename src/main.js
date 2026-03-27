@@ -648,7 +648,7 @@ function setupEnvironment(config) {
       hdr.dispose();
     }
 
-    scene.environmentRotation  = new THREE.Euler(0, Math.PI * 0.2, 0);
+    scene.environmentRotation  = new THREE.Euler(0, Math.PI * 0.0, 0);
     scene.environmentIntensity = hdriIntensity ?? 1.0;
 
     currentHdr = renderer.isWebGPURenderer ? hdr : null;
