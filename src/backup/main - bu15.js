@@ -462,7 +462,6 @@ function createVariantButtons(variants) {
     btn.style.background   = '#111';
     btn.style.color        = '#fff';
     btn.style.fontSize     = '12px';
-    btn.style.textAlign    = 'left';
 
     btn.onclick = () => {
       if (!currentModel) return;
@@ -535,18 +534,7 @@ function loadModel(config) {
     variantsExtension = gltf.userData.gltfExtensions?.KHR_materials_variants;
 
     if (variantsExtension) {
-      const rawVariants = variantsExtension.variants;
-      const orderMap    = config.variantOrder;
-
-      const variants = orderMap
-        ? [...rawVariants].sort((a, b) => {
-            const ai = orderMap.indexOf(a.name);
-            const bi = orderMap.indexOf(b.name);
-            // variants not listed in variantOrder go to the end
-            return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-          })
-        : rawVariants;
-
+      const variants = variantsExtension.variants;
       createVariantButtons(variants);
       if (variants.length > 0) {
         selectVariant(currentModel, variants[0].name);

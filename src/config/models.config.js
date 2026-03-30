@@ -24,7 +24,8 @@ export const MODELS = {
     startCamera:   'Cam_Front',
     cameras:       VANGUARD_CAMERAS,
     fresnel:       VANGUARD_FRESNEL,
-    glass:         { animate: true }
+    glass:         { animate: false },
+	variantOrder: ['Black Prizm 24k', 'White Prizm Black', 'Black Prizm Road', 'White Prizm Sapphire'],
   },
 
   WAYFARER: {
@@ -36,7 +37,10 @@ export const MODELS = {
     startCamera:   'Cam_Front',
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,
-    glass:         { animate: false }
+    glass:         { animate: true },
+	variantOrder: ['Frame Matte Black', 'Frame Shiny Black', 'Frame Shiny Cosmic Blue', 'Frame Blue Jeans',
+	'Frame Clear Sapphire', 'Lenses Clear', 'Lenses Green', 'Lenses Clear to Green', 'Lenses Clear to Grey',
+	'Lenses Dark Blue', 'Lenses Dark Blue', 'Lenses Gradient Graphite'],
   }
 
 };
