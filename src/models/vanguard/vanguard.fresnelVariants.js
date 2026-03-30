@@ -10,7 +10,7 @@ export const FRESNEL_VARIANTS = {
 
   "sapphire": {
     intensity: 1.0,
-    chromaBoost: 1.8,
+    chromaBoost: 2.0,
     colorFront: [0.47, 0.77, 0.79],
     colorMid:   [0.09, 0.11, 0.30],
     colorEdge:  [0.42, 0.12, 0.4]
