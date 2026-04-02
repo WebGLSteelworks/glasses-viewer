@@ -10,6 +10,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
 import { SSAOPass }       from 'three/addons/postprocessing/SSAOPass.js';
 import { OutputPass }     from 'three/addons/postprocessing/OutputPass.js';
+import { SMAAPass }       from 'three/addons/postprocessing/SMAAPass.js';
 
 import {
   uniform,
@@ -20,7 +21,7 @@ import {
   add,
   sub,
   pow,
-  normalWorld,           // r177: normalView → normalWorld
+  transformedNormalView, // r183: normal transformada en view space, actualizada por frame
   positionViewDirection,
   smoothstep,
 } from 'three/tsl';
@@ -168,8 +169,10 @@ function injectFresnelNode(material, fresnelCfg) {
   const intensity   = uniform(float(fresnelCfg.intensity   ?? 2.0));
   const chromaBoost = uniform(float(fresnelCfg.chromaBoost ?? 1.0));
 
-  // r177: normalView → normalWorld
-  const NdotV    = dot(normalWorld, positionViewDirection);
+  // transformedNormalView: normal en view space post-transform, se actualiza al mover la cámara
+  // positionViewDirection: vector desde fragmento a cámara en view space
+  // Ambos en el mismo espacio — dot varía correctamente con el ángulo de visión
+  const NdotV    = dot(transformedNormalView, positionViewDirection);
   const f        = pow(sub(1.0, NdotV).clamp(0.0, 1.0), float(0.5));
   const frontMix = smoothstep(float(0.05), float(0.25), f);
   const edgeMix  = smoothstep(float(0.55), float(0.85), f);
@@ -186,23 +189,20 @@ function injectFresnelNode(material, fresnelCfg) {
     fresnelColor.z.mul(0.114)
   );
   const lumVec       = vec3(lum, lum, lum);
-  const boostedColor = add(lumVec, sub(fresnelColor, lumVec).mul(chromaBoost.mul(float(3.0))));
+  const boostedColor = add(lumVec, sub(fresnelColor, lumVec).mul(chromaBoost));
 
-  const FRESNEL_MIX  = float(1.5);
-  const FRESNEL_DARK = float(0.5);
-
-  const baseColor = vec3(
-    float(material.color.r),
-    float(material.color.g),
-    float(material.color.b)
-  );
-
+  // fresnelStrength: 0 en el centro del cristal (vista frontal), 1 en los bordes
   const fresnelStrength = pow(f, float(1.5)).clamp(0.0, 1.0);
-  const darkFresnel     = mix(vec3(float(0.0), float(0.0), float(0.0)), boostedColor, FRESNEL_DARK);
-  const finalColor      = mix(baseColor, darkFresnel, fresnelStrength.mul(FRESNEL_MIX));
 
-  nodeMat.colorNode    = finalColor;
-  nodeMat.emissiveNode = null;
+  // El Fresnel va en emissiveNode, NO en colorNode:
+  // - colorNode reemplaza el PBR completo y pierde ángulo-dependencia con NoToneMapping
+  // - emissiveNode se suma al output PBR, es siempre ángulo-dependiente via f
+  // - Con NoToneMapping emissive no se satura ni distorsiona
+  // Modulamos por fresnelStrength * intensity para que sea 0 en vista frontal
+  const fresnelEmissive = boostedColor.mul(fresnelStrength).mul(intensity);
+
+  nodeMat.colorNode    = null;   // PBR normal desde material.color
+  nodeMat.emissiveNode = fresnelEmissive;
 
   nodeMat.userData.fresnelUniforms = {
     colorFront, colorMid, colorEdge, intensity, chromaBoost
@@ -269,16 +269,10 @@ function injectFresnel(material, fresnelCfg) {
       vec3  chroma = fresnelColor - vec3(lum);
       fresnelColor = vec3(lum) + chroma * chromaBoost;
 
-      float FRESNEL_DARK = 0.5;
-      vec3  darkFresnel  = mix(vec3(0.0), fresnelColor, FRESNEL_DARK);
-
-      float FRESNEL_MIX     = 1.5;
+      // Mismo approach que WebGPU emissiveNode: suma directa sobre el output,
+      // no mezcla con indirectSpecular. Así brillo y saturación son iguales.
       float fresnelStrength = clamp(pow(f, 1.5), 0.0, 1.0);
-      reflectedLight.indirectSpecular.rgb = mix(
-        reflectedLight.indirectSpecular.rgb,
-        darkFresnel,
-        fresnelStrength * FRESNEL_MIX
-      );
+      totalEmissiveRadiance += fresnelColor * fresnelStrength * fresnelIntensity;
       `
     );
 
@@ -759,10 +753,16 @@ function setupSSAO() {
   ssaoPass.maxDistance  = SSAO_CONFIG.maxDistance;
   ssaoPass.kernelSize   = SSAO_CONFIG.kernelSize;
   ssaoPass.output       = SSAOPass.OUTPUT.Default;
+  //ssaoPass.output = SSAOPass.OUTPUT.SSAO; // debug — black and white
   composer.addPass(ssaoPass);
 
   const outputPass = new OutputPass();
   composer.addPass(outputPass);
+
+  // SMAA — antialiasing por postprocesado, necesario porque el MSAA del
+  // renderer (antialias:true) no actúa sobre render targets del composer
+  const smaaPass = new SMAAPass(w, h);
+  composer.addPass(smaaPass);
 }
 
 

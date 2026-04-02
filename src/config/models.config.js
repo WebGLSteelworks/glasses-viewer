@@ -38,9 +38,9 @@ export const MODELS = {
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
-	variantOrder: ['Frame Matte Black', 'Frame Shiny Black', 'Frame Shiny Cosmic Blue', 'Frame Blue Jeans',
-	'Frame Clear Sapphire', 'Lenses Clear', 'Lenses Green', 'Lenses Clear to Green', 'Lenses Clear to Grey',
-	'Lenses Dark Blue', 'Lenses Dark Blue', 'Lenses Gradient Graphite'],
+	variantOrder: ['Frame Matte Black', 'Frame Shiny Black', 'Frame Shiny Cosmic Blue', 'Lenses Polar Gradient', 
+	'Lenses Clear', 'Lenses Clear to Graphite Green', 'Lenses Clear to Grey',
+	'Lenses Clear to Sapphire', 'Lenses Clear to Emerald', 'Lenses Clear to Amethyst', 'Lenses G15 Green'],
   }
 
 };
