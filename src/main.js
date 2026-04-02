@@ -1,15 +1,15 @@
 import * as THREE from 'three';
 
 import { WebGPURenderer, MeshPhysicalNodeMaterial } from 'three/webgpu';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader }    from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RGBELoader }    from 'three/examples/jsm/loaders/RGBELoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
+import { HDRLoader }     from 'three/addons/loaders/HDRLoader.js';
 
 // ── Postprocessing — WebGL only (incompatible con WebGPURenderer) ────────────
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass }     from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { SSAOPass }       from 'three/examples/jsm/postprocessing/SSAOPass.js';
-import { OutputPass }     from 'three/examples/jsm/postprocessing/OutputPass.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { SSAOPass }       from 'three/addons/postprocessing/SSAOPass.js';
+import { OutputPass }     from 'three/addons/postprocessing/OutputPass.js';
 
 import {
   uniform,
@@ -20,10 +20,12 @@ import {
   add,
   sub,
   pow,
-  normalView,
+  normalWorld,           // r177: normalView → normalWorld
   positionViewDirection,
   smoothstep,
 } from 'three/tsl';
+
+import { Timer } from 'three';
 
 import { isWebGPUSupported } from './utils/deviceDetection.js';
 import { MODELS, DEFAULT_MODEL } from './config/models.config.js';
@@ -36,7 +38,7 @@ import { MODELS, DEFAULT_MODEL } from './config/models.config.js';
 let scene          = new THREE.Scene();
 scene.background   = new THREE.Color(0xffffff);
 
-const clock        = new THREE.Clock();
+const timer        = new Timer(); // r183: reemplaza THREE.Clock
 const loader       = new GLTFLoader();
 
 let fps            = 0;
@@ -166,7 +168,8 @@ function injectFresnelNode(material, fresnelCfg) {
   const intensity   = uniform(float(fresnelCfg.intensity   ?? 2.0));
   const chromaBoost = uniform(float(fresnelCfg.chromaBoost ?? 1.0));
 
-  const NdotV    = dot(normalView, positionViewDirection);
+  // r177: normalView → normalWorld
+  const NdotV    = dot(normalWorld, positionViewDirection);
   const f        = pow(sub(1.0, NdotV).clamp(0.0, 1.0), float(0.5));
   const frontMix = smoothstep(float(0.05), float(0.25), f);
   const edgeMix  = smoothstep(float(0.55), float(0.85), f);
@@ -522,8 +525,6 @@ function loadModel(config) {
   const isWebGPU  = renderer.isWebGPURenderer;
   const modelPath = isWebGPU ? config.glbHigh : config.glbLow;
 
-  console.log('Loading model:', modelPath);
-
   loader.load(modelPath, (gltf) => {
 
     gltfData     = gltf;
@@ -557,9 +558,6 @@ function loadModel(config) {
     const box         = new THREE.Box3().setFromObject(currentModel);
     const modelCenter = new THREE.Vector3();
     box.getCenter(modelCenter);
-	
-	// TEMPORAL — borrar después
-	console.log('Model size:', box.getSize(new THREE.Vector3()));
 
     // ── load cameras from model config ────
     Object.entries(config.cameras).forEach(([name, cam]) => {
@@ -636,10 +634,10 @@ let currentHdr = null;
 function setupEnvironment(config) {
 
   // snapshot config at call time — avoids race condition if
-  // currentConfig changes before the async RGBELoader callback fires
+  // currentConfig changes before the async HDRLoader callback fires
   const { hdri, hdriIntensity } = config;
 
-  new RGBELoader().load(hdri, (hdr) => {
+  new HDRLoader().load(hdri, (hdr) => {  // r180: RGBELoader → HDRLoader
 
     // dispose previous HDR
     if (currentHdr) {
@@ -723,10 +721,10 @@ async function initRenderer() {
   // Cap at 2 — beyond that GPU cost outweighs the visual gain
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.outputColorSpace         = THREE.SRGBColorSpace;
-  renderer.physicallyCorrectLights  = true;
-  renderer.toneMapping              = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure      = 1.0;
+  renderer.outputColorSpace      = THREE.SRGBColorSpace;
+  // r183: physicallyCorrectLights eliminado (era default desde r155)
+  renderer.toneMapping           = THREE.NoToneMapping;
+  renderer.toneMappingExposure   = 1.0;
 
   document.body.appendChild(renderer.domElement);
 
@@ -761,7 +759,6 @@ function setupSSAO() {
   ssaoPass.maxDistance  = SSAO_CONFIG.maxDistance;
   ssaoPass.kernelSize   = SSAO_CONFIG.kernelSize;
   ssaoPass.output       = SSAOPass.OUTPUT.Default;
-  //ssaoPass.output = SSAOPass.OUTPUT.SSAO; // debug — black and white
   composer.addPass(ssaoPass);
 
   const outputPass = new OutputPass();
@@ -900,7 +897,9 @@ function animate(time) {
 
     wasAnimatingGlass = true;
 
-    const delta = clock.getDelta();
+    // r183: Timer requiere update() antes de getDelta()
+    timer.update();
+    const delta = timer.getDelta();
     glassAnim.timer += delta;
 
     glassMaterials.forEach((mat, i) => {

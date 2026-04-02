@@ -16,6 +16,14 @@
         width: 100%;
         height: 100%;
         overflow: hidden;
+        background: transparent;
+      }
+
+      #bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: #ffffff;
       }
 
       canvas {
@@ -25,10 +33,13 @@
         left: 0;
         width: 100% !important;
         height: 100% !important;
+        z-index: 1;
+        background: transparent !important;
       }
     </style>
   </head>
   <body>
+    <div id="bg"></div>
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
