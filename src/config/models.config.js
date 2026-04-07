@@ -24,8 +24,9 @@ export const MODELS = {
     startCamera:   'Cam_Front',
     cameras:       VANGUARD_CAMERAS,
     fresnel:       VANGUARD_FRESNEL,
-    glass:         { animate: false },
-	variantOrder: ['Black Prizm 24k', 'White Prizm Black', 'Black Prizm Road', 'White Prizm Sapphire'],
+    glass:         { animate: true },
+	variantOrder: ['Black Prizm Black', 'Black Prizm Transitions Ember', 'Whiite Prizm Rose Gold', 'Black Prizm 24k',
+						'Black Prizm Road', 'White Prizm Black', 'White Prizm Sapphire'],
   },
 
   WAYFARER: {

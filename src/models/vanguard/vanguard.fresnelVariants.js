@@ -2,7 +2,7 @@ export const FRESNEL_VARIANTS = {
 
   "road": {
     intensity: 1.0,
-    chromaBoost: 2.0,
+    chromaBoost: 1.5,
     colorFront: [0.5, 0.02, 0.6],
     colorMid:   [1.0, 0.0, 0.0],
     colorEdge:  [0.97, 0.84, 0.09]
@@ -30,6 +30,23 @@ export const FRESNEL_VARIANTS = {
     colorFront: [0.05, 0.05, 0.05],
     colorMid:   [0.0, 0.0, 0.0],
     colorEdge:  [0.0, 0.0, 0.0]
+  },
+
+  "rose": {
+    intensity: 1.0,
+    chromaBoost: 2.0,
+    colorFront: [1.00, 0.82, 0.87],
+    colorMid:   [0.69, 0.49, 0.42],
+    colorEdge:  [0.48, 0.53, 0.4]
+  },
+  
+  "ember": {
+    intensity: 1.0,
+    chromaBoost: 1.5,
+    colorFront: [0.05, 0.05, 0.05],
+    colorMid:   [0.5, 0.0, 0.0],
+    colorEdge:  [0.49, 0.42, 0.09]
   }
+  
 
 };
