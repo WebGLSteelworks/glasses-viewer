@@ -395,50 +395,18 @@ function rebuildGlassMaterials() {
 
         } else {
 
-          // WebGL — misma configuración base que WebGPU pero sin reemplazar el material
+          // WebGL — leave material as-is from GLB
+          m.transparent = true;
+          m.depthWrite  = false;  // no escribir depth — permite ver patillas a través del cristal
+          m.needsUpdate = true;
 
-          if (name.includes('lenses.front.')) {
-
-            obj.renderOrder = 2;
-
-            if (m.userData.originalOpacity === undefined) {
-              m.userData.originalOpacity = m.opacity;
+          // Fresnel WebGL — only if this model has fresnel config
+          if (fresnel && name.includes('lenses.front.')) {
+            const typeRaw = name.split('lenses.front.')[1];
+            const type    = typeRaw?.split('.')[0];
+            if (fresnel[type]) {
+              injectFresnel(m, { enabled: true, ...fresnel[type] });
             }
-            const rawOpacity = m.userData.originalOpacity;
-            const glbOpacity = rawOpacity < 0.999 ? rawOpacity : 0.7;
-
-            m.transmission = 0;
-            m.opacity      = glbOpacity;
-            m.depthWrite   = false;
-            m.transparent  = true;
-            m.side         = THREE.FrontSide;
-            m.needsUpdate  = true;
-
-            // Fresnel WebGL — solo si el modelo lo tiene configurado
-            if (fresnel) {
-              const typeRaw = name.split('lenses.front.')[1];
-              const type    = typeRaw?.split('.')[0];
-              if (fresnel[type]) {
-                injectFresnel(m, { enabled: true, ...fresnel[type] });
-              }
-            }
-
-          } else if (name.includes('lenses.back.')) {
-
-            obj.renderOrder = 1;
-            m.transmission  = 0;
-            m.opacity       = 1.0;
-            m.depthWrite    = false;
-            m.transparent   = false;
-            m.side          = THREE.FrontSide;
-            m.needsUpdate   = true;
-
-          } else {
-
-            // Wayfarer u otros modelos sin front/back — cristal cerrado
-            m.transparent = true;
-            m.depthWrite  = false;
-            m.needsUpdate = true;
           }
         }
       }
