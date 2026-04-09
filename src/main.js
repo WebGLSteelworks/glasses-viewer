@@ -12,9 +12,14 @@ import { SSAOPass }       from 'three/addons/postprocessing/SSAOPass.js';
 import { OutputPass }     from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass }       from 'three/addons/postprocessing/SMAAPass.js';
 
+// ── Contact shadows blur shaders ─────────────────────────────────────────────
+import { HorizontalBlurShader } from 'three/addons/shaders/HorizontalBlurShader.js';
+import { VerticalBlurShader }   from 'three/addons/shaders/VerticalBlurShader.js';
+
 import {
   uniform,
   vec3,
+  vec4,
   float,
   mix,
   dot,
@@ -24,7 +29,12 @@ import {
   transformedNormalView, // r183: normal transformada en view space, actualizada por frame
   positionViewDirection,
   smoothstep,
+  texture,               // TSL texture sampler — used for shadow plane on WebGPU
+  uv,                    // TSL UV coords — used for shadow plane on WebGPU
+  Fn,                    // TSL function builder — used for blur node material
 } from 'three/tsl';
+
+import { NodeMaterial } from 'three/webgpu';
 
 import { Timer } from 'three';
 
@@ -112,6 +122,30 @@ const SSAO_CONFIG = {
 
 // ── Fresnel cache (WebGPU) ───────────────────
 const fresnelMatCache = new Map();
+
+// ── Contact shadow state ─────────────────────
+// All objects live inside shadowGroup so moving the group repositions the shadow.
+// renderTarget      → receives the depth-based shadow render
+// renderTargetBlur  → intermediate buffer for the separable blur pass
+// shadowCamera      → orthographic, looks upward from below the model
+// depthMaterial     → black-to-transparent depth material painted onto the model
+// blurPlane         → invisible plane used only during the blur passes
+// shadowPlane       → visible plane that displays the blurred shadow texture
+let shadowGroup            = null;
+let shadowRenderTarget     = null;
+let shadowRenderTargetBlur = null;
+let shadowCamera           = null;
+let shadowDepthMaterial    = null;
+let shadowBlurPlane        = null;
+let shadowPlane            = null;
+let shadowHBlurMat         = null;
+let shadowVBlurMat         = null;
+// WebGPU native shadow state:
+let shadowLight            = null;
+let shadowFloorMesh        = null;
+let shadowMapBlurTarget    = null;  // extra blur target for WebGPU shadow map post-blur
+let shadowMapBlurQuad      = null;  // fullscreen quad for blurring the shadow map
+let shadowMapBlurCamera    = null;  // ortho camera for blur quad renders
 
 
 // ─────────────────────────────────────────────
@@ -504,6 +538,407 @@ function createVariantButtons(variants) {
 
 
 // ─────────────────────────────────────────────
+// CONTACT SHADOWS
+// ─────────────────────────────────────────────
+//
+// Two implementations selected at runtime:
+//
+//   WebGL  — render-target technique.
+//            An orthographic camera looks upward from below the model.
+//            The scene is rendered with a plain black MeshBasicMaterial
+//            into a WebGLRenderTarget (RGBAFormat), then blurred with two
+//            separable Gaussian passes. Result shown on a plane via
+//            transparent MeshBasicMaterial + map.
+//
+//   WebGPU — native shadow map technique.
+//            A DirectionalLight (intensity=0, castShadow=true) positioned
+//            above the model casts into a ShadowMaterial floor plane.
+//            No render targets, no alpha compositing — fully compatible
+//            with WebGPURenderer out of the box.
+//
+// Config keys (per model in models.config.js, under shadow: {}):
+//   enabled          {boolean} — master switch (default false)
+//   planeSize        {number}  — world-space size of shadow plane (default 0.5)
+//   opacity          {number}  — shadow opacity 0-1 (default 0.6)
+//   blur             {number}  — blur/softness amount (default 3.5)
+//   darkness         {number}  — darkness multiplier (default 1.5)
+//   offsetY          {number}  — Y position of shadow plane, auto from bbox
+//   cameraHeight     {number}  — WebGL only: ortho cam height, auto from bbox
+//   updateEveryFrame {boolean} — re-render every frame (default true)
+
+function setupContactShadow(config) {
+
+  disposeContactShadow();
+
+  const cfg = config.shadow;
+  if (!cfg?.enabled) return;
+
+  // Use the same WebGL render-target + gaussian blur path for both renderers.
+  // The WebGPU native path (DirectionalLight + ShadowMaterial) is kept below
+  // but not used — it produces lower quality shadows than the gaussian approach.
+  setupContactShadowWebGL(config);
+}
+
+// ── WebGPU: native DirectionalLight + ShadowMaterial ─────────────────────────
+//
+// Blur strategy: PCFSoftShadowMap with a very low-resolution shadow map.
+// In Three.js r183 WebGPU, shadow.radius is ignored by PCFSoftShadowMap.
+// The only reliable way to get soft shadows is a small mapSize — the
+// inherent blurriness from low resolution is the blur effect.
+// mapSize is driven by the blur config value: higher blur = smaller map.
+//   blur 1  → 512×512  (sharp)
+//   blur 5  → 256×256  (medium)
+//   blur 10 → 128×128  (soft)
+//   blur 20 → 64×64    (very soft)
+
+function setupContactShadowWebGPU(config) {
+
+  const cfg        = config.shadow;
+  const PLANE_SIZE = cfg.planeSize ?? 0.5;
+  const DARKNESS   = cfg.darkness  ?? 1.5;
+  const OPACITY    = (cfg.opacity ?? 0.6) * DARKNESS * 0.35;
+  const BLUR       = cfg.blur ?? 5;
+  const MAP_SIZE   = 512; // High res — blur is applied post-render via Gaussian
+
+  let OFFSET_Y = cfg.offsetY;
+  if (OFFSET_Y === undefined && currentModel) {
+    const box = new THREE.Box3().setFromObject(currentModel);
+    OFFSET_Y  = box.min.y;
+  }
+  OFFSET_Y = OFFSET_Y ?? -0.085;
+
+  // Floor plane — receives the shadow
+  const floorGeom = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE);
+  floorGeom.rotateX(-Math.PI / 2);
+
+  shadowFloorMesh = new THREE.Mesh(floorGeom, new THREE.ShadowMaterial({
+    opacity:    OPACITY,
+    depthWrite: false,
+  }));
+  shadowFloorMesh.position.y    = OFFSET_Y;
+  shadowFloorMesh.receiveShadow = true;
+  shadowFloorMesh.renderOrder   = 3;
+  scene.add(shadowFloorMesh);
+
+  // Directional light — intensity=0 so it only contributes the shadow, not lighting
+  const modelCentre = new THREE.Vector3();
+  if (currentModel) {
+    new THREE.Box3().setFromObject(currentModel).getCenter(modelCentre);
+  }
+
+  shadowLight = new THREE.DirectionalLight(0xffffff, 0);
+  shadowLight.castShadow = true;
+  shadowLight.position.set(modelCentre.x, modelCentre.y + 1.0, modelCentre.z);
+  shadowLight.target.position.copy(modelCentre);
+
+  const half = PLANE_SIZE / 2;
+  shadowLight.shadow.mapSize.set(MAP_SIZE, MAP_SIZE);
+  shadowLight.shadow.camera.near   = 0.01;
+  shadowLight.shadow.camera.far    = 2.0;
+  shadowLight.shadow.camera.left   = -half;
+  shadowLight.shadow.camera.right  =  half;
+  shadowLight.shadow.camera.top    =  half;
+  shadowLight.shadow.camera.bottom = -half;
+  shadowLight.shadow.bias          = -0.001;
+
+  scene.add(shadowLight);
+  scene.add(shadowLight.target);
+
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+
+  // Post-render Gaussian blur on the shadow map texture.
+  // After renderer.render() generates shadowLight.shadow.map, we blur it
+  // using the same separable Gaussian technique as the WebGL contact shadow.
+  // This gives smooth soft shadows without low-res artefacts.
+  shadowMapBlurTarget = new THREE.WebGLRenderTarget(MAP_SIZE, MAP_SIZE);
+  shadowMapBlurTarget.texture.generateMipmaps = false;
+
+  // Orthographic camera + fullscreen quad for the blur passes
+  shadowMapBlurCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  const quadGeom = new THREE.PlaneGeometry(2, 2);
+  shadowMapBlurQuad = new THREE.Mesh(quadGeom, new THREE.ShaderMaterial(HorizontalBlurShader));
+  shadowMapBlurQuad.frustumCulled = false;
+
+  if (currentModel) {
+    currentModel.traverse(obj => {
+      if (obj.isMesh) obj.castShadow = true;
+    });
+  }
+
+  console.log(
+    `[shadow] WebGPU | offsetY=${OFFSET_Y.toFixed(4)} planeSize=${PLANE_SIZE} ` +
+    `blur=${BLUR} mapSize=${MAP_SIZE} opacity=${OPACITY.toFixed(3)}`
+  );
+}
+
+// ── WebGL: render-target + separable blur ────────────────────────────────────
+
+function setupContactShadowWebGL(config) {
+
+  const cfg        = config.shadow;
+  const PLANE_SIZE = cfg.planeSize ?? 0.5;
+  const OPACITY    = cfg.opacity   ?? 0.6;
+
+  let OFFSET_Y      = cfg.offsetY;
+  let CAMERA_HEIGHT = cfg.cameraHeight;
+
+  if (currentModel) {
+    const box    = new THREE.Box3().setFromObject(currentModel);
+    const modelH = box.max.y - box.min.y;
+    if (OFFSET_Y === undefined)      OFFSET_Y      = box.min.y;
+    if (CAMERA_HEIGHT === undefined) CAMERA_HEIGHT = modelH * 1.2;
+    console.log(
+      `[shadow] bbox minY=${box.min.y.toFixed(4)} maxY=${box.max.y.toFixed(4)} ` +
+      `-> offsetY=${OFFSET_Y.toFixed(4)} cameraHeight=${CAMERA_HEIGHT.toFixed(4)}`
+    );
+  }
+  OFFSET_Y      = OFFSET_Y      ?? -0.085;
+  CAMERA_HEIGHT = CAMERA_HEIGHT ?? 0.25;
+
+  shadowGroup = new THREE.Group();
+  shadowGroup.position.y = OFFSET_Y;
+  scene.add(shadowGroup);
+
+  shadowRenderTarget     = new THREE.WebGLRenderTarget(512, 512, { format: THREE.RGBAFormat });
+  shadowRenderTarget.texture.generateMipmaps = false;
+  shadowRenderTargetBlur = new THREE.WebGLRenderTarget(512, 512, { format: THREE.RGBAFormat });
+  shadowRenderTargetBlur.texture.generateMipmaps = false;
+
+  const planeGeom = new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE).rotateX(Math.PI / 2);
+
+  // Shadow display plane material:
+  // WebGL — MeshBasicMaterial with map + transparent alpha compositing works fine.
+  // WebGPU — MeshBasicMaterial.map does not composite alpha from render targets.
+  //          Use MeshPhysicalNodeMaterial with a TSL opacityNode that reads the
+  //          alpha channel of the render target texture directly.
+  let shadowPlaneMat;
+  if (!renderer.isWebGPURenderer) {
+    shadowPlaneMat = new THREE.MeshBasicMaterial({
+      map:         shadowRenderTarget.texture,
+      opacity:     OPACITY,
+      transparent: true,
+      depthWrite:  false,
+    });
+  } else {
+    const shadowTex  = texture(shadowRenderTarget.texture, uv());
+    const shadowAlpha = shadowTex.a.mul(float(OPACITY));
+    const nodeMat    = new MeshPhysicalNodeMaterial();
+    nodeMat.colorNode   = vec3(0.0, 0.0, 0.0);
+    nodeMat.opacityNode = shadowAlpha;
+    nodeMat.transparent = true;
+    nodeMat.depthWrite  = false;
+    shadowPlaneMat = nodeMat;
+  }
+
+  shadowPlane = new THREE.Mesh(planeGeom, shadowPlaneMat);
+  shadowPlane.renderOrder = 3;
+  shadowPlane.scale.y = -1;
+  shadowGroup.add(shadowPlane);
+
+  shadowBlurPlane = new THREE.Mesh(planeGeom);
+  shadowBlurPlane.visible = false;
+  shadowGroup.add(shadowBlurPlane);
+
+  shadowCamera = new THREE.OrthographicCamera(
+    -PLANE_SIZE / 2,  PLANE_SIZE / 2,
+     PLANE_SIZE / 2, -PLANE_SIZE / 2,
+    0, CAMERA_HEIGHT
+  );
+  shadowCamera.rotation.x = Math.PI / 2;
+  shadowGroup.add(shadowCamera);
+
+  shadowDepthMaterial = new THREE.MeshBasicMaterial({
+    color:      0x000000,
+    depthTest:  false,
+    depthWrite: false,
+  });
+
+  if (!renderer.isWebGPURenderer) {
+    // WebGL: standard GLSL ShaderMaterial blur
+    shadowHBlurMat = new THREE.ShaderMaterial(HorizontalBlurShader);
+    shadowHBlurMat.depthTest = false;
+    shadowVBlurMat = new THREE.ShaderMaterial(VerticalBlurShader);
+    shadowVBlurMat.depthTest = false;
+  } else {
+    // WebGPU: TSL node materials for separable Gaussian blur.
+    // In TSL, textures are passed as TextureNode objects — texture() creates a
+    // node that wraps a THREE.Texture and can be reassigned via .value.
+    // uniform() is for scalars/vectors only, not textures.
+
+    // Step uniforms (scalar) — updated per blur call
+    const hStep = uniform(0.0);
+    const vStep = uniform(0.0);
+
+    // Texture nodes — .value is reassigned before each blur pass
+    const hTexNode = texture(shadowRenderTarget.texture);
+    const vTexNode = texture(shadowRenderTarget.texture);
+
+    // 9-tap Gaussian weights (sigma ≈ 2)
+    const offsets = [-4, -3, -2, -1, 0, 1, 2, 3, 4];
+    const weights = [0.0162, 0.0540, 0.1216, 0.1945, 0.2270, 0.1945, 0.1216, 0.0540, 0.0162];
+
+    const hColorFn = Fn(() => {
+      const uvCoord = uv();
+      let result = vec4(0.0, 0.0, 0.0, 0.0);
+      for (let i = 0; i < offsets.length; i++) {
+        result = result.add(
+          hTexNode.sample(uvCoord.add(vec4(float(offsets[i]).mul(hStep), 0.0, 0.0, 0.0).xy))
+                  .mul(float(weights[i]))
+        );
+      }
+      return result;
+    });
+
+    const vColorFn = Fn(() => {
+      const uvCoord = uv();
+      let result = vec4(0.0, 0.0, 0.0, 0.0);
+      for (let i = 0; i < offsets.length; i++) {
+        result = result.add(
+          vTexNode.sample(uvCoord.add(vec4(0.0, float(offsets[i]).mul(vStep), 0.0, 0.0).xy))
+                  .mul(float(weights[i]))
+        );
+      }
+      return result;
+    });
+
+    const hMat = new NodeMaterial();
+    hMat.fragmentNode = hColorFn();
+    hMat.depthTest    = false;
+    hMat.depthWrite   = false;
+
+    const vMat = new NodeMaterial();
+    vMat.fragmentNode = vColorFn();
+    vMat.depthTest    = false;
+    vMat.depthWrite   = false;
+
+    // Store nodes on userData so blurContactShadow can update them per call
+    hMat.userData.stepUniform    = hStep;
+    hMat.userData.textureNode    = hTexNode;
+    vMat.userData.stepUniform    = vStep;
+    vMat.userData.textureNode    = vTexNode;
+
+    shadowHBlurMat = hMat;
+    shadowVBlurMat = vMat;
+  }
+
+  console.log(
+    `[shadow] WebGL RT | offsetY=${OFFSET_Y.toFixed(4)} ` +
+    `planeSize=${PLANE_SIZE} cameraHeight=${CAMERA_HEIGHT.toFixed(4)}`
+  );
+
+  renderContactShadow(config);
+}
+
+function disposeContactShadow() {
+
+  // WebGL
+  if (shadowGroup) { scene.remove(shadowGroup); shadowGroup = null; }
+  if (shadowRenderTarget)     { shadowRenderTarget.dispose();     shadowRenderTarget     = null; }
+  if (shadowRenderTargetBlur) { shadowRenderTargetBlur.dispose(); shadowRenderTargetBlur = null; }
+  if (shadowDepthMaterial)    { shadowDepthMaterial.dispose();    shadowDepthMaterial    = null; }
+  if (shadowHBlurMat)         { shadowHBlurMat.dispose();         shadowHBlurMat         = null; }
+  if (shadowVBlurMat)         { shadowVBlurMat.dispose();         shadowVBlurMat         = null; }
+  shadowCamera    = null;
+  shadowBlurPlane = null;
+  shadowPlane     = null;
+
+  // WebGPU
+  if (shadowFloorMesh) {
+    scene.remove(shadowFloorMesh);
+    shadowFloorMesh.geometry.dispose();
+    shadowFloorMesh.material.dispose();
+    shadowFloorMesh = null;
+  }
+  if (shadowLight) {
+    scene.remove(shadowLight);
+    scene.remove(shadowLight.target);
+    shadowLight = null;
+  }
+  if (shadowMapBlurTarget) { shadowMapBlurTarget.dispose(); shadowMapBlurTarget = null; }
+  if (shadowMapBlurQuad)   { shadowMapBlurQuad.geometry.dispose(); shadowMapBlurQuad.material.dispose(); shadowMapBlurQuad = null; }
+  shadowMapBlurCamera = null;
+  if (renderer) renderer.shadowMap.enabled = false;
+}
+
+function blurContactShadow(amount) {
+
+  shadowBlurPlane.visible = true;
+
+  const step = amount / 256;
+
+  if (!renderer.isWebGPURenderer) {
+    // WebGL: standard ShaderMaterial uniforms
+    shadowBlurPlane.material               = shadowHBlurMat;
+    shadowHBlurMat.uniforms.tDiffuse.value = shadowRenderTarget.texture;
+    shadowHBlurMat.uniforms.h.value        = step;
+    renderer.setRenderTarget(shadowRenderTargetBlur);
+    renderer.render(shadowBlurPlane, shadowCamera);
+
+    shadowBlurPlane.material               = shadowVBlurMat;
+    shadowVBlurMat.uniforms.tDiffuse.value = shadowRenderTargetBlur.texture;
+    shadowVBlurMat.uniforms.v.value        = step;
+    renderer.setRenderTarget(shadowRenderTarget);
+    renderer.render(shadowBlurPlane, shadowCamera);
+  } else {
+    // WebGPU: update TSL uniforms stored in userData
+    shadowBlurPlane.material = shadowHBlurMat;
+    shadowHBlurMat.userData.textureNode.value = shadowRenderTarget.texture;
+    shadowHBlurMat.userData.stepUniform.value = step;
+    renderer.setRenderTarget(shadowRenderTargetBlur);
+    renderer.render(shadowBlurPlane, shadowCamera);
+
+    shadowBlurPlane.material = shadowVBlurMat;
+    shadowVBlurMat.userData.textureNode.value = shadowRenderTargetBlur.texture;
+    shadowVBlurMat.userData.stepUniform.value = step;
+    renderer.setRenderTarget(shadowRenderTarget);
+    renderer.render(shadowBlurPlane, shadowCamera);
+  }
+
+  shadowBlurPlane.visible = false;
+}
+
+function renderContactShadow(config) {
+
+  if (!shadowGroup || !shadowCamera || !shadowDepthMaterial) return;
+  if (!isRendererReady) return;
+
+  const cfg = config.shadow;
+  // WebGL gaussian blur uses amount/256 as the shader uniform.
+  // At blur=15 that equals 0.059 — much more aggressive than WebGPU's
+  // low-res shadowmap blur. Scale by 0.25 to visually match WebGPU output.
+  // Use blurWebGL in config to override this independently if needed.
+  const rawBlur    = cfg.blur ?? 3.5;
+  const blurAmount = (cfg.blurWebGL ?? rawBlur * 0.25);
+
+  shadowGroup.visible = false;
+
+  const savedBackground  = scene.background;
+  scene.background       = null;
+  scene.overrideMaterial = shadowDepthMaterial;
+
+  const savedClearAlpha = renderer.getClearAlpha();
+  renderer.setClearAlpha(0);
+
+  renderer.setRenderTarget(shadowRenderTarget);
+  renderer.clear();
+  renderer.render(scene, shadowCamera);
+
+  scene.overrideMaterial = null;
+  scene.background       = savedBackground;
+  renderer.setClearAlpha(savedClearAlpha);
+
+  shadowGroup.visible = true;
+
+  blurContactShadow(blurAmount);
+  blurContactShadow(blurAmount * 0.4);
+
+  renderer.setRenderTarget(null);
+}
+
+
+// ─────────────────────────────────────────────
 // LOAD MODEL
 // ─────────────────────────────────────────────
 
@@ -645,6 +1080,11 @@ function loadModel(config) {
       });
 
     });
+
+    // ── contact shadow ────────────────────
+    // Set up after the model is loaded so the shadow renders correctly
+    // on top of the actual geometry.
+    setupContactShadow(config);
 
     smoothSwitchCamera(config.startCamera);
 
@@ -814,6 +1254,9 @@ async function restartApp() {
 
   if (composer) { composer.dispose(); composer = null; }
 
+  // Dispose contact shadows before destroying the renderer
+  disposeContactShadow();
+
   if (renderer) {
     renderer.dispose();
     renderer.domElement.remove();
@@ -881,6 +1324,49 @@ function smoothSwitchCamera(name) {
   transition.toQuat.copy(camData.quaternion);
   transition.startTime = performance.now();
   transition.active    = true;
+}
+
+
+// ─────────────────────────────────────────────
+// WEBGPU SHADOW MAP POST-BLUR
+// ─────────────────────────────────────────────
+// After the main render generates shadowLight.shadow.map, blur it with
+// the same separable Gaussian used by the WebGL contact shadow system.
+// This converts the hard PCF shadow into a smooth soft shadow without
+// changing the underlying shadow map technique.
+
+function blurWebGPUShadowMap(blurAmount) {
+
+  if (!shadowLight.shadow.map || !shadowMapBlurTarget || !shadowMapBlurQuad) return;
+
+  const shadowTex = shadowLight.shadow.map.texture;
+  const step      = blurAmount / 512; // normalised to shadow map size
+
+  // Horizontal pass: shadow.map → shadowMapBlurTarget
+  shadowMapBlurQuad.material = new THREE.ShaderMaterial({
+    ...HorizontalBlurShader,
+    uniforms: {
+      tDiffuse: { value: shadowTex },
+      h:        { value: step },
+    },
+    depthTest: false,
+  });
+  renderer.setRenderTarget(shadowMapBlurTarget);
+  renderer.render(shadowMapBlurQuad, shadowMapBlurCamera);
+
+  // Vertical pass: shadowMapBlurTarget → shadow.map (write back in-place)
+  shadowMapBlurQuad.material = new THREE.ShaderMaterial({
+    ...VerticalBlurShader,
+    uniforms: {
+      tDiffuse: { value: shadowMapBlurTarget.texture },
+      v:        { value: step },
+    },
+    depthTest: false,
+  });
+  renderer.setRenderTarget(shadowLight.shadow.map);
+  renderer.render(shadowMapBlurQuad, shadowMapBlurCamera);
+
+  renderer.setRenderTarget(null);
 }
 
 
@@ -989,6 +1475,17 @@ function animate(time) {
     }
   }
 
+  // ── contact shadow — update every frame if configured to do so ────────────
+  // updateEveryFrame should be true when the model has animated geometry
+  // (glass animation) or when Cam_Free orbit is active, since the shadow
+  // camera is fixed relative to the model, not the main camera.
+  // For static preset cameras the shadow can be rendered once at load time
+  // (setupContactShadow already calls renderContactShadow on init), so
+  // updateEveryFrame can be set to false for a small performance saving.
+  if (currentConfig.shadow?.enabled && currentConfig.shadow?.updateEveryFrame !== false) {
+    renderContactShadow(currentConfig);
+  }
+
   // ── render ────────────────────────────────
   if (!isRendererReady) return;
 
@@ -998,6 +1495,13 @@ function animate(time) {
     composer.render();
   } else {
     renderer.render(scene, camera);
+  }
+
+  // ── WebGPU shadow map post-blur ───────────────────────────────────────────
+  // After the main render, shadowLight.shadow.map exists with the raw PCF
+  // shadow map. Apply separable Gaussian blur to soften the hard edges.
+  if (renderer.isWebGPURenderer && shadowLight?.shadow?.map && shadowMapBlurQuad && currentConfig.shadow?.enabled) {
+    blurWebGPUShadowMap(currentConfig.shadow.blur ?? 5);
   }
 }
 

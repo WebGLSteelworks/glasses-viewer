@@ -27,6 +27,17 @@ export const MODELS = {
     glass:         { animate: true },
 	variantOrder: ['Black Prizm Black', 'Black Prizm Transitions Ember', 'Whiite Prizm Rose Gold', 'Black Prizm 24k',
 						'Black Prizm Road', 'White Prizm Black', 'White Prizm Sapphire'],
+	shadow: {
+	  enabled:         true,
+	  planeSize:       0.5,
+	  opacity:         0.6,
+	  blur:      	   15,     
+	  blurWebGL: 	   1.5, 
+	  darkness:        5.0,   
+	  offsetY:         -0.028,
+	  cameraHeight:    0.5,
+	  updateEveryFrame: true,   
+	},					
   },
 
   WAYFARER: {
@@ -34,7 +45,7 @@ export const MODELS = {
     glbLow:        'models/Standard_Wayfarer_low.glb',
     glbHigh:       'models/Standard_Wayfarer_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 0.5,
+    hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,
@@ -42,6 +53,17 @@ export const MODELS = {
 	variantOrder: ['Frame Matte Black', 'Frame Shiny Black', 'Frame Shiny Cosmic Blue', 'Frame Transparent Grey', 
 	'Lenses Clear', 'Lenses Green', 'Lenses Polar Gradient', 'Lenses Clear to Graphite Green', 'Lenses Clear to Grey',
 	'Lenses Clear to Sapphire', 'Lenses Clear to Emerald', 'Lenses Clear to Amethyst'],
+	shadow: {
+	  enabled:         true,
+	  planeSize:       0.5,
+	  opacity:         0.6,
+	  blur:      	   15,     
+	  blurWebGL: 	   1.5,     
+	  darkness:        5.0,   
+	  offsetY:         -0.022,
+	  cameraHeight:    0.5,
+	  updateEveryFrame: true, 
+	},
   }
 
 };
