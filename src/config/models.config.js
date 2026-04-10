@@ -64,7 +64,34 @@ export const MODELS = {
 	  cameraHeight:    0.5,
 	  updateEveryFrame: true, 
 	},
+  },
+
+  WAYFARER_L: {
+    label:         'Wayfarer L',
+    glbLow:        'models/Standard_Wayfarer_Large_low.glb',
+    glbHigh:       'models/Standard_Wayfarer_Large_low.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame Matte Black', 'Frame Shiny Black', 'Frame Shiny Cosmic Blue', 'Frame Transparent Grey', 
+	'Lenses Clear', 'Lenses Green', 'Lenses Polar Gradient', 'Lenses Clear to Graphite Green', 'Lenses Clear to Grey',
+	'Lenses Clear to Sapphire', 'Lenses Clear to Emerald', 'Lenses Clear to Amethyst'],
+	shadow: {
+	  enabled:         true,
+	  planeSize:       0.5,
+	  opacity:         0.6,
+	  blur:      	   15,     
+	  blurWebGL: 	   1.5,     
+	  darkness:        5.0,   
+	  offsetY:         -0.022,
+	  cameraHeight:    0.5,
+	  updateEveryFrame: true, 
+	},
   }
+
 
 };
 
