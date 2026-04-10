@@ -550,7 +550,7 @@ function loadModel(config) {
   }
 
   const isWebGPU  = renderer.isWebGPURenderer;
-  const modelPath = isWebGPU ? config.glbHigh : config.glbLow;
+  const modelPath = config.glb;
 
   loader.load(modelPath, (gltf) => {
 
