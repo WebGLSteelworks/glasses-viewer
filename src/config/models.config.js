@@ -17,8 +17,7 @@ export const MODELS = {
 
   VANGUARD: {
     label:         'Vanguard',
-    glbLow:        'models/Standard_Vanguard_low.glb',
-    glbHigh:       'models/Standard_Vanguard_high.glb',
+    glb:           'models/Standard_Vanguard.glb',
     hdri:          'studio_vanguard_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
@@ -42,8 +41,7 @@ export const MODELS = {
 
   WAYFARER: {
     label:         'Wayfarer',
-    glbLow:        'models/Standard_Wayfarer_low.glb',
-    glbHigh:       'models/Standard_Wayfarer_high.glb',
+    glb:           'models/Standard_Wayfarer.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
@@ -68,8 +66,7 @@ export const MODELS = {
 
   WAYFARER_L: {
     label:         'Wayfarer L',
-    glbLow:        'models/Standard_Wayfarer_Large_low.glb',
-    glbHigh:       'models/Standard_Wayfarer_Large_low.glb',
+    glb:           'models/Standard_Wayfarer_Large.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
