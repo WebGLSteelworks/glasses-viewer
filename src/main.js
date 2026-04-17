@@ -30,6 +30,8 @@ import { Timer } from 'three';
 
 import { isWebGPUSupported } from './utils/deviceDetection.js';
 import { MODELS, DEFAULT_MODEL } from './config/models.config.js';
+import ContactShadow      from './renderer/ContactShadowWebGPU.js';
+import ContactShadowWebGL from './renderer/ContactShadowWebGL.js';
 
 
 // ─────────────────────────────────────────────
@@ -112,6 +114,9 @@ const SSAO_CONFIG = {
 
 // ── Fresnel cache (WebGPU) ───────────────────
 const fresnelMatCache = new Map();
+
+// ── Contact shadow (WebGPU only) ─────────────
+let contactShadow = null;
 
 
 // ─────────────────────────────────────────────
@@ -387,7 +392,7 @@ function rebuildGlassMaterials() {
             obj.renderOrder = 1;
             m.transmission  = 0;
             m.opacity       = 1.0;
-            m.depthWrite    = false;
+            m.depthWrite    = true;   // opaque back lens must write depth
             m.transparent   = false;
             m.side          = THREE.FrontSide;
             m.needsUpdate   = true;
@@ -409,7 +414,7 @@ function rebuildGlassMaterials() {
 
             m.transmission = 0;
             m.opacity      = glbOpacity;
-            m.depthWrite   = false;
+            m.depthWrite   = true;   // write depth so floor (renderOrder 3) clips behind lens
             m.transparent  = true;
             m.side         = THREE.FrontSide;
             m.needsUpdate  = true;
@@ -428,7 +433,7 @@ function rebuildGlassMaterials() {
             obj.renderOrder = 1;
             m.transmission  = 0;
             m.opacity       = 1.0;
-            m.depthWrite    = false;
+            m.depthWrite    = true;   // opaque back lens must write depth
             m.transparent   = false;
             m.side          = THREE.FrontSide;
             m.needsUpdate   = true;
@@ -436,8 +441,11 @@ function rebuildGlassMaterials() {
           } else {
 
             // Wayfarer or other models without front/back split — closed lens
+            // renderOrder 2: renders before floor (3), writes depth so floor
+            // depthTest correctly clips behind the lens
+            obj.renderOrder = 2;
             m.transparent = true;
-            m.depthWrite  = false;
+            m.depthWrite  = true;   // write depth so floor doesn't overdraw through glass
             m.needsUpdate = true;
           }
         }
@@ -534,6 +542,12 @@ function loadModel(config) {
     currentModel = null;
   }
 
+  // ── dispose previous contact shadow ───────
+  if (contactShadow) {
+    contactShadow.dispose();
+    contactShadow = null;
+  }
+
   // ── reset state ───────────────────────────
   glassMaterials.length         = 0;
   originalGlassColors.length    = 0;
@@ -559,7 +573,19 @@ function loadModel(config) {
 
     scene.add(currentModel);
 
-    // ── variants ──────────────────────────
+    // ── contact shadow ────────────────────────
+    if (config.shadow?.enabled) {
+      if (contactShadow) {
+        contactShadow.dispose();
+        contactShadow = null;
+      }
+      contactShadow = renderer.isWebGPURenderer
+        ? new ContactShadow()
+        : new ContactShadowWebGL();
+      contactShadow.setScene(currentModel, config.shadow.softness ?? 1.0);
+      contactShadow.setIntensity(config.shadow.intensity ?? 1.0);
+      scene.add(contactShadow.group);
+    }
     variantsExtension = gltf.userData.gltfExtensions?.KHR_materials_variants;
 
     if (variantsExtension) {
@@ -815,6 +841,8 @@ async function restartApp() {
 
   if (composer) { composer.dispose(); composer = null; }
 
+  if (contactShadow) { contactShadow.dispose(); contactShadow = null; }
+
   if (renderer) {
     renderer.dispose();
     renderer.domElement.remove();
@@ -996,8 +1024,19 @@ function animate(time) {
   // WebGPU: direct render (EffectComposer not compatible)
   // WebGL:  composer with SSAO
   if (composer) {
-    composer.render();
+    if (contactShadow) {
+      // WebGL + contact shadow: bypass composer, use direct render like WebGPU.
+      // The floor is transparent inside the main scene — direct render sorts it
+      // correctly. The composer's EffectComposer/RenderPass clears the buffer
+      // before the floor can be drawn, making them incompatible.
+      contactShadow.render(renderer, scene);
+      renderer.render(scene, camera);
+    } else {
+      composer.render();
+    }
   } else {
+    // WebGPU
+    if (contactShadow) contactShadow.render(renderer, scene);
     renderer.render(scene, camera);
   }
 

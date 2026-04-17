@@ -27,16 +27,10 @@ export const MODELS = {
 	variantOrder: ['Black Prizm Black', 'Black Prizm Transitions Ember', 'Whiite Prizm Rose Gold', 'Black Prizm 24k',
 						'Black Prizm Road', 'White Prizm Black', 'White Prizm Sapphire'],
 	shadow: {
-	  enabled:         true,
-	  planeSize:       0.5,
-	  opacity:         0.6,
-	  blur:      	   15,     
-	  blurWebGL: 	   1.5, 
-	  darkness:        5.0,   
-	  offsetY:         -0.028,
-	  cameraHeight:    0.5,
-	  updateEveryFrame: true,   
-	},					
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},				
   },
 
   WAYFARER: {
@@ -52,15 +46,9 @@ export const MODELS = {
 	'Lenses Clear', 'Lenses Green', 'Lenses Polar Gradient', 'Lenses Clear to Graphite Green', 'Lenses Clear to Grey',
 	'Lenses Clear to Sapphire', 'Lenses Clear to Emerald', 'Lenses Clear to Amethyst'],
 	shadow: {
-	  enabled:         true,
-	  planeSize:       0.5,
-	  opacity:         0.6,
-	  blur:      	   15,     
-	  blurWebGL: 	   1.5,     
-	  darkness:        5.0,   
-	  offsetY:         -0.022,
-	  cameraHeight:    0.5,
-	  updateEveryFrame: true, 
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
 	},
   },
 
@@ -77,15 +65,9 @@ export const MODELS = {
 	'Lenses Clear', 'Lenses Green', 'Lenses Polar Gradient', 'Lenses Clear to Graphite Green', 'Lenses Clear to Grey',
 	'Lenses Clear to Sapphire', 'Lenses Clear to Emerald', 'Lenses Clear to Amethyst'],
 	shadow: {
-	  enabled:         true,
-	  planeSize:       0.5,
-	  opacity:         0.6,
-	  blur:      	   15,     
-	  blurWebGL: 	   1.5,     
-	  darkness:        5.0,   
-	  offsetY:         -0.022,
-	  cameraHeight:    0.5,
-	  updateEveryFrame: true, 
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
 	},
   }
 
