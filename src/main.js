@@ -199,7 +199,7 @@ function injectFresnelNode(material, fresnelCfg) {
   // fresnelStrength: 0 at the lens centre (front view), 1 at the edges
   const fresnelStrength = pow(f, float(1.5)).clamp(0.0, 1.0);
 
-  // El Fresnel va en emissiveNode, NO en colorNode:
+  // El Fresnel in emissiveNode, NOT in colorNode:
   // - colorNode replaces the full PBR output and loses angle-dependence with NoToneMapping
   // - emissiveNode adds to the PBR output, always angle-dependent via f
   // - Con NoToneMapping emissive no se satura ni distorsiona
@@ -959,7 +959,7 @@ function animate(time) {
 
     wasAnimatingGlass = true;
 
-    // r183: Timer requiere update() antes de getDelta()
+    // r183: Timer needs update() before getDelta()
     timer.update();
     const delta = timer.getDelta();
     glassAnim.timer += delta;
