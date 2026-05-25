@@ -85,7 +85,13 @@ export default class ContactShadowWebGL {
     );
     this.floor.rotation.x     = -Math.PI / 2;
     this.floor.rotation.z     = Math.PI;
-    this.floor.renderOrder    = 3;   // after lenses (2) write depth, floor depthTest clips correctly
+    // renderOrder 3: floor draws AFTER opaque geometry (frame + temples at
+    // renderOrder ≤2, which write depth) so depthTest=true clips it correctly
+    // behind them, and BEFORE the transparent lens (renderOrder 4, depthWrite
+    // false) so the floor never bleeds in front of the glass. The floor no
+    // longer depends on the LENS writing depth — only on the opaque frame and
+    // temples, which always do.
+    this.floor.renderOrder    = 3;
     this.floor.userData.noHit = true;
     this.floor.visible        = false;
     this.group.add(this.floor);
