@@ -453,15 +453,13 @@ function rebuildGlassMaterials() {
 
           } else {
 
-            // Wayfarer / closed-lens (no front/back split) — WebGL.
-            // depthWrite MUST be false: the _Inside temple shares renderOrder 2,
-            // and depthWrite=true would let the lens write depth and discard the
-            // temple fragments → _Inside invisible. The floor is handled by
-            // MultiplyBlending in ContactShadowWebGL (no longer needs depthWrite).
+            // Wayfarer or other models without front/back split — closed lens
+            // renderOrder 2: renders before floor (3), writes depth so floor
+            // depthTest correctly clips behind the lens
             obj.renderOrder = 2;
-            m.transparent   = true;
-            m.depthWrite    = false;
-            m.needsUpdate   = true;
+            m.transparent = true;
+            m.depthWrite  = true;   // write depth so floor doesn't overdraw through glass
+            m.needsUpdate = true;
           }
         }
       }
@@ -689,8 +687,6 @@ function loadModel(config) {
     });
 
     smoothSwitchCamera(config.startCamera);
-    window._scene = scene;           // debug
-    window._model = currentModel;    // debug
 
   });
 }
@@ -1042,7 +1038,10 @@ function animate(time) {
   // WebGL:  composer with SSAO
   if (composer) {
     if (contactShadow) {
-      // WebGL + contact shadow: bypass composer, use direct render.
+      // WebGL + contact shadow: bypass composer, use direct render like WebGPU.
+      // The floor is transparent inside the main scene — direct render sorts it
+      // correctly. The composer's EffectComposer/RenderPass clears the buffer
+      // before the floor can be drawn, making them incompatible.
       contactShadow.render(renderer, scene);
       renderer.render(scene, camera);
     } else {

@@ -76,16 +76,18 @@ export default class ContactShadowWebGL {
     this.floor = new THREE.Mesh(
       new THREE.PlaneGeometry(),
       new THREE.MeshBasicMaterial({
-        opacity:     0,
-        transparent: true,
-        depthWrite:  false,
-        depthTest:   true,   // respect opaque geometry depth — won't draw over frame/temples
-        side:        THREE.FrontSide,
+        opacity:            1,
+        transparent:        false,
+        depthWrite:         false,
+        depthTest:          false,
+        blending:           THREE.MultiplyBlending,
+        premultipliedAlpha: true,
+        side:               THREE.FrontSide,
       })
     );
     this.floor.rotation.x     = -Math.PI / 2;
     this.floor.rotation.z     = Math.PI;
-    this.floor.renderOrder    = 3;   // after lenses (2) write depth, floor depthTest clips correctly
+    this.floor.renderOrder    = -1;    // before all geometry
     this.floor.userData.noHit = true;
     this.floor.visible        = false;
     this.group.add(this.floor);
@@ -181,13 +183,13 @@ export default class ContactShadowWebGL {
     if (intensity > 0) {
       this.group.visible = true;
       this.floor.visible = true;
-      // opacity capped at 1.0 — use it for the base blend factor only
+      // With MultiplyBlending, opacity blends between multiply effect (1.0)
+      // and no effect (0.0). We use it as the shadow strength control.
       this.floor.material.opacity = Math.min(
         intensity * lerp(DEFAULT_HARD_INTENSITY, 1, this.softness * this.softness),
         1.0
       );
-      // intensity > 1 is applied to the depth pass opacity so the shadow
-      // texture itself gets darker — matches WebGPU behaviour
+      this.floor.material.transparent = this.floor.material.opacity < 1.0;
       this.depthMaterial.uniforms.uOpacity.value =
         (intensity / this.softness) * lerp(DEFAULT_HARD_INTENSITY, 1, this.softness * this.softness);
     } else {
