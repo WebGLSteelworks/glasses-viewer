@@ -392,10 +392,23 @@ function rebuildGlassMaterials() {
             obj.renderOrder = 1;
             m.transmission  = 0;
             m.opacity       = 1.0;
-            m.depthWrite    = true;   // opaque back lens must write depth
+            m.depthWrite    = true;
             m.transparent   = false;
             m.side          = THREE.FrontSide;
             m.needsUpdate   = true;
+
+          } else {
+
+            // Closed lens (Lenses.X, Wayfarer) on WebGPU — no front/back split.
+            // Some variants (e.g. Lenses_Polar_Green) come from the GLB with
+            // depthWrite:true + transparent:false, which makes them opaque —
+            // they write depth at renderOrder 1 and the temple (renderOrder 2)
+            // gets clipped behind them → temple disappears.
+            // Fix: force same values as the working variants have at first load.
+            // renderOrder stays at whatever loadModel set (1) — do NOT change it.
+            m.depthWrite  = false;
+            m.transparent = true;
+            m.needsUpdate = true;
           }
 
         } else {
@@ -440,13 +453,15 @@ function rebuildGlassMaterials() {
 
           } else {
 
-            // Wayfarer or other models without front/back split — closed lens
-            // renderOrder 2: renders before floor (3), writes depth so floor
-            // depthTest correctly clips behind the lens
+            // Wayfarer / closed-lens (no front/back split) — WebGL.
+            // depthWrite MUST be false: the _Inside temple shares renderOrder 2,
+            // and depthWrite=true would let the lens write depth and discard the
+            // temple fragments → _Inside invisible. The floor is handled by
+            // MultiplyBlending in ContactShadowWebGL (no longer needs depthWrite).
             obj.renderOrder = 2;
-            m.transparent = true;
-            m.depthWrite  = true;   // write depth so floor doesn't overdraw through glass
-            m.needsUpdate = true;
+            m.transparent   = true;
+            m.depthWrite    = false;
+            m.needsUpdate   = true;
           }
         }
       }
@@ -674,6 +689,8 @@ function loadModel(config) {
     });
 
     smoothSwitchCamera(config.startCamera);
+    window._scene = scene;           // debug
+    window._model = currentModel;    // debug
 
   });
 }
@@ -1025,10 +1042,7 @@ function animate(time) {
   // WebGL:  composer with SSAO
   if (composer) {
     if (contactShadow) {
-      // WebGL + contact shadow: bypass composer, use direct render like WebGPU.
-      // The floor is transparent inside the main scene — direct render sorts it
-      // correctly. The composer's EffectComposer/RenderPass clears the buffer
-      // before the floor can be drawn, making them incompatible.
+      // WebGL + contact shadow: bypass composer, use direct render.
       contactShadow.render(renderer, scene);
       renderer.render(scene, camera);
     } else {
@@ -1189,6 +1203,7 @@ async function init() {
   setupEnvironment(currentConfig);
   loadModel(currentConfig);
   animate();
+  window._scene = scene; // debug
 }
 
 init();

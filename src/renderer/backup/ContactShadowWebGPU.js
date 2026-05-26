@@ -70,11 +70,6 @@ export default class ContactShadow {
       }),
     );
     this.floor.rotation.x = -Math.PI / 2;
-    // renderOrder 3: floor draws after opaque frame + temples (which write
-    // depth) so it clips correctly behind them, and before the transparent
-    // lens (renderOrder 4, depthWrite false) so it never bleeds in front of
-    // the glass. Matches ContactShadowWebGL.
-    this.floor.renderOrder = 3;
     this.floor.userData.noHit = true;
     this.floor.visible = false;
     this.group.add(this.floor);
