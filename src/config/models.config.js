@@ -81,9 +81,8 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
-	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	'Lenses_Clear', 'Lenses_G15_Green', 'Lenses_Polar_Gradient', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey',
-	'Lenses_Clear_Sapphire', 'Lenses_Clear_Emerald', 'Lenses_Clear_Amethyst'],
+	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
+	'Lenses_Clear', 'Lenses_Polar_Grey', 'Lenses_Transitions_Grey', 'Lenses_Transitions_Merlot', 'Lenses_Transitions_Sapphire'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
