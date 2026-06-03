@@ -72,24 +72,24 @@ export const MODELS = {
 	// },
   // },
 
-  // ADVENTURER: {
-    // label:         'Adventurer',
-    // glb:           'models/Standard_Adventurer.glb',
-    // hdri:          'studio_wayfarer_2k.hdr',
-    // hdriIntensity: 1.0,
-    // startCamera:   'Cam_Front',
-    // cameras:       ADVENTURER_CAMERAS,
-    // fresnel:       null,
-    // glass:         { animate: true },
-	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	// 'Lenses_Clear', 'Lenses_G15_Green', 'Lenses_Polar_Gradient', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey',
-	// 'Lenses_Clear_Sapphire', 'Lenses_Clear_Emerald', 'Lenses_Clear_Amethyst'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },
-  // },
+  ADVENTURER: {
+    label:         'Adventurer',
+    glb:           'models/Standard_Adventurer.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
+	'Lenses_Clear', 'Lenses_G15_Green', 'Lenses_Polar_Gradient', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey',
+	'Lenses_Clear_Sapphire', 'Lenses_Clear_Emerald', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
 
   FURY: {
     label:         'Fury',
@@ -129,4 +129,4 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'FURY';
+export const DEFAULT_MODEL = 'ADVENTURER';
