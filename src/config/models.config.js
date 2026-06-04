@@ -107,24 +107,24 @@ export const MODELS = {
 	  intensity: 1.0,
 	  softness:  1.0,
 	},
-  }
+  },
 
-  // STARFIRE: {
-    // label:         'Starfire',
-    // glb:           'models/Standard_Starfire.glb',
-    // hdri:          'studio_wayfarer_2k.hdr',
-    // hdriIntensity: 1.0,
-    // startCamera:   'Cam_Front',
-    // cameras:       ADVENTURER_CAMERAS,
-    // fresnel:       null,
-    // glass:         { animate: true },
-	// variantOrder: ['Frame_Classic_Black', 'Frame_Dark_Havana', 'Lens_Black', 'Lens_Chocolate'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },
-  // }
+  STARFIRE: {
+    label:         'Starfire',
+    glb:           'models/Standard_Starfire.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Classic_Black', 'Frame_Dark_Havana', 'Lens_Black', 'Lens_Chocolate'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  }
 
 };
 
