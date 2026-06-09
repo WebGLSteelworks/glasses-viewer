@@ -90,6 +90,24 @@ export const MODELS = {
 	},
   },
 
+  ADVENTURERL: {
+    label:         'Adventurer Large',
+    glb:           'models/Standard_Adventurer_Large.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
+	'Lenses_Clear', 'Lenses_Brown','Lenses_Polar_Grey', 'Lenses_Transitions_Grey', 'Lenses_Transitions_Merlot', 'Lenses_Transitions_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
   FURY: {
     label:         'Fury',
     glb:           'models/Standard_Fury.glb',
@@ -99,9 +117,9 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
-	//variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	//'Lenses_Clear', 'Lenses_G15_Green', 'Lenses_Polar_Gradient', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey',
-	//'Lenses_Clear_Sapphire', 'Lenses_Clear_Emerald', 'Lenses_Clear_Amethyst'],
+	variantOrder: ['Frame_Classic_Black', 'Frame_Mahogany', 'Frame_Racing_Green', 'Frame_Sandstone', 
+	'Lenses_Brown_Gradient', 'Lenses_Green_Herbal', 'Lenses_Light_Blue_Atlantic', 'Lenses_Polar_Dark_Amber',
+	'Lenses_Polar_Grey', 'Lenses_Transitions_Grey'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
