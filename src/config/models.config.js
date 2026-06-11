@@ -16,61 +16,61 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 
 export const MODELS = {
 
-  // VANGUARD: {
-    // label:         'Vanguard',
-    // glb:           'models/Standard_Vanguard.glb',
-    // hdri:          'studio_vanguard_2k.hdr',
-    // hdriIntensity: 1.0,
-    // startCamera:   'Cam_Front',
-    // cameras:       VANGUARD_CAMERAS,
-    // fresnel:       VANGUARD_FRESNEL,
-    // glass:         { animate: true },
-	// variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
-						// 'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },				
-  // },
+  VANGUARD: {
+    label:         'Vanguard',
+    glb:           'models/Standard_Vanguard.glb',
+    hdri:          'studio_vanguard_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       VANGUARD_CAMERAS,
+    fresnel:       VANGUARD_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
+						'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},				
+  },
 
-  // WAYFARER: {
-    // label:         'Wayfarer',
-    // glb:           'models/Standard_Wayfarer.glb',
-    // hdri:          'studio_wayfarer_2k.hdr',
-    // hdriIntensity: 1.0,
-    // startCamera:   'Cam_Front',
-    // cameras:       WAYFARER_CAMERAS,
-    // fresnel:       null,
-    // glass:         { animate: true },
-	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	// 'Lenses_Clear', 'Lenses_G15_Green', 'Lenses_Polar_Gradient', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey',
-	// 'Lenses_Clear_Sapphire', 'Lenses_Clear_Emerald', 'Lenses_Clear_Amethyst'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },
-  // },
+  WAYFARER: {
+    label:         'Wayfarer',
+    glb:           'models/Standard_Wayfarer.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
+	'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
+	'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
 
-  // WAYFARER_L: {
-    // label:         'Wayfarer L',
-    // glb:           'models/Standard_Wayfarer_Large.glb',
-    // hdri:          'studio_wayfarer_2k.hdr',
-    // hdriIntensity: 1.0,
-    // startCamera:   'Cam_Front',
-    // cameras:       WAYFARER_CAMERAS,
-    // fresnel:       null,
-    // glass:         { animate: true },
-	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	// 'Lenses_Clear', 'Lenses_G15_Green', 'Lenses_Polar_Gradient', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey',
-	// 'Lenses_Clear_Sapphire', 'Lenses_Clear_Emerald', 'Lenses_Clear_Amethyst'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },
-  // },
+  WAYFARER_L: {
+    label:         'Wayfarer L',
+    glb:           'models/Standard_Wayfarer_Large.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
+	'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
+	'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
 
   ADVENTURER: {
     label:         'Adventurer',
@@ -146,4 +146,4 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'ADVENTURER';
+export const DEFAULT_MODEL = 'WAYFARER';
