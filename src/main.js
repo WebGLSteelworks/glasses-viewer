@@ -131,6 +131,72 @@ function getOrBuildFresnelMat(originalMaterial, fresnelCfg) {
   return nodeMat;
 }
 
+// Plain (no-Fresnel) glass on WebGPU. Classic MeshPhysicalMaterial under
+// WebGPURenderer blends transparency in sRGB space instead of linear, which
+// washes out dark transparent colors against a light background (confirmed:
+// identical color/opacity/blending in both renderers, identical result only
+// against a black background — diverges only against white, i.e. the alpha
+// blend step itself, not the material's input values). Building an explicit
+// MeshPhysicalNodeMaterial routes the same color/opacity through the node
+// graph, which blends in linear like WebGL — matching the working renderer.
+function getOrBuildPlainNodeMat(originalMaterial) {
+  const key = originalMaterial.name.toLowerCase();
+  if (fresnelMatCache.has(key)) return fresnelMatCache.get(key);
+
+  const nodeMat = new MeshPhysicalNodeMaterial();
+  nodeMat.name = originalMaterial.name;
+  nodeMat.color.copy(originalMaterial.color); // unmodified — color was never the issue
+
+  // ⚠ TEMPORARY STOPGAP (see investigation notes below) — NOT the real fix.
+  //
+  // Root cause, confirmed via isolation testing across a full session:
+  // WebGPURenderer leaks scene.background into the shading of transparent
+  // glass materials, making them read as "lit" by the white background
+  // (reflection terms partially overwritten by general overexposure — not a
+  // simple alpha-blend ratio issue). Confirmed NOT caused by: material color
+  // (bit-identical RGB to WebGL), opacity/blending/premultipliedAlpha (all
+  // identical), envMapIntensity (zeroing it didn't help), specular/roughness/
+  // metalness/clearcoat (zeroing them didn't help either), toneMapped flag,
+  // scene.backgroundIntensity. Matches a known unresolved three.js upstream
+  // pattern (issues #33104, #28645) of node materials behaving differently
+  // near a light scene background under WebGPURenderer vs WebGLRenderer.
+  // Against a pure black background both renderers match exactly — the leak
+  // scales with how light the background is.
+  //
+  // Real fix is still pending — leading suspect is replacing scene.background
+  // (a THREE.Color) with an actual white plane/object in the scene, since
+  // that's the one mechanism not yet ruled out. Pick this back up before
+  // shipping; this opacity bump is a visual patch, not a resolved bug.
+  //
+  // Lenses_Clear is EXCLUDED: it's a near-fully-transparent lens (opacity
+  // 0.1) where push ing opacity toward 1 doesn't compress the washout — it
+  // visibly breaks the specular reflection instead (confirmed by hand:
+  // pushing opacity up made the lens look MORE overlit, not less, and the
+  // reflection got swallowed by the general overexposure). Needs a different
+  // treatment once the real fix is in; for now it's left untouched so it
+  // doesn't regress further than the original washout.
+  const WEBGPU_TEMP_OPACITY = 0.98;
+  const isExcludedFromTempFix = key === 'lenses_clear';
+  nodeMat.opacity = isExcludedFromTempFix
+    ? originalMaterial.opacity
+    : WEBGPU_TEMP_OPACITY;
+
+  nodeMat.roughness          = originalMaterial.roughness ?? 0.0;
+  nodeMat.metalness          = originalMaterial.metalness ?? 0.0;
+  nodeMat.ior                = originalMaterial.ior ?? 1.5;
+  nodeMat.envMapIntensity    = originalMaterial.envMapIntensity ?? 1.0;
+  nodeMat.clearcoat          = originalMaterial.clearcoat ?? 0.0;
+  nodeMat.clearcoatRoughness = originalMaterial.clearcoatRoughness ?? 0.0;
+  nodeMat.transmission       = 0;
+  nodeMat.transparent        = true;
+  nodeMat.depthWrite         = false;
+  nodeMat.side               = THREE.FrontSide;
+  if (originalMaterial.map) nodeMat.map = originalMaterial.map;
+
+  fresnelMatCache.set(key, nodeMat);
+  return nodeMat;
+}
+
 function updateFresnelVariant(variantKey) {
   const fresnel = currentConfig.fresnel;
   if (!fresnel) return;
@@ -358,6 +424,23 @@ function rebuildGlassMaterials() {
 
       if (isGlass) {
 
+        // Gradient lens: the opacity gradient lives in the ALPHA channel of an
+        // sRGB-tagged baseColor PNG. WebGL uploads it as SRGB8_ALPHA8 (RGB
+        // decoded, alpha kept LINEAR — correct). WebGPU applies the sRGB→linear
+        // transfer to the sampled alpha too, lowering mid values (0.5 → ~0.21),
+        // so the lens reads too transparent / too light. Forcing the map to
+        // NoColorSpace removes the transform in both paths → identical alpha.
+        // The RGB is unused here (baseColorFactor is black, texture Color output
+        // unconnected in Blender), so skipping the sRGB decode on color is
+        // visually inert. version++ forces the WebGPU node-material rebuild.
+        if (m.map && name.includes('gradient') &&
+            m.map.colorSpace !== THREE.NoColorSpace) {
+          m.map.colorSpace = THREE.NoColorSpace;
+          m.map.needsUpdate = true;
+          m.needsUpdate     = true;
+          m.version++;
+        }
+
         if (isWebGPU) {
 
           if (name.includes('lenses.front.')) {
@@ -409,6 +492,15 @@ function rebuildGlassMaterials() {
             m.depthWrite  = false;
             m.transparent = true;
             m.needsUpdate = true;
+
+            // Plain colors (e.g. Lenses_Clear_Amethyst) have no fresnel config
+            // and were staying as classic MeshPhysicalMaterial under WebGPU —
+            // that path blends alpha in sRGB and washes out dark transparent
+            // colors against the scene's white background. Route them through
+            // the node material so the blend matches WebGL (linear). Only the
+            // type-keyed fresnel branch above (lenses.front.*) is exempt since
+            // it already builds its own node material.
+            obj.material = getOrBuildPlainNodeMat(m);
           }
 
         } else {
@@ -458,7 +550,14 @@ function rebuildGlassMaterials() {
             // and depthWrite=true would let the lens write depth and discard the
             // temple fragments → _Inside invisible. The floor is handled by
             // MultiplyBlending in ContactShadowWebGL (no longer needs depthWrite).
+            // transmission MUST be 0 (like the front/back branches above): in
+            // WebGL, transmission renders in a separate pass BEFORE the normal
+            // transparent pass, so a lens with transmission>0 never composites
+            // over the interior temple text (transparent) and the text shows
+            // through un-darkened. Forcing it to 0 makes the lens a normal
+            // transparent surface that tints/darkens the text behind it.
             obj.renderOrder = 2;
+            m.transmission  = 0;
             m.transparent   = true;
             m.depthWrite    = false;
             m.needsUpdate   = true;
@@ -474,12 +573,28 @@ function rebuildGlassMaterials() {
         }
       }
 
-      // Temple text material: mesh name doesn't contain 'temple' so loadModel
-      // never assigns a renderOrder — it stays at default 2, drawing AFTER the
-      // lens → not affected by lens color. Set renderOrder 0 so it draws before
-      // the lens (renderOrder 1) and the lens composites over it correctly.
-      if (name.includes('temple') && name.includes('text')) {
+      // Temple-text material ('TempleTrans') — PNG with real alpha (letters
+      // opaque, background transparent). Two different failures per renderer:
+      //  • WebGL: alphaTest worked (text never vanished) but making it opaque
+      //    (transparent:false) pulled it out of the order that lets the lens
+      //    darken it → lens no longer tinted the text.
+      //  • WebGPU: alphaTest as a plain property had no visual effect (NodeMaterial
+      //    path), so the text stayed pure-transparent, no depth → vanished at
+      //    grazing angles, though the lens did darken it.
+      // Fix: keep transparent:true + depthWrite:true + alphaTest in BOTH paths so
+      // the text both writes depth (won't be erased by the temple) AND stays in
+      // the transparent pass before the lens (renderOrder 0) so the lens darkens
+      // it. Force material regeneration so WebGPU rebuilds its node graph with
+      // the alpha test active.
+      if (name.includes('templetrans') || name.includes('text')) {
         obj.renderOrder = 0;
+        m.alphaTest   = 0.5;
+        m.transparent = true;
+        m.depthWrite  = true;
+        m.depthTest   = true;
+        m.side        = THREE.FrontSide;
+        m.needsUpdate = true;
+        m.version++;            // force WebGPU to rebuild the node material
       }
 
     });
@@ -671,8 +786,23 @@ function loadModel(config) {
           obj.renderOrder = 1;    // lens — rendered before the temple arms
         }
 
+        // Temple-text material ('TempleTrans') — keep transparent so the lens
+        // still darkens it, but with alphaTest + depthWrite so only the letters
+        // render and write depth (won't be erased by the temple at grazing
+        // angles). version++ forces WebGPU to rebuild its node material with the
+        // alpha test. Checked before the temple branch (name contains 'temple').
+        if (name.includes('templetrans') || name.includes('text')) {
+          obj.renderOrder = 0;
+          m.alphaTest   = 0.5;
+          m.transparent = true;
+          m.depthWrite  = true;
+          m.depthTest   = true;
+          m.side        = THREE.FrontSide;
+          m.needsUpdate = true;
+          m.version++;
+        }
         // Temple arms — higher renderOrder than lenses so they show through
-        if (name.includes('temple')) {
+        else if (name.includes('temple')) {
           obj.renderOrder = 2;
         }
 
@@ -685,7 +815,14 @@ function loadModel(config) {
         }
 
         // reflection + roughness tweaks
-        if (mat.envMapIntensity !== undefined) {
+        // envMapIntensity: glass is EXCLUDED from the WebGPU boost so the lens
+        // matches between renderers. The lens reflects the white-background HDRI,
+        // so the ×1.5 WebGPU boost (intended for opaque frame/metal parts, where
+        // the direct-env path reads dimmer than WebGL's PMREM path) washed the
+        // lens out. Note this multiply runs once PER MESH: the left+right lens
+        // meshes share one material instance, so on WebGPU it compounded to
+        // 1.5² = 2.25. Keeping glass at its GLB base (1.0) makes both paths equal.
+        if (!isGlass && mat.envMapIntensity !== undefined) {
           mat.envMapIntensity *= isWebGPU ? 1.5 : 1.0;
         }
         if (mat.roughness !== undefined) {
@@ -811,6 +948,23 @@ async function initRenderer() {
   if (!renderer.isWebGPURenderer) {
     setupSSAO();
   }
+
+  // ── DEBUG EXPOSURE — temporary, for console diagnostics ──
+  // Lets you run `renderer.render(scene, camera)` etc. directly in DevTools
+  // to bypass the composer and compare WebGL vs WebGPU output frame by frame.
+  // Getters (not snapshots) because currentConfig/currentModel/activeVariantName
+  // are reassigned later (on model switch / variant select) — a plain copy
+  // would go stale immediately.
+  // Safe to remove once the GL/GPU color discrepancy is resolved.
+  window._renderer  = renderer;
+  window._composer  = composer;
+  window._camera    = camera;
+  window.THREE      = THREE;
+  window._animationId = () => animationId;
+  Object.defineProperty(window, '_currentConfig', { get: () => currentConfig, configurable: true });
+  Object.defineProperty(window, '_currentModel',  { get: () => currentModel,  configurable: true });
+  Object.defineProperty(window, '_activeVariant', { get: () => activeVariantName, configurable: true });
+  Object.defineProperty(window, '_gltfData',      { get: () => gltfData,     configurable: true });
 
   isRendererReady = true;
 }

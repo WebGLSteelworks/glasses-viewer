@@ -474,6 +474,14 @@ function rebuildGlassMaterials() {
         }
       }
 
+      // Temple text material: mesh name doesn't contain 'temple' so loadModel
+      // never assigns a renderOrder — it stays at default 2, drawing AFTER the
+      // lens → not affected by lens color. Set renderOrder 0 so it draws before
+      // the lens (renderOrder 1) and the lens composites over it correctly.
+      if (name.includes('temple') && name.includes('text')) {
+        obj.renderOrder = 0;
+      }
+
     });
 
   });
