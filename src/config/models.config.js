@@ -75,7 +75,7 @@ export const MODELS = {
   ADVENTURER: {
     label:         'Adventurer',
     glb:           'models/Standard_Adventurer.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
+    hdri:          'studio_adventurer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
@@ -93,7 +93,7 @@ export const MODELS = {
   ADVENTURERL: {
     label:         'Adventurer Large',
     glb:           'models/Standard_Adventurer_Large.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
+    hdri:          'studio_adventurer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
