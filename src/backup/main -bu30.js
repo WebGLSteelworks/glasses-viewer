@@ -39,7 +39,7 @@ import ContactShadowWebGL from './renderer/ContactShadowWebGL.js';
 // ─────────────────────────────────────────────
 
 let scene          = new THREE.Scene();
-scene.background   = new THREE.Color(0xffffff);
+// scene.background intentionally left null — see initRenderer/init() for why.
 
 const timer        = new Timer(); // r183: replaces THREE.Clock
 const loader       = new GLTFLoader();
@@ -127,6 +127,47 @@ function getOrBuildFresnelMat(originalMaterial, fresnelCfg) {
   const key = originalMaterial.name.toLowerCase();
   if (fresnelMatCache.has(key)) return fresnelMatCache.get(key);
   const nodeMat = injectFresnelNode(originalMaterial, fresnelCfg);
+  fresnelMatCache.set(key, nodeMat);
+  return nodeMat;
+}
+
+// Plain (no-Fresnel) glass on WebGPU. Classic MeshPhysicalMaterial under
+// WebGPURenderer blends transparency in sRGB space instead of linear, which
+// washes out dark transparent colors against a light background (confirmed:
+// identical color/opacity/blending in both renderers, identical result only
+// against a black background — diverges only against white, i.e. the alpha
+// blend step itself, not the material's input values). Building an explicit
+// MeshPhysicalNodeMaterial routes the same color/opacity through the node
+// graph, which blends in linear like WebGL — matching the working renderer.
+function getOrBuildPlainNodeMat(originalMaterial) {
+  const key = originalMaterial.name.toLowerCase();
+  if (fresnelMatCache.has(key)) return fresnelMatCache.get(key);
+
+  const nodeMat = new MeshPhysicalNodeMaterial();
+  nodeMat.name = originalMaterial.name;
+  nodeMat.color.copy(originalMaterial.color);
+  nodeMat.opacity            = originalMaterial.opacity;
+
+  // Note: WebGPU used to render this lens overexposed/washed out against
+  // the scene's white background (it was leaking scene.background-as-Color
+  // into transparent-material shading — three.js issue #28645). Fixed at
+  // the source: scene.background is now left null, with the white surface
+  // coming from CSS behind the renderer's alpha:true canvas instead, so the
+  // leak has no Color object to occur on. See initRenderer/init() for that.
+  // No per-material compensation needed here as a result.
+
+  nodeMat.roughness          = originalMaterial.roughness ?? 0.0;
+  nodeMat.metalness          = originalMaterial.metalness ?? 0.0;
+  nodeMat.ior                = originalMaterial.ior ?? 1.5;
+  nodeMat.envMapIntensity    = originalMaterial.envMapIntensity ?? 1.0;
+  nodeMat.clearcoat          = originalMaterial.clearcoat ?? 0.0;
+  nodeMat.clearcoatRoughness = originalMaterial.clearcoatRoughness ?? 0.0;
+  nodeMat.transmission       = 0;
+  nodeMat.transparent        = true;
+  nodeMat.depthWrite         = false;
+  nodeMat.side               = THREE.FrontSide;
+  if (originalMaterial.map) nodeMat.map = originalMaterial.map;
+
   fresnelMatCache.set(key, nodeMat);
   return nodeMat;
 }
@@ -358,6 +399,23 @@ function rebuildGlassMaterials() {
 
       if (isGlass) {
 
+        // Gradient lens: the opacity gradient lives in the ALPHA channel of an
+        // sRGB-tagged baseColor PNG. WebGL uploads it as SRGB8_ALPHA8 (RGB
+        // decoded, alpha kept LINEAR — correct). WebGPU applies the sRGB→linear
+        // transfer to the sampled alpha too, lowering mid values (0.5 → ~0.21),
+        // so the lens reads too transparent / too light. Forcing the map to
+        // NoColorSpace removes the transform in both paths → identical alpha.
+        // The RGB is unused here (baseColorFactor is black, texture Color output
+        // unconnected in Blender), so skipping the sRGB decode on color is
+        // visually inert. version++ forces the WebGPU node-material rebuild.
+        if (m.map && name.includes('gradient') &&
+            m.map.colorSpace !== THREE.NoColorSpace) {
+          m.map.colorSpace = THREE.NoColorSpace;
+          m.map.needsUpdate = true;
+          m.needsUpdate     = true;
+          m.version++;
+        }
+
         if (isWebGPU) {
 
           if (name.includes('lenses.front.')) {
@@ -409,6 +467,17 @@ function rebuildGlassMaterials() {
             m.depthWrite  = false;
             m.transparent = true;
             m.needsUpdate = true;
+
+            // Plain colors (e.g. Lenses_Clear_Amethyst) have no fresnel config,
+            // so route them through an explicit node material for consistency
+            // with the Fresnel path above (which already builds its own node
+            // material) rather than leaving them as classic MeshPhysicalMaterial
+            // under WebGPU. (Earlier investigation suspected this classic-vs-node
+            // distinction caused the GL/GPU lens color mismatch — it didn't; the
+            // real cause was scene.background leaking into transparent-material
+            // shading under WebGPU, fixed in initRenderer/init(). Keeping the
+            // node-material conversion regardless, for consistency.)
+            obj.material = getOrBuildPlainNodeMat(m);
           }
 
         } else {
@@ -723,7 +792,14 @@ function loadModel(config) {
         }
 
         // reflection + roughness tweaks
-        if (mat.envMapIntensity !== undefined) {
+        // envMapIntensity: glass is EXCLUDED from the WebGPU boost so the lens
+        // matches between renderers. The lens reflects the white-background HDRI,
+        // so the ×1.5 WebGPU boost (intended for opaque frame/metal parts, where
+        // the direct-env path reads dimmer than WebGL's PMREM path) washed the
+        // lens out. Note this multiply runs once PER MESH: the left+right lens
+        // meshes share one material instance, so on WebGPU it compounded to
+        // 1.5² = 2.25. Keeping glass at its GLB base (1.0) makes both paths equal.
+        if (!isGlass && mat.envMapIntensity !== undefined) {
           mat.envMapIntensity *= isWebGPU ? 1.5 : 1.0;
         }
         if (mat.roughness !== undefined) {
@@ -827,12 +903,12 @@ async function initRenderer() {
   if (useWebGPU) {
     console.log('🚀 Using WebGPU');
     rendererLabel.textContent = `Renderer: WebGPU | DPR: ${window.devicePixelRatio}`;
-    renderer = new WebGPURenderer({ antialias: true });
+    renderer = new WebGPURenderer({ antialias: true, alpha: true });
     await renderer.init();
   } else {
     console.log('⚠ Using WebGL');
     rendererLabel.textContent = `Renderer: WebGL | ${window.innerWidth}x${window.innerHeight}`;
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   }
 
   // Cap at 2 — beyond that GPU cost outweighs the visual gain
@@ -920,7 +996,17 @@ async function restartApp() {
 
   await initRenderer();
 
-  scene.background = new THREE.Color(0xffffff);
+  // scene.background intentionally left null (not THREE.Color(0xffffff)).
+  // Confirmed via console testing: scene.background as a Color leaks into
+  // WebGPURenderer's shading of transparent glass materials, washing them
+  // out (overexposed/desaturated) against a light background — matches
+  // three.js issue #28645 (node materials affected by background color).
+  // Against scene.background = null, WebGPU's lens render matched WebGL
+  // exactly. The white you see is now the CSS background behind the
+  // transparent canvas (renderer created with alpha:true), never touched by
+  // three.js's own shading pipeline — so the leak has no surface to occur on.
+  // Do NOT reintroduce scene.background = Color(white) here without also
+  // re-verifying this bug is fixed upstream.
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enabled       = false;
@@ -1234,7 +1320,11 @@ async function init() {
 
   await initRenderer();
 
-  scene.background = new THREE.Color(0xffffff);
+  // scene.background intentionally left null — see notes in the
+  // model/renderer-switch reset path above for the full explanation
+  // (WebGPURenderer leaks scene.background-as-Color into transparent
+  // material shading; the visible white now comes from CSS behind the
+  // alpha:true canvas instead).
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enabled       = false;

@@ -39,7 +39,7 @@ import ContactShadowWebGL from './renderer/ContactShadowWebGL.js';
 // ─────────────────────────────────────────────
 
 let scene          = new THREE.Scene();
-// scene.background intentionally left null — see initRenderer/init() for why.
+scene.background   = new THREE.Color(0xffffff);
 
 const timer        = new Timer(); // r183: replaces THREE.Clock
 const loader       = new GLTFLoader();
@@ -145,24 +145,55 @@ function getOrBuildPlainNodeMat(originalMaterial) {
 
   const nodeMat = new MeshPhysicalNodeMaterial();
   nodeMat.name = originalMaterial.name;
-  nodeMat.color.copy(originalMaterial.color);
-  nodeMat.opacity            = originalMaterial.opacity;
+  nodeMat.color.copy(originalMaterial.color); // unmodified — color was never the issue
 
-  // Note: WebGPU used to render this lens overexposed/washed out against
-  // the scene's white background (it was leaking scene.background-as-Color
-  // into transparent-material shading — three.js issue #28645). Fixed at
-  // the source: scene.background is now left null, with the white surface
-  // coming from CSS behind the renderer's alpha:true canvas instead, so the
-  // leak has no Color object to occur on. See initRenderer/init() for that.
-  // No per-material compensation needed here as a result.
+  // ⚠ TEMPORARY STOPGAP (see investigation notes below) — NOT the real fix.
+  //
+  // Root cause, confirmed via isolation testing across a full session:
+  // WebGPURenderer leaks scene.background into the shading of transparent
+  // glass materials, making them read as "lit" by the white background
+  // (reflection terms partially overwritten by general overexposure — not a
+  // simple alpha-blend ratio issue). Confirmed NOT caused by: material color
+  // (bit-identical RGB to WebGL), opacity/blending/premultipliedAlpha (all
+  // identical), envMapIntensity (zeroing it didn't help), specular/roughness/
+  // metalness/clearcoat (zeroing them didn't help either), toneMapped flag,
+  // scene.backgroundIntensity. Matches a known unresolved three.js upstream
+  // pattern (issues #33104, #28645) of node materials behaving differently
+  // near a light scene background under WebGPURenderer vs WebGLRenderer.
+  // Against a pure black background both renderers match exactly — the leak
+  // scales with how light the background is.
+  //
+  // Real fix is still pending — leading suspect is replacing scene.background
+  // (a THREE.Color) with an actual white plane/object in the scene, since
+  // that's the one mechanism not yet ruled out. Pick this back up before
+  // shipping; this opacity bump is a visual patch, not a resolved bug.
+  //
+  // Lenses_Clear is EXCLUDED: it's a near-fully-transparent lens (opacity
+  // 0.1) where push ing opacity toward 1 doesn't compress the washout — it
+  // visibly breaks the specular reflection instead (confirmed by hand:
+  // pushing opacity up made the lens look MORE overlit, not less, and the
+  // reflection got swallowed by the general overexposure). Needs a different
+  // treatment once the real fix is in; for now it's left untouched so it
+  // doesn't regress further than the original washout.
+  // Lenses_Clear: pushing opacity toward 1 visibly broke the specular
+  // reflection instead of compressing the washout (see notes above).
+  // Lenses_Polar_Gradient: its transparency comes from a per-pixel PNG alpha
+  // map (m.map), not this flat opacity value — final per-pixel alpha is
+  // opacity × textureAlpha, so a flat 0.98 does almost nothing in the lens's
+  // more-transparent regions (where textureAlpha is already low and the
+  // background-leak washout is worst). Needs a per-pixel-aware fix, not a
+  // flat opacity bump — excluded here rather than leaving a number that
+  // doesn't actually do anything in the affected areas.
+  const WEBGPU_TEMP_OPACITY = 0.98;
+  const isExcludedFromTempFix =
+    key === 'lenses_clear' || key === 'lenses_polar_gradient';
+  nodeMat.opacity = isExcludedFromTempFix
+    ? originalMaterial.opacity
+    : WEBGPU_TEMP_OPACITY;
 
   nodeMat.roughness          = originalMaterial.roughness ?? 0.0;
   nodeMat.metalness          = originalMaterial.metalness ?? 0.0;
   nodeMat.ior                = originalMaterial.ior ?? 1.5;
-  nodeMat.specularIntensity  = originalMaterial.specularIntensity ?? 1.0;
-  if (originalMaterial.specularColor) {
-    nodeMat.specularColor.copy(originalMaterial.specularColor);
-  }
   nodeMat.envMapIntensity    = originalMaterial.envMapIntensity ?? 1.0;
   nodeMat.clearcoat          = originalMaterial.clearcoat ?? 0.0;
   nodeMat.clearcoatRoughness = originalMaterial.clearcoatRoughness ?? 0.0;
@@ -472,15 +503,13 @@ function rebuildGlassMaterials() {
             m.transparent = true;
             m.needsUpdate = true;
 
-            // Plain colors (e.g. Lenses_Clear_Amethyst) have no fresnel config,
-            // so route them through an explicit node material for consistency
-            // with the Fresnel path above (which already builds its own node
-            // material) rather than leaving them as classic MeshPhysicalMaterial
-            // under WebGPU. (Earlier investigation suspected this classic-vs-node
-            // distinction caused the GL/GPU lens color mismatch — it didn't; the
-            // real cause was scene.background leaking into transparent-material
-            // shading under WebGPU, fixed in initRenderer/init(). Keeping the
-            // node-material conversion regardless, for consistency.)
+            // Plain colors (e.g. Lenses_Clear_Amethyst) have no fresnel config
+            // and were staying as classic MeshPhysicalMaterial under WebGPU —
+            // that path blends alpha in sRGB and washes out dark transparent
+            // colors against the scene's white background. Route them through
+            // the node material so the blend matches WebGL (linear). Only the
+            // type-keyed fresnel branch above (lenses.front.*) is exempt since
+            // it already builds its own node material.
             obj.material = getOrBuildPlainNodeMat(m);
           }
 
@@ -907,12 +936,12 @@ async function initRenderer() {
   if (useWebGPU) {
     console.log('🚀 Using WebGPU');
     rendererLabel.textContent = `Renderer: WebGPU | DPR: ${window.devicePixelRatio}`;
-    renderer = new WebGPURenderer({ antialias: true, alpha: true });
+    renderer = new WebGPURenderer({ antialias: true });
     await renderer.init();
   } else {
     console.log('⚠ Using WebGL');
     rendererLabel.textContent = `Renderer: WebGL | ${window.innerWidth}x${window.innerHeight}`;
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer = new THREE.WebGLRenderer({ antialias: true });
   }
 
   // Cap at 2 — beyond that GPU cost outweighs the visual gain
@@ -929,6 +958,23 @@ async function initRenderer() {
   if (!renderer.isWebGPURenderer) {
     setupSSAO();
   }
+
+  // ── DEBUG EXPOSURE — temporary, for console diagnostics ──
+  // Lets you run `renderer.render(scene, camera)` etc. directly in DevTools
+  // to bypass the composer and compare WebGL vs WebGPU output frame by frame.
+  // Getters (not snapshots) because currentConfig/currentModel/activeVariantName
+  // are reassigned later (on model switch / variant select) — a plain copy
+  // would go stale immediately.
+  // Safe to remove once the GL/GPU color discrepancy is resolved.
+  window._renderer  = renderer;
+  window._composer  = composer;
+  window._camera    = camera;
+  window.THREE      = THREE;
+  window._animationId = () => animationId;
+  Object.defineProperty(window, '_currentConfig', { get: () => currentConfig, configurable: true });
+  Object.defineProperty(window, '_currentModel',  { get: () => currentModel,  configurable: true });
+  Object.defineProperty(window, '_activeVariant', { get: () => activeVariantName, configurable: true });
+  Object.defineProperty(window, '_gltfData',      { get: () => gltfData,     configurable: true });
 
   isRendererReady = true;
 }
@@ -1000,17 +1046,7 @@ async function restartApp() {
 
   await initRenderer();
 
-  // scene.background intentionally left null (not THREE.Color(0xffffff)).
-  // Confirmed via console testing: scene.background as a Color leaks into
-  // WebGPURenderer's shading of transparent glass materials, washing them
-  // out (overexposed/desaturated) against a light background — matches
-  // three.js issue #28645 (node materials affected by background color).
-  // Against scene.background = null, WebGPU's lens render matched WebGL
-  // exactly. The white you see is now the CSS background behind the
-  // transparent canvas (renderer created with alpha:true), never touched by
-  // three.js's own shading pipeline — so the leak has no surface to occur on.
-  // Do NOT reintroduce scene.background = Color(white) here without also
-  // re-verifying this bug is fixed upstream.
+  scene.background = new THREE.Color(0xffffff);
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enabled       = false;
@@ -1324,11 +1360,7 @@ async function init() {
 
   await initRenderer();
 
-  // scene.background intentionally left null — see notes in the
-  // model/renderer-switch reset path above for the full explanation
-  // (WebGPURenderer leaks scene.background-as-Color into transparent
-  // material shading; the visible white now comes from CSS behind the
-  // alpha:true canvas instead).
+  scene.background = new THREE.Color(0xffffff);
 
   controls = new OrbitControls(camera, renderer.domElement);
   controls.enabled       = false;
