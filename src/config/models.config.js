@@ -111,7 +111,7 @@ export const MODELS = {
   FURY: {
     label:         'Fury',
     glb:           'models/Standard_Fury.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
+    hdri:          'studio_fury_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
@@ -130,7 +130,7 @@ export const MODELS = {
   STARFIRE: {
     label:         'Starfire',
     glb:           'models/Standard_Starfire.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
+    hdri:          'studio_starfire_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
