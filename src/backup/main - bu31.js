@@ -569,23 +569,11 @@ function rebuildGlassMaterials() {
       // the alpha test active.
       if (name.includes('templetrans') || name.includes('text')) {
         obj.renderOrder = 0;
-        // alphaTest lowered from 0.5 → 0.2: at grazing viewing angles (temple
-        // arm seen edge-on) the hard 0.5 cutoff combined with anisotropy:1
-        // was chopping thin letter strokes into broken fragments. Confirmed
-        // via live console test on Temple_Transparent_Text / Mesh008_6 & 009_7.
-        m.alphaTest   = 0.2;
+        m.alphaTest   = 0.5;
         m.transparent = true;
         m.depthWrite  = true;
         m.depthTest   = true;
         m.side        = THREE.FrontSide;
-        // Anisotropic filtering — was 1 (GLTFLoader default), which severely
-        // blurs/aliases the text texture along the grazing axis of the temple
-        // arm. 16 is the common GPU max; three.js clamps internally if the
-        // device supports less.
-        if (m.map) {
-          m.map.anisotropy  = 16;
-          m.map.needsUpdate = true;
-        }
         m.needsUpdate = true;
         m.version++;            // force WebGPU to rebuild the node material
       }
@@ -786,15 +774,11 @@ function loadModel(config) {
         // alpha test. Checked before the temple branch (name contains 'temple').
         if (name.includes('templetrans') || name.includes('text')) {
           obj.renderOrder = 0;
-          m.alphaTest   = 0.2;
+          m.alphaTest   = 0.5;
           m.transparent = true;
           m.depthWrite  = true;
           m.depthTest   = true;
           m.side        = THREE.FrontSide;
-          if (m.map) {
-            m.map.anisotropy  = 16;
-            m.map.needsUpdate = true;
-          }
           m.needsUpdate = true;
           m.version++;
         }
