@@ -16,27 +16,28 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 
 export const MODELS = {
 
-  VANGUARD: {
-    label:         'Vanguard',
-    glb:           'models/Standard_Vanguard.glb',
-    hdri:          'studio_vanguard_2k.hdr',
+  WAYFARER100: {
+    label:         'Wayfarer 100k',
+    glb:           'models/Standard_Wayfarer_100k.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
-    cameras:       VANGUARD_CAMERAS,
-    fresnel:       VANGUARD_FRESNEL,
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
     glass:         { animate: true },
-	variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
-						'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
+	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
+	'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
+	'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
-	},				
+	},
   },
-
-  WAYFARER: {
-    label:         'Wayfarer',
-    glb:           'models/Standard_Wayfarer.glb',
+  
+    WAYFARER168: {
+    label:         'Wayfarer 168k',
+    glb:           'models/Standard_Wayfarer_168k.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
@@ -72,6 +73,24 @@ export const MODELS = {
 	},
   },
 
+  VANGUARD: {
+    label:         'Vanguard',
+    glb:           'models/Standard_Vanguard.glb',
+    hdri:          'studio_vanguard_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       VANGUARD_CAMERAS,
+    fresnel:       VANGUARD_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
+						'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},				
+  },
+
   ADVENTURER: {
     label:         'Adventurer',
     glb:           'models/Standard_Adventurer.glb',
@@ -91,7 +110,7 @@ export const MODELS = {
   },
 
   ADVENTURERL: {
-    label:         'Adventurer Large',
+    label:         'Adventurer L',
     glb:           'models/Standard_Adventurer_Large.glb',
     hdri:          'studio_adventurer_2k.hdr',
     hdriIntensity: 1.0,
@@ -146,4 +165,4 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'WAYFARER';
+export const DEFAULT_MODEL = 'WAYFARER100';
