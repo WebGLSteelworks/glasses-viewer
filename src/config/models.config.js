@@ -16,8 +16,8 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 
 export const MODELS = {
 
-  WAYFARER100: {
-    label:         'Wayfarer 100k',
+  WAYFARER: {
+    label:         'Wayfarer',
     glb:           'models/Standard_Wayfarer_100k.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
@@ -35,24 +35,24 @@ export const MODELS = {
 	},
   },
   
-    WAYFARER168: {
-    label:         'Wayfarer 168k',
-    glb:           'models/Standard_Wayfarer_168k.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
-	'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
+    // WAYFARER168: {
+    // label:         'Wayfarer 168k',
+    // glb:           'models/Standard_Wayfarer_168k.glb',
+    // hdri:          'studio_wayfarer_2k.hdr',
+    // hdriIntensity: 1.0,
+    // startCamera:   'Cam_Front',
+    // cameras:       WAYFARER_CAMERAS,
+    // fresnel:       null,
+    // glass:         { animate: true },
+	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
+	// 'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
+	// 'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },
 
   WAYFARER_L: {
     label:         'Wayfarer L',
@@ -165,4 +165,4 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'WAYFARER100';
+export const DEFAULT_MODEL = 'WAYFARER';
