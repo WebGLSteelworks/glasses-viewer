@@ -1149,15 +1149,7 @@ function animate(time) {
         case 'toClear': {
           const t    = Math.min(glassAnim.timer / glassAnim.duration, 1);
           const ease = t * t * (3 - 2 * t);
-          // NOTE: color is intentionally NOT animated here. Since we dropped
-          // KHR_materials_transmission, "clear" is simulated purely via
-          // opacity -> 0. Lerping color toward white at the same time used
-          // to create a "white scrim": mid-transition the material was both
-          // semi-opaque AND still near-white, which briefly composited
-          // lighter than either endpoint. Keeping color fixed at the
-          // original tint and only animating opacity restores the
-          // monotonic darken/lighten behavior we had with transmission.
-          mat.color.copy(originalColor);
+          mat.color.lerpColors(originalColor, new THREE.Color(1, 1, 1), ease);
           mat.opacity = THREE.MathUtils.lerp(originalGlassOpacities[i], 0.0, ease);
           if (t >= 1) { glassAnim.timer = 0; glassAnim.state = 'waitClear'; }
           break;
@@ -1173,11 +1165,7 @@ function animate(time) {
         case 'toGreen': {
           const t    = Math.min(glassAnim.timer / glassAnim.duration, 1);
           const ease = t * t * (3 - 2 * t);
-          // Same fix as toClear: keep the true tint color throughout and
-          // only ramp opacity up. This is the transition visible in the
-          // client feedback (temple briefly getting lighter) — removing
-          // the white->tint color lerp makes it strictly darken instead.
-          mat.color.copy(originalColor);
+          mat.color.lerpColors(new THREE.Color(1, 1, 1), originalColor, ease);
           mat.opacity = THREE.MathUtils.lerp(0.0, originalGlassOpacities[i], ease);
           if (t >= 1) { glassAnim.timer = 0; glassAnim.state = 'waitGreen'; }
           break;
