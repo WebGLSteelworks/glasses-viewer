@@ -82,7 +82,20 @@ export default class ContactShadowWebGL {
         // as opaque and overwrites instead of blending by alpha.
         transparent:        true,
         depthWrite:         false,
-        depthTest:          false,
+        // depthTest MUST be true — NOT false. Making this material
+        // transparent (above) moved it into three.js's separate transparent
+        // render queue, which always draws AFTER the opaque queue (the
+        // frame geometry) regardless of renderOrder — renderOrder only
+        // orders objects within the same queue, it doesn't interleave
+        // opaque and transparent passes. With depthTest:false the floor
+        // could paint over the already-drawn frame with nothing to stop it
+        // (confirmed: this caused the shadow to render on top of the
+        // frame in WebGL). depthTest:true lets it correctly respect the
+        // depth buffer the frame already wrote, so it stays occluded
+        // wherever the frame covers it, while depthWrite stays false so
+        // the floor itself doesn't block other transparent draws (lenses)
+        // behind it in the same pass.
+        depthTest:          true,
         // NormalBlending (SRC_ALPHA, ONE_MINUS_SRC_ALPHA), NOT MultiplyBlending.
         // MultiplyBlending's WebGL blend equation is (ZERO, SRC_COLOR) — it
         // ignores src alpha entirely, multiplying dst by src RGB only. The
