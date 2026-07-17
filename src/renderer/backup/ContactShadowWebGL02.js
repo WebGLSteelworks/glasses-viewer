@@ -77,22 +77,10 @@ export default class ContactShadowWebGL {
       new THREE.PlaneGeometry(),
       new THREE.MeshBasicMaterial({
         opacity:            1,
-        // transparent MUST be true (and stay true — see setIntensity()) for
-        // NormalBlending to actually blend; otherwise WebGL treats the draw
-        // as opaque and overwrites instead of blending by alpha.
-        transparent:        true,
+        transparent:        false,
         depthWrite:         false,
         depthTest:          false,
-        // NormalBlending (SRC_ALPHA, ONE_MINUS_SRC_ALPHA), NOT MultiplyBlending.
-        // MultiplyBlending's WebGL blend equation is (ZERO, SRC_COLOR) — it
-        // ignores src alpha entirely, multiplying dst by src RGB only. The
-        // depth material below writes constant black RGB (0,0,0) with the
-        // actual shadow gradient encoded ONLY in alpha, so MultiplyBlending
-        // always multiplied every touched pixel to solid black regardless
-        // of its alpha, instead of a soft falloff — this is what caused the
-        // shadow to render as an opaque black/invisible patch instead of a
-        // soft gradient. NormalBlending correctly respects alpha here.
-        blending:           THREE.NormalBlending,
+        blending:           THREE.MultiplyBlending,
         premultipliedAlpha: true,
         side:               THREE.FrontSide,
       })
@@ -201,11 +189,7 @@ export default class ContactShadowWebGL {
         intensity * lerp(DEFAULT_HARD_INTENSITY, 1, this.softness * this.softness),
         1.0
       );
-      // transparent is fixed to true in the constructor and must stay that
-      // way — do NOT toggle it based on opacity here. NormalBlending only
-      // blends by alpha when transparent:true; flipping it false (which
-      // happened whenever opacity rounded to exactly 1.0) silently broke
-      // the shadow by making WebGL treat the draw as opaque.
+      this.floor.material.transparent = this.floor.material.opacity < 1.0;
       this.depthMaterial.uniforms.uOpacity.value =
         (intensity / this.softness) * lerp(DEFAULT_HARD_INTENSITY, 1, this.softness * this.softness);
     } else {

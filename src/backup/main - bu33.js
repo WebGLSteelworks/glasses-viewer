@@ -22,7 +22,6 @@ import { SMAAPass }       from 'three/addons/postprocessing/SMAAPass.js';
 import {
   uniform,
   vec3,
-  vec4,
   float,
   mix,
   dot,
@@ -36,7 +35,6 @@ import {
   mrt,      // TRAA: multiple-render-target config for the scene pass
   output,   // TRAA: MRT channel — beauty/color output
   velocity, // TRAA: MRT channel — per-pixel screen-space velocity
-  texture,  // TRAA lens correction: sample gradient map alpha explicitly
 } from 'three/tsl';
 
 import { Timer } from 'three';
@@ -131,15 +129,13 @@ const fresnelMatCache = new Map();
 // ── Contact shadow (WebGPU only) ─────────────
 let contactShadow = null;
 
-// ── TRAA (WebGPU) ─────────────────────────────
-// Validated: 120fps unaffected, no ghosting on fast camera motion. Opaque
-// white background comes from a real backdrop mesh (buildTRAABackdrop),
-// NOT scene.background/clearColor/alpha compositing — those all fought an
-// apparently-unresolved WebGPU post-processing rough edge (see notes in
-// buildTRAAPipeline). Still toggleable live via window.toggleTRAA().
+// ── TRAA experiment (WebGPU only) ────────────
+// Isolated behind a runtime toggle so it can be A/B compared against the
+// plain renderer.render(scene, camera) path without changing default
+// behavior. Rebuilt every initRenderer() call since it holds a scene
+// reference — see buildTRAAPipeline() for why that matters.
 let renderPipeline = null;
-let traaEnabled    = true;
-let traaBackdrop   = null;
+let traaEnabled    = false;
 
 
 // ─────────────────────────────────────────────
@@ -154,56 +150,14 @@ function getOrBuildFresnelMat(originalMaterial, fresnelCfg) {
   return nodeMat;
 }
 
-
-const TRAA_LENS_GAMMA = 1.05;
-
-const TRAA_LENS_SATURATION = 1.25;
-
-const TRAA_LENS_OPACITY_MULT = 1.03;
-
-function boostSaturation(color, factor) {
-  const luminance = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
-  color.r = Math.min(1, Math.max(0, luminance + (color.r - luminance) * factor));
-  color.g = Math.min(1, Math.max(0, luminance + (color.g - luminance) * factor));
-  color.b = Math.min(1, Math.max(0, luminance + (color.b - luminance) * factor));
-}
-
-function applyTRAALensCorrection(nodeMat) {
-  if (!traaEnabled) return;
-
-  if (nodeMat.map) {
-    // Gradient lens (e.g. Lenses_Polar_Gradient): confirmed via console —
-    // opacity=1 (a no-op multiplier) and color≈(0,0,0) (near-black,
-    // unused for shading). The actual transparency gradient lives in the
-    // map's ALPHA channel, sampled per-pixel by the shader — mutating the
-    // flat scalars above does nothing for this material type, which is
-    // exactly why the first version of this correction had zero visible
-    // effect. Has to intercept the per-pixel sampled alpha directly via an
-    // explicit opacityNode instead. No saturation step here — color is
-    // unused for this material type, nothing to adjust.
-    const sampledAlpha = texture(nodeMat.map).a;
-    const correctedAlpha = float(1).sub(
-      pow(float(1).sub(sampledAlpha), float(TRAA_LENS_GAMMA))
-    );
-    nodeMat.opacityNode = correctedAlpha
-      .mul(float(nodeMat.opacity))
-      .mul(float(TRAA_LENS_OPACITY_MULT))
-      .clamp(0.0, 1.0);
-  } else {
-    // Flat-opacity lens (no map): .opacity/.color are real, meaningful
-    // scalar values — same uniform exponent applied to both, then
-    // saturation on the color and the extra opacity multiplier on top.
-    nodeMat.opacity = Math.min(
-      1,
-      (1 - Math.pow(1 - nodeMat.opacity, TRAA_LENS_GAMMA)) * TRAA_LENS_OPACITY_MULT
-    );
-    nodeMat.color.r = Math.pow(nodeMat.color.r, TRAA_LENS_GAMMA);
-    nodeMat.color.g = Math.pow(nodeMat.color.g, TRAA_LENS_GAMMA);
-    nodeMat.color.b = Math.pow(nodeMat.color.b, TRAA_LENS_GAMMA);
-    boostSaturation(nodeMat.color, TRAA_LENS_SATURATION);
-  }
-}
-
+// Plain (no-Fresnel) glass on WebGPU. Classic MeshPhysicalMaterial under
+// WebGPURenderer blends transparency in sRGB space instead of linear, which
+// washes out dark transparent colors against a light background (confirmed:
+// identical color/opacity/blending in both renderers, identical result only
+// against a black background — diverges only against white, i.e. the alpha
+// blend step itself, not the material's input values). Building an explicit
+// MeshPhysicalNodeMaterial routes the same color/opacity through the node
+// graph, which blends in linear like WebGL — matching the working renderer.
 function getOrBuildPlainNodeMat(originalMaterial) {
   const key = originalMaterial.name.toLowerCase();
   if (fresnelMatCache.has(key)) return fresnelMatCache.get(key);
@@ -220,9 +174,6 @@ function getOrBuildPlainNodeMat(originalMaterial) {
   // coming from CSS behind the renderer's alpha:true canvas instead, so the
   // leak has no Color object to occur on. See initRenderer/init() for that.
   // No per-material compensation needed here as a result.
-  //
-  // The TRAA path is a SEPARATE issue from that one (linear- vs gamma-space
-  // blending, not a background leak) — see applyTRAALensCorrection() below.
 
   nodeMat.roughness          = originalMaterial.roughness ?? 0.0;
   nodeMat.metalness          = originalMaterial.metalness ?? 0.0;
@@ -239,8 +190,6 @@ function getOrBuildPlainNodeMat(originalMaterial) {
   nodeMat.depthWrite         = false;
   nodeMat.side               = THREE.FrontSide;
   if (originalMaterial.map) nodeMat.map = originalMaterial.map;
-
-  applyTRAALensCorrection(nodeMat);
 
   fresnelMatCache.set(key, nodeMat);
   return nodeMat;
@@ -327,11 +276,6 @@ function injectFresnelNode(material, fresnelCfg) {
   nodeMat.userData.fresnelUniforms = {
     colorFront, colorMid, colorEdge, intensity, chromaBoost
   };
-
-  // See applyTRAALensCorrection() near getOrBuildPlainNodeMat for why —
-  // corrects the base color/opacity blend only; the fresnel glow above is
-  // additive (emissiveNode) and unaffected by transparency blend space.
-  applyTRAALensCorrection(nodeMat);
 
   return nodeMat;
 }
@@ -792,7 +736,6 @@ function loadModel(config) {
       contactShadow.setIntensity(config.shadow.intensity ?? 1.0);
       scene.add(contactShadow.group);
     }
-    window._contactShadow = contactShadow; // debug
     variantsExtension = gltf.userData.gltfExtensions?.KHR_materials_variants;
 
     if (variantsExtension) {
@@ -1060,7 +1003,7 @@ function buildTRAAPipeline() {
   // needs rebuilding alongside it.
   const scenePass = pass(scene, camera);
   scenePass.setMRT(mrt({
-    output:   output,   // required — traa() needs a valid beautyNode
+    output:   output,
     velocity: velocity
   }));
 
@@ -1075,41 +1018,23 @@ function buildTRAAPipeline() {
 
   window._renderPipeline = renderPipeline; // debug
 
-  // Opaque white background via REAL scene geometry, not clear-color/alpha
-  // compositing. That path (scene.background=Color, renderer.setClearColor,
-  // mix() in the output graph) fought an apparently-unresolved rough edge in
-  // WebGPU's node-based post-processing — same "black background after
-  // post-processing" symptom other developers hit on the three.js forum,
-  // with no clean fix as of this three.js version. A literal backdrop mesh
-  // sidesteps all of that: TRAA/the render graph treat it like any other
-  // piece of geometry (shaded, depth-tested, velocity-tracked normally),
-  // no special-casing of transparency or clear state needed anywhere.
-  buildTRAABackdrop();
+  applyTRAABackground();
 }
 
-// Large inverted sphere enclosing the scene, unlit white, BackSide so it's
-// only visible from inside (i.e. always fills the background regardless of
-// camera angle — needed since Cam_Free orbits freely). Radius must stay
-// under camera.far (100) with margin; scene scale here is glasses-sized
-// (controls maxDistance 1.2), so 20 is comfortable headroom either way.
-function buildTRAABackdrop() {
-  if (traaBackdrop) {
-    scene.remove(traaBackdrop);
-    traaBackdrop.geometry.dispose();
-    traaBackdrop.material.dispose();
-    traaBackdrop = null;
+// The RenderPipeline/TRAA path does NOT reproduce the scene.background-Color
+// leak into transparent node-material shading (issue #28645) — confirmed by
+// console test with the Vanguard fresnel lenses, unlike the direct
+// renderer.render(scene, camera) path where that leak was previously
+// confirmed and is why scene.background is normally left null (see notes in
+// restartApp/init). So: opaque white background ONLY while TRAA is the
+// active render path; revert to null (CSS-backed transparency) the moment
+// TRAA is off, since the direct-render leak is unverified as fixed.
+function applyTRAABackground() {
+  if (renderer && renderer.isWebGPURenderer && traaEnabled) {
+    scene.background = new THREE.Color(0xffffff);
+  } else {
+    scene.background = null;
   }
-  const geo = new THREE.SphereGeometry(20, 16, 16);
-  const mat = new THREE.MeshBasicMaterial({
-    color:  0xffffff,
-    side:   THREE.BackSide,
-    fog:    false,
-  });
-  traaBackdrop = new THREE.Mesh(geo, mat);
-  traaBackdrop.name          = 'TRAA_WhiteBackdrop';
-  traaBackdrop.frustumCulled = false;
-  traaBackdrop.visible       = traaEnabled;
-  scene.add(traaBackdrop);
 }
 
 window.toggleTRAA = () => {
@@ -1118,21 +1043,8 @@ window.toggleTRAA = () => {
     return;
   }
   traaEnabled = !traaEnabled;
-  if (traaBackdrop) traaBackdrop.visible = traaEnabled;
+  applyTRAABackground();
   console.log('TRAA', traaEnabled ? 'ON' : 'OFF');
-};
-
-// WebGL experiment: test running the composer (SMAA/SSAO) even while the
-// contact shadow is active, instead of the historical direct-render bypass.
-// See notes at the render() dispatch site for why this is expected to be
-// safe to test. Watch specifically for: SSAO artifacts on the shadow floor
-// plane, double/darker shadows, or z-fighting — the floor uses
-// depthWrite:false + renderOrder:-1 + MultiplyBlending, which is exactly
-// the kind of setup that can interact oddly with SSAOPass's own depth read.
-window._forceComposerWithShadow = false;
-window.toggleComposerWithShadow = () => {
-  window._forceComposerWithShadow = !window._forceComposerWithShadow;
-  console.log('Composer with shadow:', window._forceComposerWithShadow ? 'ON (testing)' : 'OFF (direct render, default)');
 };
 
 
@@ -1193,12 +1105,6 @@ async function restartApp() {
   if (contactShadow) { contactShadow.dispose(); contactShadow = null; }
 
   if (renderPipeline) { renderPipeline.dispose(); renderPipeline = null; }
-
-  if (traaBackdrop) {
-    traaBackdrop.geometry.dispose();
-    traaBackdrop.material.dispose();
-    traaBackdrop = null; // belonged to the scene being discarded below
-  }
 
   if (renderer) {
     renderer.dispose();
@@ -1404,18 +1310,9 @@ function animate(time) {
   // WebGL:  composer with SSAO
   if (composer) {
     if (contactShadow) {
+      // WebGL + contact shadow: bypass composer, use direct render.
       contactShadow.render(renderer, scene);
-      // Historically bypassed the composer here (direct render). Reading
-      // ContactShadowWebGL.render(): it's self-contained — sets its own
-      // offscreen render target, restores renderer.getRenderTarget()/
-      // clearAlpha/autoClear before returning — so it shouldn't matter
-      // whether composer.render() runs before or after it. Testing that
-      // hypothesis behind a flag before trusting it by default.
-      if (window._forceComposerWithShadow) {
-        composer.render();
-      } else {
-        renderer.render(scene, camera);
-      }
+      renderer.render(scene, camera);
     } else {
       composer.render();
     }
