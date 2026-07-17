@@ -931,8 +931,9 @@ async function initRenderer() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   }
 
-  // Cap at 2 — beyond that GPU cost outweighs the visual gain
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  // Cap at 2.5 — tested live with setDPR() in console; beyond this the
+  // visual gain flattens out (no perceptible improvement going higher).
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.5));
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.outputColorSpace      = THREE.SRGBColorSpace;
   // r183: physicallyCorrectLights removed (was default since r155)
@@ -940,6 +941,11 @@ async function initRenderer() {
   renderer.toneMappingExposure   = 1.0;
 
   document.body.appendChild(renderer.domElement);
+
+  // debug: expose the live renderer for console AA/pixel-ratio tuning.
+  // Reassigned on every initRenderer() call, so it survives mode switches.
+  window._renderer = renderer;
+  window._composer = null;
 
   // SSAO on WebGL only — WebGPURenderer is not compatible with EffectComposer
   if (!renderer.isWebGPURenderer) {
@@ -982,6 +988,10 @@ function setupSSAO() {
   // (antialias:true) does not apply to the composer's render targets
   const smaaPass = new SMAAPass(w, h);
   composer.addPass(smaaPass);
+
+  // debug: expose the WebGL composer so setDPR() can resize its render
+  // targets in sync with the renderer during live pixel-ratio testing.
+  window._composer = composer;
 }
 
 
@@ -1231,7 +1241,7 @@ window.addEventListener('resize', () => {
   const h = window.innerHeight;
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2.5));
   renderer.setSize(w, h);
   if (composer) composer.setSize(w, h);
 });
