@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/glasses-viewer/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my-three-app</title>
+    <style>
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: transparent;
+      }
+
+      #bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: #ffffff;
+      }
+
+      canvas {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 1;
+        background: transparent !important;
+      }
+    </style>
+    <script type="module" crossorigin src="/glasses-viewer/assets/index-CkhxTzZ1.js"></script>
+  </head>
+  <body>
+    <div id="bg"></div>
+    <div id="app"></div>
+  </body>
+</html>
