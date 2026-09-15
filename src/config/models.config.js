@@ -167,7 +167,7 @@ export const MODELS = {
     label:         'HSTN',
     glb:           'models/Standard_HSTN.glb',
     hdri:          'studio_starfire_4k.hdr',
-    hdriIntensity: 1.0,
+    hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
