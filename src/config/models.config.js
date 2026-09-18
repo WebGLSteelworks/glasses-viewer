@@ -201,29 +201,26 @@ export const MODELS = {
 	  intensity: 1.0,
 	  softness:  1.0,
 	},
+  },
+
+    HSTN: {
+    label:         'HSTN',
+    glb:           'models/Standard_HSTN.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Frame_Black_Silver','Frame_Warm_Grey', 'Frame_Brown_Smoke', 'Frame_Light_Curry',
+	'Lenses_Clear', 'Lenses_Clear_Grey', 'Lenses_Clear_Brown', 'Lenses_Clear_Amethyst','Lenses_Prizm_24K_Polar', 'Lenses_Prizm_Black_Polar', 
+	'Lenses_Prizm_Dark_Golf_Polar', 'Lenses_Prizm_Deep_Water', 'Lenses_Prizm_Ruby'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
   }
-
-
-  
-    // HSTN: {
-    // label:         'HSTN',
-    // glb:           'models/Standard_HSTN.glb',
-    // hdri:          'studio_starfire_4k.hdr',
-    // hdriIntensity: 0.75,
-    // startCamera:   'Cam_Front',
-    // cameras:       ADVENTURER_CAMERAS,
-    // fresnel:       null,
-    // glass:         { animate: true },
-	// variantOrder: ['Frame_Shiny_Black', 'Frame_Shiny_Chalky_Gray', 'Frame_Shiny_Mystic_Violet', 'Frame_Shiny_Transparent_Peach', 
-	// 'Lenses_Clear', 'Lenses_Green', 'Lenses_Polar_Brown', 'Lenses_Polar_Dusty_Blue','Lenses_Polar_Dusty_Red', 'Lenses_Polar_Green', 
-	// 'Lenses_Charcoal_Black', 'Lenses_Polar_Gradient_Graphite', 'Lenses_Clear_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire',
-	// 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Brown_Transitions', 'Lenses_Gradient_Graphite', 'Lenses_Clear_Graphite_Green'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },
-  // }
 
 };
 
