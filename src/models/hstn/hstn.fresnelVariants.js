@@ -9,16 +9,16 @@ export const FRESNEL_VARIANTS = {
   },
 
 
-  "Deep_Water": {
+  "deep_water": {
     intensity: 1.0,
-    chromaBoost: 2.0,
-    colorFront: [0.68, 0.77, 0.89],
-    colorMid:   [0.68, 0.77, 0.89],
-    colorEdge:  [0.85, 0.94, 0.97]
+    chromaBoost: 1,
+    colorFront: [0.69, 0.79, 0.89],
+    colorMid:   [0.69, 0.79, 0.89],
+    colorEdge:  [0.66, 0.44, 0.86]
   },
 
   "ruby": {
-    intensity: 1.0,
+    intensity: 2.0,
     chromaBoost: 2.0,
     colorFront: [0.87, 0.24, 0.23],
     colorMid:   [0.98, 0.47, 0.3],
