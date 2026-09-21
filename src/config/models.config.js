@@ -1,5 +1,6 @@
 import { CAMERAS as VANGUARD_CAMERAS }        from '../models/vanguard/vanguard.cameras.js';
 import { FRESNEL_VARIANTS as VANGUARD_FRESNEL } from '../models/vanguard/vanguard.fresnelVariants.js';
+import { FRESNEL_VARIANTS as HSTN_FRESNEL } from '../models/hstn/hstn.fresnelVariants.js';
 import { CAMERAS as WAYFARER_CAMERAS }          from '../models/wayfarer/wayfarer.cameras.js';
 import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adventurer.cameras.js';
 
@@ -210,7 +211,7 @@ export const MODELS = {
     hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
-    fresnel:       null,
+    fresnel:       HSTN_FRESNEL,
     glass:         { animate: true },
 	variantOrder: ['Frame_Black_Gunmetal', 'Frame_Black_Silver','Frame_Warm_Grey', 'Frame_Brown_Smoke', 'Frame_Light_Curry',
 	'Lenses_Clear', 'Lenses_Clear_Grey', 'Lenses_Clear_Brown', 'Lenses_Clear_Amethyst','Lenses_Prizm_24K_Polar', 'Lenses_Prizm_Black_Polar', 
