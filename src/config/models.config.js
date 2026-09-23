@@ -272,6 +272,58 @@ export const MODELS = {
 	  intensity: 1.0,
 	  softness:  1.0,
 	},
+  },
+
+
+    FURYPLOW: {
+    label:         'Fury polycount LOW 100k',
+    glb:           'models/Fury_polycount_low_01.glb',
+    hdri:          'studio_fury_2k.hdr',
+    hdriIntensity: 1,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    FURYPMID: {
+    label:         'Fury polycount MID 250k',
+    glb:           'models/Fury_polycount_mid_01.glb',
+    hdri:          'studio_fury_2k.hdr',
+    hdriIntensity: 1,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    FURYPHIGH: {
+    label:         'Fury polycount HIGH 500k',
+    glb:           'models/Fury_polycount_high_01.glb',
+    hdri:          'studio_fury_2k.hdr',
+    hdriIntensity: 1,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
   }
 
 
