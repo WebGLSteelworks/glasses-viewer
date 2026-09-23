@@ -221,7 +221,59 @@ export const MODELS = {
 	  intensity: 1.0,
 	  softness:  1.0,
 	},
+  },
+
+    HSTNPLOW: {
+    label:         'HSTN polycount LOW 100k',
+    glb:           'models/HSTN_polycount_low_01.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    HSTNPMID: {
+    label:         'HSTN polycount MID 250k',
+    glb:           'models/HSTN_polycount_mid_01.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    HSTNPHIGH: {
+    label:         'HSTN polycount HIGH 500k',
+    glb:           'models/HSTN_polycount_high_01.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
   }
+
 
 };
 
