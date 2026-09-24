@@ -900,7 +900,9 @@ async function switchModel(modelKey) {
   loadModel(currentConfig);
 
   // update active state on model buttons
-  updateModelButtons(modelKey);
+  document.querySelectorAll('[data-model-btn]').forEach(btn => {
+    btn.style.background = btn.dataset.modelBtn === modelKey ? '#555' : '#333';
+  });
 }
 
 
@@ -1305,68 +1307,19 @@ modelUI.style.cssText = `
 `;
 document.body.appendChild(modelUI);
 
-// Group models by cfg.group (fallback: the key itself → own row).
-// Row order = first appearance of the group in MODELS.
-const modelGroups = new Map();
 Object.entries(MODELS).forEach(([key, cfg]) => {
-  const groupId = cfg.group ?? key;
-  if (!modelGroups.has(groupId)) {
-    modelGroups.set(groupId, { label: cfg.group ?? cfg.label, members: [] });
-  }
-  modelGroups.get(groupId).members.push({ key, cfg });
-});
-
-modelGroups.forEach((group, groupId) => {
-
-  const row = document.createElement('div');
-  row.style.cssText = `display:flex; gap:4px; align-items:stretch;`;
-
-  // main button → loads the first member of the group
-  const mainBtn = document.createElement('button');
-  mainBtn.textContent       = group.label;
-  mainBtn.dataset.groupBtn  = groupId;
-  mainBtn.style.cssText = `
+  const btn = document.createElement('button');
+  btn.textContent          = cfg.label;
+  btn.dataset.modelBtn     = key;
+  btn.style.cssText = `
     padding:8px 14px; font-size:13px; font-weight:500;
     border-radius:6px; border:none; cursor:pointer;
-    background:#333; color:#fff; min-width:110px; text-align:center;
+    background:${key === DEFAULT_MODEL ? '#555' : '#333'};
+    color:#fff; min-width:110px; text-align:center;
   `;
-  mainBtn.onclick = () => switchModel(group.members[0].key);
-  row.appendChild(mainBtn);
-
-  // small buttons → only when the group has more than one member
-  if (group.members.length > 1) {
-    group.members.forEach(({ key, cfg }) => {
-      const subBtn = document.createElement('button');
-      subBtn.textContent         = cfg.subLabel ?? cfg.label;
-      subBtn.title               = cfg.label;
-      subBtn.dataset.modelBtn    = key;
-      subBtn.dataset.modelGroup  = groupId;
-      subBtn.style.cssText = `
-        padding:4px 8px; font-size:11px; font-weight:500;
-        border-radius:5px; border:none; cursor:pointer;
-        background:#333; color:#fff; min-width:30px; text-align:center;
-      `;
-      subBtn.onclick = () => switchModel(key);
-      row.appendChild(subBtn);
-    });
-  }
-
-  modelUI.appendChild(row);
+  btn.onclick = () => switchModel(key);
+  modelUI.appendChild(btn);
 });
-
-function updateModelButtons(activeKey) {
-  const activeCfg   = MODELS[activeKey];
-  const activeGroup = activeCfg?.group ?? activeKey;
-
-  document.querySelectorAll('[data-group-btn]').forEach(btn => {
-    btn.style.background = btn.dataset.groupBtn === activeGroup ? '#555' : '#333';
-  });
-  document.querySelectorAll('[data-model-btn]').forEach(btn => {
-    btn.style.background = btn.dataset.modelBtn === activeKey ? '#777' : '#333';
-  });
-}
-
-updateModelButtons(DEFAULT_MODEL);
 
 
 // ─────────────────────────────────────────────
