@@ -185,10 +185,11 @@ export const MODELS = {
 	},
   },
   
-    SKYLER: {
+    SKYLERGEN1: {
     label:         'Skyler',
     group:         'Skyler',
-    glb:           'models/Standard_Skyler.glb',
+	subLabel:      'Gen 1',
+    glb:           'models/Standard_Skyler_gen1.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
@@ -205,6 +206,29 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
+
+    SKYLERGEN2: {
+    label:         'Skyler',
+    group:         'Skyler',
+	subLabel:      'Gen 2',
+    glb:           'models/Standard_Skyler_gen2.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Frame_Shiny_Chalky_Gray', 'Frame_Shiny_Mystic_Violet', 'Frame_Shiny_Transparent_Peach', 
+	'Lenses_Clear', 'Lenses_Green', 'Lenses_Polar_Brown', 'Lenses_Polar_Dusty_Blue','Lenses_Polar_Dusty_Red', 'Lenses_Polar_Green', 
+	'Lenses_Charcoal_Black', 'Lenses_Polar_Gradient_Graphite', 'Lenses_Clear_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire',
+	'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Brown_Transitions', 'Lenses_Gradient_Graphite', 'Lenses_Clear_Graphite_Green'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
 
     HEADLINER: {
     label:         'Headliner',
