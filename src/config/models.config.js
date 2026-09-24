@@ -13,12 +13,21 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 //   3. Import both above and add an entry below
 //
 // fresnel: null → no Fresnel effect on this model
+//
+// UI grouping (left-side model selector):
+//   group:    models sharing the same group are shown in ONE row.
+//             The main button shows the group name and loads the first
+//             member of the group (in the order they appear below).
+//   subLabel: text of the small button for this member (S, L, LOW...).
+//   A model without group gets its own row using its label.
 // ─────────────────────────────────────────────────────────────────
 
 export const MODELS = {
 
   WAYFARER: {
     label:         'Wayfarer',
+    group:         'Wayfarer',
+    subLabel:      'S',
     glb:           'models/Standard_Wayfarer_100k.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
@@ -36,9 +45,11 @@ export const MODELS = {
 	},
   },
   
-    WAYFARER168: {
-    label:         'Wayfarer 168k',
-    glb:           'models/Standard_Wayfarer_168k.glb',
+  WAYFARER_L: {
+    label:         'Wayfarer L',
+    group:         'Wayfarer',
+    subLabel:      'L',
+    glb:           'models/Standard_Wayfarer_Large.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
@@ -55,9 +66,11 @@ export const MODELS = {
 	},
   },
 
-  WAYFARER_L: {
-    label:         'Wayfarer L',
-    glb:           'models/Standard_Wayfarer_Large.glb',
+    WAYFARER168: {
+    label:         'Wayfarer 168k',
+    group:         'Wayfarer',
+    subLabel:      '168k',
+    glb:           'models/Standard_Wayfarer_168k.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
@@ -76,6 +89,7 @@ export const MODELS = {
 
   VANGUARD: {
     label:         'Vanguard',
+    group:         'Vanguard',
     glb:           'models/Standard_Vanguard.glb',
     hdri:          'studio_vanguard_2k.hdr',
     hdriIntensity: 1.0,
@@ -94,6 +108,8 @@ export const MODELS = {
 
   ADVENTURER: {
     label:         'Adventurer',
+    group:         'Adventurer',
+    subLabel:      'S',
     glb:           'models/Standard_Adventurer.glb',
     hdri:          'studio_adventurer_2k.hdr',
     hdriIntensity: 1.0,
@@ -112,6 +128,8 @@ export const MODELS = {
 
   ADVENTURERL: {
     label:         'Adventurer L',
+    group:         'Adventurer',
+    subLabel:      'L',
     glb:           'models/Standard_Adventurer_Large.glb',
     hdri:          'studio_adventurer_2k.hdr',
     hdriIntensity: 1.0,
@@ -130,6 +148,8 @@ export const MODELS = {
 
   FURY: {
     label:         'Fury',
+    group:         'Fury',
+    subLabel:      'S',
     glb:           'models/Standard_Fury.glb',
     hdri:          'studio_fury_8k.hdr',
     hdriIntensity: 1.0,
@@ -149,6 +169,7 @@ export const MODELS = {
 
   STARFIRE: {
     label:         'Starfire',
+    group:         'Starfire',
     glb:           'models/Standard_Starfire.glb',
     hdri:          'studio_starfire_4k.hdr',
     hdriIntensity: 1.0,
@@ -166,6 +187,7 @@ export const MODELS = {
   
     SKYLER: {
     label:         'Skyler',
+    group:         'Skyler',
     glb:           'models/Standard_Skyler.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 0.75,
@@ -186,6 +208,7 @@ export const MODELS = {
 
     HEADLINER: {
     label:         'Headliner',
+    group:         'Headliner',
     glb:           'models/Standard_Headliner.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 0.75,
@@ -206,6 +229,8 @@ export const MODELS = {
 
     HSTN: {
     label:         'HSTN',
+    group:         'HSTN',
+    // subLabel:      'S',
     glb:           'models/Standard_HSTN.glb',
     hdri:          'studio_HSTN_4k.hdr',
     hdriIntensity: 0.75,
@@ -225,6 +250,8 @@ export const MODELS = {
 
     HSTNPLOW: {
     label:         'HSTN polycount LOW 100k',
+    group:         'HSTN Polycount',
+    subLabel:      'LOW',
     glb:           'models/HSTN_polycount_low_01.glb',
     hdri:          'studio_HSTN_4k.hdr',
     hdriIntensity: 0.75,
@@ -242,6 +269,8 @@ export const MODELS = {
 
     HSTNPMID: {
     label:         'HSTN polycount MID 250k',
+    group:         'HSTN Polycount',
+    subLabel:      'MID',
     glb:           'models/HSTN_polycount_mid_01.glb',
     hdri:          'studio_HSTN_4k.hdr',
     hdriIntensity: 0.75,
@@ -259,6 +288,8 @@ export const MODELS = {
 
     HSTNPHIGH: {
     label:         'HSTN polycount HIGH 500k',
+    group:         'HSTN Polycount',
+    subLabel:      'HIGH',
     glb:           'models/HSTN_polycount_high_01.glb',
     hdri:          'studio_HSTN_4k.hdr',
     hdriIntensity: 0.75,
@@ -277,6 +308,8 @@ export const MODELS = {
 
     FURYPLOW: {
     label:         'Fury polycount LOW 100k',
+    group:         'Fury Polycount',
+    subLabel:      'LOW',
     glb:           'models/Fury_polycount_low_01.glb',
     hdri:          'studio_fury_2k.hdr',
     hdriIntensity: 1,
@@ -294,6 +327,8 @@ export const MODELS = {
 
     FURYPMID: {
     label:         'Fury polycount MID 250k',
+    group:         'Fury Polycount',
+    subLabel:      'MID',
     glb:           'models/Fury_polycount_mid_01.glb',
     hdri:          'studio_fury_2k.hdr',
     hdriIntensity: 1,
@@ -311,6 +346,8 @@ export const MODELS = {
 
     FURYPHIGH: {
     label:         'Fury polycount HIGH 500k',
+    group:         'Fury Polycount',
+    subLabel:      'HIGH',
     glb:           'models/Fury_polycount_high_01.glb',
     hdri:          'studio_fury_2k.hdr',
     hdriIntensity: 1,
