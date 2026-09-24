@@ -1305,6 +1305,18 @@ modelUI.style.cssText = `
 `;
 document.body.appendChild(modelUI);
 
+// Button colors by cfg.color (simple dark palette).
+//   base   → idle state
+//   group  → main button of the active group
+//   active → small button of the active model
+const MODEL_COLORS = {
+  black:  { base: '#333333', group: '#555555', active: '#777777' },
+  blue:   { base: '#1e3a5f', group: '#2a4f80', active: '#3a6aa8' },
+  green:  { base: '#1e4a2a', group: '#2a6139', active: '#3a8250' },
+  red:    { base: '#5a1e1e', group: '#782828', active: '#a03636' },
+  yellow: { base: '#5a4a10', group: '#766116', active: '#9c8020' },
+};
+
 // Group models by cfg.group (fallback: the key itself → own row).
 // Row order = first appearance of the group in MODELS.
 const modelGroups = new Map();
@@ -1325,6 +1337,7 @@ modelGroups.forEach((group, groupId) => {
   const mainBtn = document.createElement('button');
   mainBtn.textContent       = group.label;
   mainBtn.dataset.groupBtn  = groupId;
+  mainBtn.dataset.colorKey  = group.members[0].cfg.color ?? 'black';
   mainBtn.style.cssText = `
     padding:8px 14px; font-size:13px; font-weight:500;
     border-radius:6px; border:none; cursor:pointer;
@@ -1341,6 +1354,7 @@ modelGroups.forEach((group, groupId) => {
       subBtn.title               = cfg.label;
       subBtn.dataset.modelBtn    = key;
       subBtn.dataset.modelGroup  = groupId;
+      subBtn.dataset.colorKey    = cfg.color ?? 'black';
       subBtn.style.cssText = `
         padding:4px 8px; font-size:11px; font-weight:500;
         border-radius:5px; border:none; cursor:pointer;
@@ -1359,10 +1373,12 @@ function updateModelButtons(activeKey) {
   const activeGroup = activeCfg?.group ?? activeKey;
 
   document.querySelectorAll('[data-group-btn]').forEach(btn => {
-    btn.style.background = btn.dataset.groupBtn === activeGroup ? '#555' : '#333';
+    const c = MODEL_COLORS[btn.dataset.colorKey] ?? MODEL_COLORS.black;
+    btn.style.background = btn.dataset.groupBtn === activeGroup ? c.group : c.base;
   });
   document.querySelectorAll('[data-model-btn]').forEach(btn => {
-    btn.style.background = btn.dataset.modelBtn === activeKey ? '#777' : '#333';
+    const c = MODEL_COLORS[btn.dataset.colorKey] ?? MODEL_COLORS.black;
+    btn.style.background = btn.dataset.modelBtn === activeKey ? c.active : c.base;
   });
 }
 
