@@ -350,51 +350,9 @@ export const MODELS = {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
-	  floorMesh: 'RBM_Zena_frame_LOW',   // floor from frame, not drooping temples
 	},
   },
 
-  ZENAPMID: {
-    label:         'Zena polycount MID 250k',
-    group:         'Zena Polycount',
-    subLabel:      'MID',
-	color:         'blue',
-    glb:           'models/ZENA_polycount_mid_01.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 0.75,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: [ 'Frame_Shiny_Black',  'Lenses_Clear_Graphite_Green' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	  floorMesh: 'RBM_Zena_frame_MID',   // floor from frame, not drooping temples
-	},
-  },
-
-  ZENAPHIGH: {
-    label:         'Zena polycount HIGH 500k',
-    group:         'Zena Polycount',
-    subLabel:      'HIGH',
-	color:         'blue',
-    glb:           'models/ZENA_polycount_high_01.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 0.75,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: [ 'Frame_Shiny_Black',  'Lenses_Clear_Graphite_Green' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	  floorMesh: 'RBM_Zena_frame_MID',   // floor from frame, not drooping temples
-	},
-  },
 
 
 

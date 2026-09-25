@@ -716,30 +716,6 @@ function loadModel(config) {
       contactShadow.setScene(currentModel, config.shadow.softness ?? 1.0);
       contactShadow.setIntensity(config.shadow.intensity ?? 1.0);
       scene.add(contactShadow.group);
-
-      // ── floor reference (optional) ────────
-      // config.shadow.floorMesh: name (or name prefix) of the mesh whose
-      // lowest point defines the floor. Useful when temples droop below
-      // the frame. Without it, the default placement is kept.
-      const floorName = config.shadow.floorMesh;
-      if (floorName) {
-        let floorObj  = null;
-        let planeMesh = null;
-        currentModel.traverse(o => {
-          if (!floorObj && o.name && (o.name === floorName || o.name.startsWith(floorName))) floorObj = o;
-        });
-        contactShadow.group.traverse(o => {
-          if (!planeMesh && o.isMesh) planeMesh = o;
-        });
-        if (floorObj && planeMesh) {
-          scene.updateMatrixWorld(true);
-          const targetY  = new THREE.Box3().setFromObject(floorObj).min.y;
-          const currentY = new THREE.Box3().setFromObject(planeMesh).min.y;
-          contactShadow.group.position.y += targetY - currentY;
-        } else {
-          console.warn(`[shadow] floorMesh "${floorName}" not found — using default placement`);
-        }
-      }
     }
     variantsExtension = gltf.userData.gltfExtensions?.KHR_materials_variants;
 
