@@ -272,6 +272,66 @@ export const MODELS = {
 	},
   },
 
+    CLUBMASTERPLOW: {
+    label:         'Clubmaster polycount LOW 100k',
+    group:         'Clubmaster Polycount',
+    subLabel:      'LOW',
+	color:         'blue',
+    glb:           'models/Clubmaster_polycount_low_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    CLUBMASTERPMID: {
+    label:         'Clubmaster polycount MID 250k',
+    group:         'Clubmaster Polycount',
+    subLabel:      'MID',
+	color:         'blue',
+    glb:           'models/Clubmaster_polycount_mid_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    CLUBMASTERPHIGH: {
+    label:         'Clubmaster polycount HIGH 500k',
+    group:         'Clubmaster Polycount',
+    subLabel:      'HIGH',
+	color:         'blue',
+    glb:           'models/Clubmaster_polycount_high_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
 
     FURYPLOW: {
     label:         'Fury polycount LOW 100k',
