@@ -88,26 +88,26 @@ export const MODELS = {
 	},
   },
 
-  WAYFARER_GEN2: {
-    label:         'Wayfarer',
-    group:         'Wayfarer',
-    subLabel:      'Gen 2',
-    glb:           'models/Standard_Wayfarer_gen2.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
+  // WAYFARER_GEN2: {
+    // label:         'Wayfarer',
+    // group:         'Wayfarer',
+    // subLabel:      'Gen 2',
+    // glb:           'models/Standard_Wayfarer_gen2.glb',
+    // hdri:          'studio_wayfarer_2k.hdr',
+    // hdriIntensity: 1.0,
+    // startCamera:   'Cam_Front',
+    // cameras:       WAYFARER_CAMERAS,
+    // fresnel:       null,
+    // glass:         { animate: true },
 	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
 	// 'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
 	// 'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },  
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },  
 
 
   VANGUARD: {
@@ -313,6 +313,7 @@ export const MODELS = {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
+	  floorMesh: 'RBM_Zena_frame_LOW',
 	},
   },
 
