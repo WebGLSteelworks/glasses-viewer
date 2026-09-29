@@ -45,6 +45,7 @@ export const MODELS = {
 	},
   },
   
+
   WAYFARER_L: {
     label:         'Wayfarer L',
     group:         'Wayfarer',
@@ -86,6 +87,28 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
+
+  WAYFARER_GEN2: {
+    label:         'Wayfarer',
+    group:         'Wayfarer',
+    subLabel:      'Gen 2',
+    glb:           'models/Standard_Wayfarer_gen2.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
+	// 'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
+	// 'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },  
+
 
   VANGUARD: {
     label:         'Vanguard',
@@ -271,6 +294,51 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
+
+    ZENA: {
+    label:         'RBM ZENA',
+    group:         'RBM ZENA',
+    // subLabel:      'S',
+    glb:           'models/Standard_Zena.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Frame_Black_Silver','Frame_Warm_Grey', 'Frame_Brown_Smoke', 'Frame_Light_Curry',
+	'Lenses_Clear', 'Lenses_Clear_Grey', 'Lenses_Clear_Brown', 'Lenses_Clear_Amethyst','Lenses_Prizm_24K_Polar', 'Lenses_Prizm_Black_Polar', 
+	'Lenses_Prizm_Dark_Golf_Polar', 'Lenses_Prizm_Deep_Water', 'Lenses_Prizm_Ruby'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+
+
+
+    AVIATORPLOW: {
+    label:         'Aviator polycount LOW 100k',
+    group:         'Aviator Polycount',
+    subLabel:      'LOW',
+	color:         'blue',
+    glb:           'models/Aviator_polycount_low_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
 
     CLUBMASTERPLOW: {
     label:         'Clubmaster polycount LOW 100k',
