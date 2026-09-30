@@ -340,6 +340,26 @@ export const MODELS = {
 	},
   },
 
+    AVIATORPHIGH: {
+    label:         'Aviator polycount HIGH 500k',
+    group:         'Aviator Polycount',
+    subLabel:      'HIGH',
+	color:         'blue',
+    glb:           'models/Aviator_polycount_high_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
 
     CLUBMASTERPLOW: {
     label:         'Clubmaster polycount LOW 100k',
