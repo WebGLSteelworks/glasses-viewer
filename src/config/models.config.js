@@ -360,6 +360,26 @@ export const MODELS = {
 	},
   },
 
+    // AVIATORPMID: {
+    // label:         'Aviator polycount  MID 250k',
+    // group:         'Aviator Polycount',
+    // subLabel:      'MID',
+	// color:         'blue',
+    // glb:           'models/Aviator_polycount_mid_01.glb',
+    // hdri:          'studio_wayfarer_2k.hdr',
+    // hdriIntensity: 0.75,
+    // startCamera:   'Cam_Front',
+    // cameras:       ADVENTURER_CAMERAS,
+    // fresnel:       HSTN_FRESNEL,
+    // glass:         { animate: true },
+	// variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },
+
     AVIATORPHIGH: {
     label:         'Aviator polycount HIGH 500k',
     group:         'Aviator Polycount',
@@ -387,6 +407,26 @@ export const MODELS = {
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/Clubmaster_polycount_low_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    CLUBMASTERPMID: {
+    label:         'Clubmaster polycount MID 250k',
+    group:         'Clubmaster Polycount',
+    subLabel:      'MID',
+	color:         'blue',
+    glb:           'models/Clubmaster_polycount_mid_01.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
@@ -443,6 +483,26 @@ export const MODELS = {
 	},
   },
 
+    FURYPMID: {
+    label:         'Fury polycount MID 250k',
+    group:         'Fury Polycount',
+    subLabel:      'MID',
+	color:         'blue',
+    glb:           'models/Fury_polycount_mid_01.glb',
+    hdri:          'studio_fury_8k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
 
     FURYPHIGH: {
     label:         'Fury polycount HIGH 500k',
@@ -470,6 +530,27 @@ export const MODELS = {
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/ZENA_polycount_low_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: [ 'Frame_Shiny_Black',  'Lenses_Clear_Graphite_Green' ],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	  floorMesh: 'RBM_Zena_frame_LOW',   // floor from frame, not drooping temples
+	},
+  },
+
+  ZENAPMID: {
+    label:         'Zena polycount MID 250k',
+    group:         'Zena Polycount',
+    subLabel:      'MID',
+	color:         'blue',
+    glb:           'models/ZENA_polycount_mid_01.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
@@ -529,6 +610,25 @@ export const MODELS = {
 	},
   },
 
+    HSTNPMID: {
+    label:         'HSTN polycount MID 250k',
+    group:         'HSTN Polycount',
+    subLabel:      'MID',
+	color:         'blue',
+    glb:           'models/HSTN_polycount_mid_01.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
 
     HSTNPHIGH: {
     label:         'HSTN polycount HIGH 500k',
@@ -573,6 +673,26 @@ export const MODELS = {
 	},				
   },
 
+  VANGUARDPMID: {
+    label:         'Vanguard polycount MID 250k',
+    group:         'Vanguard Polycount',
+	subLabel:      'MID',
+	color:         'blue',
+    glb:           'models/Vanguard_polycount_mid_01.glb',
+    hdri:          'studio_vanguard_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       VANGUARD_CAMERAS,
+    fresnel:       VANGUARD_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
+						'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},				
+  },
   
   VANGUARDPHIGH: {
     label:         'Vanguard polycount HIGH 500k',
