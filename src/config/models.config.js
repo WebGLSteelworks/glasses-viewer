@@ -317,7 +317,27 @@ export const MODELS = {
 	},
   },
 
-
+    AVIATOR: {
+    label:         'RBM AVIATOR',
+    group:         'RBM AVIATOR',
+    // subLabel:      'S',
+    glb:           'models/Standard_Aviator.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Frame_Black_Silver','Frame_Warm_Grey', 'Frame_Brown_Smoke', 'Frame_Light_Curry',
+	'Lenses_Clear', 'Lenses_Clear_Grey', 'Lenses_Clear_Brown', 'Lenses_Clear_Amethyst','Lenses_Prizm_24K_Polar', 'Lenses_Prizm_Black_Polar', 
+	'Lenses_Prizm_Dark_Golf_Polar', 'Lenses_Prizm_Deep_Water', 'Lenses_Prizm_Ruby'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	  floorMesh: 'RBM_Zena_frame_LOW',
+	},
+  },
 
 
     AVIATORPLOW: {
