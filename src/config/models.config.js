@@ -562,7 +562,7 @@ export const MODELS = {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
-	  floorMesh: 'RBM_Zena_frame_LOW',   // floor from frame, not drooping temples
+	  floorMesh: 'RBM_Zena_frame_MID',   // floor from frame, not drooping temples
 	},
   },
 
@@ -584,7 +584,7 @@ export const MODELS = {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
-	  floorMesh: 'RBM_Zena_frame_MID',   // floor from frame, not drooping temples
+	  floorMesh: 'RBM_Zena_frame_HIGH',   // floor from frame, not drooping temples
 	},
   },
 
