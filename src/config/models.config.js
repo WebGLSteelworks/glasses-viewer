@@ -24,10 +24,10 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 
 export const MODELS = {
 
-  WAYFARER: {
-    label:         'Wayfarer',
-    group:         'Wayfarer',
-    subLabel:      'Gen 1 S',
+  WAYFARERGEN1: {
+    label:         'Wayfarergen1',
+    group:         'Wayfarer gen1',
+    subLabel:      'LOW',
     glb:           'models/Standard_Wayfarer_100k.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
@@ -46,10 +46,10 @@ export const MODELS = {
   },
   
 
-  WAYFARER_L: {
-    label:         'Wayfarer L',
-    group:         'Wayfarer',
-    subLabel:      'Gen 1 L',
+  WAYFARERGEN1_L: {
+    label:         'Wayfarergen1 L',
+    group:         'Wayfarer L gen1',
+    subLabel:      'LOW',
     glb:           'models/Standard_Wayfarer_Large.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
@@ -67,31 +67,11 @@ export const MODELS = {
 	},
   },
 
-    WAYFARER168: {
-    label:         'Wayfarer 168k',
-    group:         'Wayfarer',
-    subLabel:      '168k',
-    glb:           'models/Standard_Wayfarer_168k.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
-	'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
 
-  WAYFARER_GEN2: {
-    label:         'Wayfarer',
-    group:         'Wayfarer',
-    subLabel:      'Gen 2 S',
+  WAYFARERGEN2: {
+    label:         'Wayfarergen2',
+    group:         'Wayfarer gen2',
+    subLabel:      'LOW',
     glb:           'models/Standard_Wayfarer_gen2.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
@@ -110,10 +90,31 @@ export const MODELS = {
   },  
 
 
-  VANGUARD: {
+  VANGUARDLOW: {
     label:         'Vanguard',
     group:         'Vanguard',
+	subLabel:      'LOW',
     glb:           'models/Standard_Vanguard.glb',
+    hdri:          'studio_vanguard_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       VANGUARD_CAMERAS,
+    fresnel:       VANGUARD_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
+						'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},				
+  },
+
+  VANGUARDHIGH: {
+    label:         'Vanguard',
+    group:         'Vanguard',
+	subLabel:      'HIGH',
+    glb:           'models/Vanguard_polycount_high_01.glb',
     hdri:          'studio_vanguard_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
@@ -169,10 +170,10 @@ export const MODELS = {
 	},
   },
 
-  FURY: {
-    label:         'Fury',
+  FURYLOW: {
+    label:         'Fury L',
     group:         'Fury',
-    subLabel:      'S',
+    subLabel:      'LOW',
     glb:           'models/Standard_Fury.glb',
     hdri:          'studio_fury_8k.hdr',
     hdriIntensity: 1.0,
@@ -183,6 +184,25 @@ export const MODELS = {
 	variantOrder: ['Frame_Classic_Black', 'Frame_Mahogany', 'Frame_Racing_Green', 'Frame_Sandstone', 
 	'Lenses_Brown_Gradient', 'Lenses_Green_Herbal', 'Lenses_Light_Blue_Atlantic', 'Lenses_Polar_Dark_Amber',
 	'Lenses_Polar_Grey', 'Lenses_Transitions_Grey'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+    FURYHIGH: {
+    label:         'Fury H',
+    group:         'Fury',
+    subLabel:      'HIGH',
+    glb:           'models/Fury_polycount_high_01.glb',
+    hdri:          'studio_fury_8k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -274,10 +294,10 @@ export const MODELS = {
 	},
   },
 
-    HSTN: {
-    label:         'HSTN',
+    HSTNLOW: {
+    label:         'HSTN L',
     group:         'HSTN',
-    // subLabel:      'S',
+    subLabel:      'LOW',
     glb:           'models/Standard_HSTN.glb',
     hdri:          'studio_HSTN_4k.hdr',
     hdriIntensity: 0.75,
@@ -295,10 +315,30 @@ export const MODELS = {
 	},
   },
 
-    ZENA: {
-    label:         'RBM ZENA',
-    group:         'RBM ZENA',
-    // subLabel:      'S',
+    HSTNHIGH: {
+    label:         'HSTN H',
+    group:         'HSTN',
+    subLabel:      'HIGH',
+    glb:           'models/HSTN_polycount_high_01.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+
+    ZENALOW: {
+    label:         'RBM Zena L',
+    group:         'RBM Zena',
+    subLabel:      'LOW',
     glb:           'models/Standard_Zena.glb',
     hdri:          'studio_HSTN_4k.hdr',
     hdriIntensity: 0.75,
@@ -317,10 +357,31 @@ export const MODELS = {
 	},
   },
 
+  ZENAHIGH: {
+    label:         'RBM Zena H',
+    group:         'RBM Zena',
+    subLabel:      'HIGH',
+    glb:           'models/ZENA_polycount_high_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: [ 'Frame_Shiny_Black',  'Lenses_Clear_Graphite_Green' ],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	  floorMesh: 'RBM_Zena_frame_HIGH',   // floor from frame, not drooping temples
+	},
+  },
+
+
     AVIATOR: {
-    label:         'RBM AVIATOR',
-    group:         'RBM AVIATOR',
-    // subLabel:      'S',
+    label:         'RBM Aviator L',
+    group:         'RBM Aviator',
+    subLabel:      'LOW',
     glb:           'models/Standard_Aviator.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 0.75,
@@ -336,6 +397,25 @@ export const MODELS = {
 	  intensity: 1.0,
 	  softness:  1.0,
 	  floorMesh: 'RBM_Zena_frame_LOW',
+	},
+  },
+
+    AVIATORHIGH: {
+    label:         'RBM Aviator H',
+    group:         'RBM Aviator',
+    subLabel:      'HIGH',
+    glb:           'models/Aviator_polycount_high_01.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
 	},
   },
 
@@ -399,11 +479,10 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
-
-
-    CLUBMASTERPLOW: {
+  
+      CLUBMASTERPLOW: {
     label:         'Clubmaster polycount LOW 100k',
-    group:         'Clubmaster Polycount',
+    group:         'Clubmaster Polyc',
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/Clubmaster_polycount_low_01.glb',
@@ -423,7 +502,7 @@ export const MODELS = {
 
     CLUBMASTERPMID: {
     label:         'Clubmaster polycount MID 250k',
-    group:         'Clubmaster Polycount',
+    group:         'Clubmaster Polyc',
     subLabel:      'MID',
 	color:         'blue',
     glb:           'models/Clubmaster_polycount_mid_01.glb',
@@ -444,7 +523,7 @@ export const MODELS = {
 
     CLUBMASTERPHIGH: {
     label:         'Clubmaster polycount HIGH 500k',
-    group:         'Clubmaster Polycount',
+    group:         'Clubmaster Polyc',
     subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/Clubmaster_polycount_high_01.glb',
@@ -654,7 +733,7 @@ export const MODELS = {
 
   VANGUARDPLOW: {
     label:         'Vanguard polycount LOW 100k',
-    group:         'Vanguard Polycount',
+    group:         'Vanguard Polyc',
 	subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/Vanguard_polycount_low_01.glb',
@@ -675,7 +754,7 @@ export const MODELS = {
 
   VANGUARDPMID: {
     label:         'Vanguard polycount MID 250k',
-    group:         'Vanguard Polycount',
+    group:         'Vanguard Polyc',
 	subLabel:      'MID',
 	color:         'blue',
     glb:           'models/Vanguard_polycount_mid_01.glb',
@@ -696,7 +775,7 @@ export const MODELS = {
   
   VANGUARDPHIGH: {
     label:         'Vanguard polycount HIGH 500k',
-    group:         'Vanguard Polycount',
+    group:         'Vanguard Polyc',
 	subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/Vanguard_polycount_high_01.glb',
@@ -714,7 +793,8 @@ export const MODELS = {
 	  softness:  1.0,
 	},				
   }
+  
 
 };
 
-export const DEFAULT_MODEL = 'WAYFARER';
+export const DEFAULT_MODEL = 'WAYFARERGEN2';
