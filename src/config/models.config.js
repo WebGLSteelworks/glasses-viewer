@@ -68,26 +68,50 @@ export const MODELS = {
   },
 
 
-  WAYFARERGEN2: {
-    label:         'Wayfarergen2',
+  WAYFARERGEN2LOW: {
+    label:         'Wayfarer_gen2_low',
     group:         'Wayfarer gen2',
     subLabel:      'LOW',
-    glb:           'models/Standard_Wayfarer_gen2.glb',
+    glb:           'models/Standard_Wayfarer_gen2_low.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
-	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Shiny_Cosmic_Blue', 'Frame_Shiny_Transparent_Grey', 
-	// 'Lenses_Clear', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald', 'Lenses_Clear_Graphite_Green', 'Lenses_Clear_Grey', 'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_G15_Green',  
-	// 'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Brown_Transitions' ],
+	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Classic_Havana', 'Frame_Transparent_Ocean_Blue', 'Frame_Transparent_Black', 'Frame_Transparent_Matte',
+	'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald',  'Lenses_Clear_Green_Transitions', 'Lenses_Clear_Grey_Transitions', 
+	'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_Graphite_Green_Transitions', 'Lenses_Green', 'Lenses_Grey_Transitions',
+	'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Aquamarine_Transitions', 'Lenses_Brown_Transitions' ],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
 	},
   },  
+
+  WAYFARERGEN2HIGH: {
+    label:         'Wayfarer_gen2_high',
+    group:         'Wayfarer gen2',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Wayfarer_gen2_high.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Classic_Havana', 'Frame_Transparent_Ocean_Blue', 'Frame_Transparent_Black', 'Frame_Transparent_Matte',
+	'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Clear_Amethyst', 'Lenses_Clear_Emerald',  'Lenses_Clear_Green_Transitions', 'Lenses_Clear_Grey_Transitions', 
+	'Lenses_Clear_Sapphire','Lenses_Charcoal_Black', 'Lenses_Graphite_Green_Transitions', 'Lenses_Green', 'Lenses_Grey_Transitions',
+	'Lenses_Polar_Gradient', 'Lenses_Polar_Green', 'Lenses_Polar_Brown',  'Lenses_Polar_Dusty_Blue', 'Lenses_Polar_Dusty_Red', 'Lenses_Aquamarine_Transitions', 'Lenses_Brown_Transitions' ],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },  
+
 
 
   VANGUARDLOW: {
@@ -797,4 +821,4 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'WAYFARERGEN2';
+export const DEFAULT_MODEL = 'WAYFARERGEN2LOW';
