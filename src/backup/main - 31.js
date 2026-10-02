@@ -597,77 +597,10 @@ function rebuildGlassMaterials() {
 
 
 // ─────────────────────────────────────────────
-// VARIANT DROPDOWNS UI
+// VARIANT BUTTONS UI
 // ─────────────────────────────────────────────
-// Variants are grouped by name prefix (Frame_ / Lenses_) into native <select>
-// menus. Native selects use the OS picker on Android/iOS, which handles long
-// lists better than a custom menu. Variants without a known prefix go to "Other".
 
-const VARIANT_GROUPS = [
-  { prefix: 'Frame_',  title: 'Frame'  },
-  { prefix: 'Lenses_', title: 'Lenses' },
-];
-
-function variantLabel(name) {
-  const group = VARIANT_GROUPS.find(g => name.startsWith(g.prefix));
-  const short = group ? name.slice(group.prefix.length) : name;
-  return short.replace(/_/g, ' ');
-}
-
-// Finds which variants match the materials the GLB shows by default (before
-// any variant is applied). Uses the glTF JSON, so it still works after
-// rebuildGlassMaterials() has replaced the mesh materials.
-function detectDefaultVariants(model, variants) {
-
-  const parser = gltfData?.parser;
-  if (!parser || !variantsExtension) return [];
-
-  const votes = new Map(); // variant name → number of meshes matching
-
-  model.traverse((obj) => {
-
-    if (!obj.isMesh) return;
-
-    const ext = obj.userData.gltfExtensions?.KHR_materials_variants;
-    if (!ext) return;
-
-    const assoc = parser.associations.get(obj);
-    if (assoc?.meshes === undefined || assoc?.primitives === undefined) return;
-
-    const defaultMaterial =
-      parser.json.meshes[assoc.meshes]?.primitives[assoc.primitives]?.material;
-    if (defaultMaterial === undefined) return;
-
-    ext.mappings.forEach((map) => {
-      if (map.material !== defaultMaterial) return;
-      map.variants.forEach((variantIndex) => {
-        const name = variantsExtension.variants[variantIndex]?.name;
-        if (name) votes.set(name, (votes.get(name) || 0) + 1);
-      });
-    });
-  });
-
-  // best match per group (ties resolved by variant order)
-  const groups = [...VARIANT_GROUPS.map(g => g.prefix), null];
-  const result = [];
-
-  groups.forEach(prefix => {
-    let best = null;
-    variants.forEach(v => {
-      const inGroup = prefix === null
-        ? !VARIANT_GROUPS.some(g => v.name.startsWith(g.prefix))
-        : v.name.startsWith(prefix);
-      if (!inGroup) return;
-      const n = votes.get(v.name) || 0;
-      if (n > 0 && (!best || n > best.n)) best = { name: v.name, n };
-    });
-    if (best) result.push(best.name);
-  });
-
-  return result;
-}
-
-function createVariantDropdowns(variants, selectedNames = []) {
+function createVariantButtons(variants) {
 
   const old = document.getElementById('variantsUI');
   if (old) old.remove();
@@ -680,72 +613,31 @@ function createVariantDropdowns(variants, selectedNames = []) {
   container.style.top           = '20px';
   container.style.display       = 'flex';
   container.style.flexDirection = 'column';
-  container.style.gap           = '12px';
+  container.style.gap           = '8px';
   container.style.zIndex        = '20';
-  container.style.font          = '13px system-ui, sans-serif';
 
   document.body.appendChild(container);
 
-  // build groups, keeping the incoming order (variantOrder already applied)
-  const groups = VARIANT_GROUPS.map(g => ({
-    ...g,
-    items: variants.filter(v => v.name.startsWith(g.prefix)),
-  }));
-  const other = variants.filter(v => !VARIANT_GROUPS.some(g => v.name.startsWith(g.prefix)));
-  if (other.length) groups.push({ prefix: '', title: 'Other', items: other });
+  variants.forEach(v => {
 
-  groups.forEach(group => {
+    const btn = document.createElement('button');
+    btn.textContent = v.name;
 
-    if (!group.items.length) return;
+    btn.style.padding      = '8px 12px';
+    btn.style.border       = 'none';
+    btn.style.borderRadius = '6px';
+    btn.style.cursor       = 'pointer';
+    btn.style.background   = '#111';
+    btn.style.color        = '#fff';
+    btn.style.fontSize     = '12px';
+    btn.style.textAlign    = 'left';
 
-    const isSelected = group.items.some(v => selectedNames.includes(v.name));
-
-    const wrap = document.createElement('div');
-
-    const caption = document.createElement('div');
-    caption.textContent = `${group.title} (${group.items.length})`;
-    caption.style.color         = '#666';
-    caption.style.marginBottom  = '4px';
-    caption.style.fontSize      = '11px';
-    caption.style.textTransform = 'uppercase';
-    caption.style.letterSpacing = '0.05em';
-
-    const select = document.createElement('select');
-    select.setAttribute('aria-label', group.title);
-
-    select.style.width        = '240px';
-    select.style.padding      = '8px 10px';
-    select.style.border       = 'none';
-    select.style.borderRadius = '6px';
-    select.style.cursor       = 'pointer';
-    select.style.background   = '#111';
-    select.style.color        = '#fff';
-    select.style.font         = 'inherit';
-
-    // placeholder shown until the user picks a variant in this group
-    const placeholder = document.createElement('option');
-    placeholder.value       = '';
-    placeholder.disabled    = true;
-    placeholder.selected    = !isSelected;
-    placeholder.textContent = `Select ${group.title.toLowerCase()}…`;
-    select.appendChild(placeholder);
-
-    group.items.forEach(v => {
-      const option = document.createElement('option');
-      option.value       = v.name;
-      option.textContent = variantLabel(v.name);
-      option.selected    = selectedNames.includes(v.name);
-      select.appendChild(option);
-    });
-
-    select.onchange = () => {
-      if (!currentModel || !select.value) return;
-      selectVariant(currentModel, select.value);
+    btn.onclick = () => {
+      if (!currentModel) return;
+      selectVariant(currentModel, v.name);
     };
 
-    wrap.appendChild(caption);
-    wrap.appendChild(select);
-    container.appendChild(wrap);
+    container.appendChild(btn);
   });
 }
 
@@ -864,15 +756,7 @@ function loadModel(config) {
           })
         : rawVariants;
 
-      // variants[0] is applied below; for the other groups, show the variant
-      // that matches what the GLB displays by default
-      const firstName = variants[0]?.name;
-      const firstPrefix = VARIANT_GROUPS.find(g => firstName?.startsWith(g.prefix))?.prefix;
-      const defaults = detectDefaultVariants(currentModel, variants)
-        .filter(name => !firstPrefix || !name.startsWith(firstPrefix));
-      console.log('[variants] default selection:', [firstName, ...defaults]);
-
-      createVariantDropdowns(variants, firstName ? [firstName, ...defaults] : defaults);
+      createVariantButtons(variants);
       if (variants.length > 0) {
         selectVariant(currentModel, variants[0].name);
       }
