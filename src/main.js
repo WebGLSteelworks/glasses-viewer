@@ -1441,7 +1441,8 @@ document.body.appendChild(modeUI);
 const modelUI = document.createElement('div');
 modelUI.style.cssText = `
   position:fixed; top:140px; left:20px;
-  display:flex; flex-direction:column; gap:6px; z-index:100;
+  display:flex; flex-direction:column; gap:10px; z-index:100;
+  max-height:calc(100vh - 160px); overflow-y:auto;
 `;
 document.body.appendChild(modelUI);
 
@@ -1457,13 +1458,79 @@ const MODEL_COLORS = {
   yellow: { base: '#5a4a10', group: '#766116', active: '#9c8020' },
 };
 
+// ── Sections (accordion) ──────────────────
+// Each model belongs to a section via cfg.section. Fallback while the config
+// doesn't define it: blue models → 'polycount', everything else → 'models'.
+// Only one section is open at a time, so on mobile one list fits on screen.
+const MODEL_SECTIONS = [
+  { id: 'models',    title: 'Models'    },
+  { id: 'polycount', title: 'Polycount' },
+];
+
+function getModelSection(cfg) {
+  return cfg.section ?? (cfg.color === 'blue' ? 'polycount' : 'models');
+}
+
+const sectionEls = new Map(); // id → { header, body, chevron }
+
+function openModelSection(id) {
+  sectionEls.forEach((el, sectionId) => {
+    const open = sectionId === id;
+    el.body.style.display  = open ? 'flex' : 'none';
+    el.chevron.textContent = open ? '▾' : '▸';
+    el.header.setAttribute('aria-expanded', String(open));
+  });
+}
+
+MODEL_SECTIONS.forEach(({ id, title }) => {
+
+  const section = document.createElement('div');
+
+  const header = document.createElement('button');
+  header.style.cssText = `
+    display:flex; align-items:center; gap:6px; width:100%;
+    padding:4px 0; background:none; border:none; cursor:pointer;
+    color:#666; font:600 11px system-ui, sans-serif;
+    text-transform:uppercase; letter-spacing:0.05em; text-align:left;
+  `;
+  const chevron = document.createElement('span');
+  chevron.style.cssText = `width:10px; display:inline-block;`;
+  const label = document.createElement('span');
+  label.textContent = title;
+  header.append(chevron, label);
+
+  const body = document.createElement('div');
+  body.style.cssText = `flex-direction:column; gap:6px; margin-top:6px;`;
+
+  // clicking an open section closes it; clicking a closed one opens it
+  // (and closes the other)
+  header.onclick = () => {
+    const isOpen = body.style.display !== 'none';
+    if (isOpen) {
+      body.style.display = 'none';
+      chevron.textContent = '▸';
+      header.setAttribute('aria-expanded', 'false');
+    } else {
+      openModelSection(id);
+    }
+  };
+
+  section.append(header, body);
+  modelUI.appendChild(section);
+  sectionEls.set(id, { header, body, chevron });
+});
+
 // Group models by cfg.group (fallback: the key itself → own row).
 // Row order = first appearance of the group in MODELS.
 const modelGroups = new Map();
 Object.entries(MODELS).forEach(([key, cfg]) => {
   const groupId = cfg.group ?? key;
   if (!modelGroups.has(groupId)) {
-    modelGroups.set(groupId, { label: cfg.group ?? cfg.label, members: [] });
+    modelGroups.set(groupId, {
+      label:   cfg.group ?? cfg.label,
+      section: getModelSection(cfg),
+      members: [],
+    });
   }
   modelGroups.get(groupId).members.push({ key, cfg });
 });
@@ -1473,9 +1540,15 @@ modelGroups.forEach((group, groupId) => {
   const row = document.createElement('div');
   row.style.cssText = `display:flex; gap:4px; align-items:stretch;`;
 
+  // inside the Polycount section the "Polycount" / "Polyc" suffix is redundant
+  const label = group.section === 'polycount'
+    ? group.label.replace(/\s+Poly\w*$/i, '')
+    : group.label;
+
   // main button → loads the first member of the group
   const mainBtn = document.createElement('button');
-  mainBtn.textContent       = group.label;
+  mainBtn.textContent       = label;
+  mainBtn.title             = group.label;
   mainBtn.dataset.groupBtn  = groupId;
   mainBtn.dataset.colorKey  = group.members[0].cfg.color ?? 'black';
   mainBtn.style.cssText = `
@@ -1505,8 +1578,20 @@ modelGroups.forEach((group, groupId) => {
     });
   }
 
-  modelUI.appendChild(row);
+  const sectionEl = sectionEls.get(group.section) ?? sectionEls.get('models');
+  sectionEl.body.appendChild(row);
 });
+
+// hide sections with no models (e.g. if the config has no polycount models)
+sectionEls.forEach(el => {
+  if (!el.body.children.length) el.header.parentElement.style.display = 'none';
+});
+
+// default: Models open, Polycount closed — unless the default model is a
+// polycount one, then open that section so its active button is visible
+openModelSection(
+  MODELS[DEFAULT_MODEL] ? getModelSection(MODELS[DEFAULT_MODEL]) : 'models'
+);
 
 function updateModelButtons(activeKey) {
   const activeCfg   = MODELS[activeKey];

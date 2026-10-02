@@ -176,7 +176,7 @@ export const MODELS = {
 
   ADVENTURERL: {
     label:         'Adventurer L',
-    group:         'Adventurer',
+    group:         'Adventurer L',
     subLabel:      'L',
     glb:           'models/Standard_Adventurer_Large.glb',
     hdri:          'studio_adventurer_2k.hdr',
