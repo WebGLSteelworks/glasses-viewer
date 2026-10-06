@@ -156,10 +156,10 @@ export const MODELS = {
   },
 
 
-  ADVENTURERL: {
-    label:         'Adventurer L',
+  ADVENTURERLLOW: {
+    label:         'Adventurer L LOW',
     group:         'Adventurer L',
-    subLabel:      'L',
+    subLabel:      'LOW',
     glb:           'models/Standard_Adventurer_Large_low.glb',
     hdri:          'studio_adventurer_2k.hdr',
     hdriIntensity: 1.0,
@@ -176,6 +176,27 @@ export const MODELS = {
 	},
   },
   
+ 
+  ADVENTURERLHIGH: {
+    label:         'Adventurer L HIGH',
+    group:         'Adventurer L',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Adventurer_Large_high.glb',
+    hdri:          'studio_adventurer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
+	'Lenses_Clear', 'Lenses_Brown','Lenses_Polar_Grey', 'Lenses_Transitions_Grey', 'Lenses_Transitions_Merlot', 'Lenses_Transitions_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  }, 
+ 
  
     AVIATORLOW: {
     label:         'RBM Aviator L',
