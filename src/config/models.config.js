@@ -197,6 +197,47 @@ export const MODELS = {
 	},
   }, 
  
+
+  ADVENTURERCREATORLOW: {
+    label:         'Adventurer Creator LOW',
+    group:         'Adventurer C',
+    subLabel:      'LOW',
+    glb:           'models/Standard_Adventurer_Creator_low.glb',
+    hdri:          'studio_adventurer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Moonlit_Sky', 'Lenses_Blush'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+  
+ 
+  ADVENTURERCREATORHIGH: {
+    label:         'Adventurer Creator HIGH',
+    group:         'Adventurer C',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Adventurer_Creator_high.glb',
+    hdri:          'studio_adventurer_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Moonlit_Sky', 'Lenses_Blush'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  }, 
+ 
+
  
     AVIATORLOW: {
     label:         'RBM Aviator L',
