@@ -867,11 +867,9 @@ function loadModel(config) {
       // variants[0] is applied below; for the other groups, show the variant
       // that matches what the GLB displays by default
       const firstName = variants[0]?.name;
-      // group key: the known prefix, or '' for variants in "Other"
-      const groupKey = name => VARIANT_GROUPS.find(g => name.startsWith(g.prefix))?.prefix ?? '';
-      const firstGroup = firstName ? groupKey(firstName) : null;
+      const firstPrefix = VARIANT_GROUPS.find(g => firstName?.startsWith(g.prefix))?.prefix;
       const defaults = detectDefaultVariants(currentModel, variants)
-        .filter(name => groupKey(name) !== firstGroup);
+        .filter(name => !firstPrefix || !name.startsWith(firstPrefix));
       console.log('[variants] default selection:', [firstName, ...defaults]);
 
       createVariantDropdowns(variants, firstName ? [firstName, ...defaults] : defaults);
