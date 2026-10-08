@@ -170,8 +170,9 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
-	// variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
-	// 'Lenses_Clear', 'Lenses_Brown','Lenses_Polar_Grey', 'Lenses_Transitions_Grey', 'Lenses_Transitions_Merlot', 'Lenses_Transitions_Sapphire'],
+	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Tortoise', 'Frame_Merlot', 'Frame_Linen', 
+	'Lenses_Grey', 'Lenses_Grey_Gradient','Lenses_Polar_Grey', 'Lenses_Chocolate', 'Lenses_Clear_to_Amber_Transitions', 'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Emerald_Transitions',
+	'Lenses_Dark_Silver_Mirror', 'Lenses_Light_Blue_Atlantic', 'Lenses_Light_Burgundy', 'Lenses_Polarized_Brown'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -191,8 +192,9 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
-	// variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
-	// 'Lenses_Clear', 'Lenses_Brown','Lenses_Polar_Grey', 'Lenses_Transitions_Grey', 'Lenses_Transitions_Merlot', 'Lenses_Transitions_Sapphire'],
+	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Tortoise', 'Frame_Merlot', 'Frame_Linen', 
+	'Lenses_Grey', 'Lenses_Grey_Gradient','Lenses_Polar_Grey', 'Lenses_Chocolate', 'Lenses_Clear_to_Amber_Transitions', 'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Emerald_Transitions',
+	'Lenses_Dark_Silver_Mirror', 'Lenses_Light_Blue_Atlantic', 'Lenses_Light_Burgundy', 'Lenses_Polarized_Brown'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -575,6 +577,11 @@ export const MODELS = {
 	  // softness:  1.0,
 	// },				
   // },
+
+//  POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE 
+//  POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE 
+//  POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE 
+//  POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE 
 
 
     AVIATORPLOW: {
