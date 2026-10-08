@@ -284,6 +284,46 @@ export const MODELS = {
 	},
   }, 
  
+  VANGUARDLOW: {
+    label:         'Vanguard',
+    group:         'Vanguard',
+	subLabel:      'LOW',
+    glb:           'models/Standard_Vanguard_low.glb',
+    hdri:          'studio_vanguard_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       VANGUARD_CAMERAS,
+    fresnel:       VANGUARD_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Black_Prizm_Black', 'White_Prizm_Black', 'Black_Prizm_Clear', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
+						'Black_Prizm_Road', 'White_Prizm_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},				
+  },
+
+  VANGUARDHIGH: {
+    label:         'Vanguard',
+    group:         'Vanguard',
+	subLabel:      'HIGH',
+    glb:           'models/Standard_Vanguard_high.glb',
+    hdri:          'studio_vanguard_2k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       VANGUARD_CAMERAS,
+    fresnel:       VANGUARD_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Black_Prizm_Black', 'White_Prizm_Black', 'Black_Prizm_Clear', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
+						'Black_Prizm_Road', 'White_Prizm_Sapphire'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},				
+  },
+
 
  
     AVIATORLOW: {
@@ -538,45 +578,7 @@ export const MODELS = {
 
 
 
-  VANGUARDLOW: {
-    label:         'Vanguard',
-    group:         'Vanguard',
-	subLabel:      'LOW',
-    glb:           'models/Standard_Vanguard.glb',
-    hdri:          'studio_vanguard_2k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       VANGUARD_CAMERAS,
-    fresnel:       VANGUARD_FRESNEL,
-    glass:         { animate: true },
-	variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
-						'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},				
-  },
 
-  // VANGUARDHIGH: {
-    // label:         'Vanguard',
-    // group:         'Vanguard',
-	// subLabel:      'HIGH',
-    // glb:           'models/Vanguard_polycount_high_01.glb',
-    // hdri:          'studio_vanguard_2k.hdr',
-    // hdriIntensity: 1.0,
-    // startCamera:   'Cam_Front',
-    // cameras:       VANGUARD_CAMERAS,
-    // fresnel:       VANGUARD_FRESNEL,
-    // glass:         { animate: true },
-	// variantOrder: ['White_Prizm_Black', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
-						// 'Black_Prizm_Road', 'White_Prizm_Black', 'White_Prizm_Sapphire'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },				
-  // },
 
 //  POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE 
 //  POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE POLYCOUNT FROM HERE 
