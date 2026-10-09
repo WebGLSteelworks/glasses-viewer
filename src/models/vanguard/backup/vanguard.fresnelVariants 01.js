@@ -11,17 +11,17 @@ export const FRESNEL_VARIANTS = {
   "sapphire": {
     intensity: 1.0,
     chromaBoost: 2.0,
-    colorFront: [0.0, 0.15, 0.35],
-    colorMid:   [0.0, 0.15, 0.35],
-    colorEdge:  [0.95, 0.05, 0.85]
+    colorFront: [0.47, 0.77, 0.79],
+    colorMid:   [0.09, 0.11, 0.30],
+    colorEdge:  [0.42, 0.12, 0.4]
   },
 
   "24k": {
     intensity: 1.0,
-    chromaBoost: 1.5,
-    colorFront: [1.0, 0.60, 0.02],
-    colorMid:   [0.95, 0.40, 0.0],
-    colorEdge:  [0.50, 0.55, 0.18]
+    chromaBoost: 2.0,
+    colorFront: [0.87, 0.65, 0.25],
+    colorMid:   [0.87, 0.56, 0.16],
+    colorEdge:  [0.53, 0.59, 0.4]
   },
 
   "black": {
@@ -35,9 +35,9 @@ export const FRESNEL_VARIANTS = {
   "rose": {
     intensity: 1.0,
     chromaBoost: 2.0,
-    colorFront: [0.75, 0.45, 0.4],
-    colorMid:   [0.75, 0.45, 0.4],
-    colorEdge:  [0.50, 0.40, 0.28]
+    colorFront: [1.00, 0.82, 0.87],
+    colorMid:   [0.69, 0.49, 0.42],
+    colorEdge:  [0.48, 0.53, 0.4]
   },
   
   "ember": {
