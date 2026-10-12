@@ -722,7 +722,7 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       HSTN_FRESNEL,
     glass:         { animate: true },
-	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	variantOrder: ['Frame_Classic_Black', 'Lenses_Polar_Grey'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -742,7 +742,7 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       HSTN_FRESNEL,
     glass:         { animate: true },
-	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	variantOrder: ['Frame_Classic_Black', 'Lenses_Polar_Grey'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -763,7 +763,7 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       HSTN_FRESNEL,
     glass:         { animate: true },
-	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	variantOrder: ['Frame_Classic_Black', 'Lenses_Polar_Grey'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
