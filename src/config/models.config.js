@@ -290,7 +290,7 @@ export const MODELS = {
 	subLabel:      'LOW',
     glb:           'models/Standard_Vanguard_low.glb',
     hdri:          'studio_vanguard_2k.hdr',
-    hdriIntensity: 1.0,
+    hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
     cameras:       VANGUARD_CAMERAS,
     fresnel:       VANGUARD_FRESNEL,
@@ -301,6 +301,7 @@ export const MODELS = {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
+	  // floorMesh: 'Vanguard',
 	},				
   },
 
@@ -310,7 +311,7 @@ export const MODELS = {
 	subLabel:      'HIGH',
     glb:           'models/Standard_Vanguard_high.glb',
     hdri:          'studio_vanguard_2k.hdr',
-    hdriIntensity: 1.0,
+    hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
     cameras:       VANGUARD_CAMERAS,
     fresnel:       VANGUARD_FRESNEL,
@@ -321,6 +322,7 @@ export const MODELS = {
 	  enabled:   true,
 	  intensity: 1.0,
 	  softness:  1.0,
+	  // floorMesh: 'Vanguard',
 	},				
   },
 
