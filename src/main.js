@@ -554,6 +554,16 @@ function rebuildGlassMaterials() {
         }
       }
 
+      // Transitions logo on the lens ('TransitionsLogoOn' / future '...Off').
+      // Material name must NOT contain 'lenses' (would be treated as glass).
+      // At the default renderOrder 0 the logo draws BEFORE lenses.front (2),
+      // which then composites its tint + opacity on top → logo almost black.
+      // renderOrder 3 draws it AFTER the front lens, so it reads at full
+      // color. Confirmed via live console test in WebGPU and WebGL (Vanguard).
+      if (name.includes('transitionslogo')) {
+        obj.renderOrder = 3;
+      }
+
       // Temple-text material ('TempleTrans') — PNG with real alpha (letters
       // opaque, background transparent). Two different failures per renderer:
       //  • WebGL: alphaTest worked (text never vanished) but making it opaque
