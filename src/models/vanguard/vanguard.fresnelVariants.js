@@ -10,10 +10,10 @@ export const FRESNEL_VARIANTS = {
 
   "sapphire": {
     intensity: 1.0,
-    chromaBoost: 2.0,
-    colorFront: [0.0, 0.15, 0.35],
-    colorMid:   [0.0, 0.15, 0.35],
-    colorEdge:  [0.95, 0.05, 0.85]
+    chromaBoost: 2.5,
+    colorFront: [0.0, 0.0, 0.05],
+    colorMid:   [0.0, 0.0, 0.75],
+    colorEdge:  [0.55, 0.05, 0.85]
   },
 
   "24k": {
@@ -34,9 +34,9 @@ export const FRESNEL_VARIANTS = {
 
   "rose": {
     intensity: 1.0,
-    chromaBoost: 2.0,
-    colorFront: [0.75, 0.45, 0.4],
-    colorMid:   [0.75, 0.45, 0.4],
+    chromaBoost: 2.5,
+    colorFront: [0.0, 0.0, 0.0],
+    colorMid:   [0.75, 0.35, 0.3],
     colorEdge:  [0.50, 0.40, 0.28]
   },
   
