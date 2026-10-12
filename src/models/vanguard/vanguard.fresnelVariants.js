@@ -42,7 +42,7 @@ export const FRESNEL_VARIANTS = {
   
   "ember": {
     intensity: 1.0,
-    chromaBoost: 1.8,
+    chromaBoost: 1.5,
     colorFront: [0.05, 0.05, 0.05],
     colorMid:   [0.5, 0.0, 0.0],
     colorEdge:  [0.49, 0.42, 0.09]
