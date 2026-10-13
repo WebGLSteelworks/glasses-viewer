@@ -1601,9 +1601,11 @@ sectionEls.forEach(el => {
 
 // default: Models open, Polycount closed — unless the default model is a
 // polycount one, then open that section so its active button is visible
-openModelSection(
-  MODELS[DEFAULT_MODEL] ? getModelSection(MODELS[DEFAULT_MODEL]) : 'models'
-);
+// openModelSection(
+  // MODELS[DEFAULT_MODEL] ? getModelSection(MODELS[DEFAULT_MODEL]) : 'models'
+// );
+
+openModelSection('polycount');
 
 function updateModelButtons(activeKey) {
   const activeCfg   = MODELS[activeKey];
