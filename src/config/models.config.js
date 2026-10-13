@@ -965,4 +965,5 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'WAYFARERGEN2LOW';
+// export const DEFAULT_MODEL = 'WAYFARERGEN2LOW';
+export const DEFAULT_MODEL = 'AVIATORPLOW';
