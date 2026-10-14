@@ -1475,8 +1475,8 @@ const MODEL_COLORS = {
 // doesn't define it: blue models → 'polycount', everything else → 'models'.
 // Only one section is open at a time, so on mobile one list fits on screen.
 const MODEL_SECTIONS = [
-  { id: 'models',    title: 'Models'    },
-  { id: 'polycount', title: 'Polycount' },
+  { id: 'models',    title: 'PRIORITY 0'    },
+  { id: 'polycount', title: 'POLYCOUNT TEST' },
 ];
 
 function getModelSection(cfg) {
