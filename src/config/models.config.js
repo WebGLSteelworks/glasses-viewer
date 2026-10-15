@@ -413,7 +413,7 @@ export const MODELS = {
   STARFIREHIGH: {
     label:         'Starfire H',
     group:         'Starfire',
-    glb:           'models/Standard_Starfire.glb',
+    glb:           'models/Standard_Starfire_high.glb',
     hdri:          'studio_starfire_4k.hdr',
     hdriIntensity: 0.7,
     startCamera:   'Cam_Front',
