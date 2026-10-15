@@ -1468,14 +1468,18 @@ const MODEL_COLORS = {
   green:  { base: '#1e4a2a', group: '#2a6139', active: '#3a8250' },
   red:    { base: '#5a1e1e', group: '#782828', active: '#a03636' },
   yellow: { base: '#5a4a10', group: '#766116', active: '#9c8020' },
+  orange: { base: '#7a3d0f', group: '#9a4f14', active: '#c2661c' },
 };
 
 // ── Sections (accordion) ──────────────────
-// Each model belongs to a section via cfg.section. Fallback while the config
-// doesn't define it: blue models → 'polycount', everything else → 'models'.
+// Each model belongs to a section via cfg.section ('models' | 'qc' | 'polycount').
+// Fallback when the config doesn't define it: blue models → 'polycount',
+// everything else → 'models'.
 // Only one section is open at a time, so on mobile one list fits on screen.
+// Sections are shown in this order.
 const MODEL_SECTIONS = [
-  { id: 'models',    title: 'PRIORITY 0'    },
+  { id: 'models',    title: 'PRIORITY 0'     },
+  { id: 'qc',        title: 'STEELWORKS QC'  },
   { id: 'polycount', title: 'POLYCOUNT TEST' },
 ];
 
@@ -1515,7 +1519,7 @@ MODEL_SECTIONS.forEach(({ id, title }) => {
   body.style.cssText = `flex-direction:column; gap:6px; margin-top:6px;`;
 
   // clicking an open section closes it; clicking a closed one opens it
-  // (and closes the other)
+  // (and closes the others)
   header.onclick = () => {
     const isOpen = body.style.display !== 'none';
     if (isOpen) {
