@@ -20,6 +20,12 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 //             member of the group (in the order they appear below).
 //   subLabel: text of the small button for this member (S, L, LOW...).
 //   A model without group gets its own row using its label.
+//   section:  collapsible menu the model is listed in:
+//               'models'    → PRIORITY 0
+//               'qc'        → SteelWorks QC
+//               'polycount' → POLYCOUNT TEST
+//             (if omitted: blue models → 'polycount', the rest → 'models')
+//   color:    button color: black (default), orange, blue, green, red, yellow
 // ─────────────────────────────────────────────────────────────────
 
 export const MODELS = {
@@ -71,6 +77,7 @@ export const MODELS = {
   WAYFARERGEN2LOW: {
     label:         'Wayfarer_gen2_low',
     group:         'Wayfarer gen2',
+    section:       'models',
     subLabel:      'LOW',
     glb:           'models/Standard_Wayfarer_gen2_low.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -93,6 +100,7 @@ export const MODELS = {
   WAYFARERGEN2HIGH: {
     label:         'Wayfarer_gen2_high',
     group:         'Wayfarer gen2',
+    section:       'models',
     subLabel:      'HIGH',
     glb:           'models/Standard_Wayfarer_gen2_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -116,6 +124,7 @@ export const MODELS = {
   WAYFARERGEN2LLOW: {
     label:         'Wayfarer_gen2_large_low',
     group:         'Wayfarer gen2 L',
+    section:       'models',
     subLabel:      'LOW',
     glb:           'models/Standard_Wayfarer_gen2_large_low.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -138,6 +147,7 @@ export const MODELS = {
   WAYFARERGEN2LHIGH: {
     label:         'Wayfarer_gen2_large_high',
     group:         'Wayfarer gen2 L',
+    section:       'models',
     subLabel:      'HIGH',
     glb:           'models/Standard_Wayfarer_gen2_large_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -162,6 +172,7 @@ export const MODELS = {
   ADVENTURERLOW: {
     label:         'Adventurer',
     group:         'Adventurer',
+    section:       'models',
     subLabel:      'LOW',
     glb:           'models/Standard_Adventurer_low.glb',
     hdri:          'studio_adventurer_2k.hdr',
@@ -184,6 +195,7 @@ export const MODELS = {
   ADVENTURERHIGH: {
     label:         'Adventurer',
     group:         'Adventurer',
+    section:       'models',
     subLabel:      'HIGH',
     glb:           'models/Standard_Adventurer_high.glb',
     hdri:          'studio_adventurer_2k.hdr',
@@ -206,6 +218,7 @@ export const MODELS = {
   ADVENTURERLLOW: {
     label:         'Adventurer L LOW',
     group:         'Adventurer L',
+    section:       'models',
     subLabel:      'LOW',
     glb:           'models/Standard_Adventurer_Large_low.glb',
     hdri:          'studio_adventurer_2k.hdr',
@@ -227,6 +240,7 @@ export const MODELS = {
   ADVENTURERLHIGH: {
     label:         'Adventurer L HIGH',
     group:         'Adventurer L',
+    section:       'models',
     subLabel:      'HIGH',
     glb:           'models/Standard_Adventurer_Large_high.glb',
     hdri:          'studio_adventurer_2k.hdr',
@@ -287,6 +301,7 @@ export const MODELS = {
   VANGUARDLOW: {
     label:         'Vanguard',
     group:         'Vanguard',
+    section:       'models',
 	subLabel:      'LOW',
     glb:           'models/Standard_Vanguard_low.glb',
     hdri:          'studio_vanguard_2k.hdr',
@@ -308,6 +323,7 @@ export const MODELS = {
   VANGUARDHIGH: {
     label:         'Vanguard',
     group:         'Vanguard',
+    section:       'models',
 	subLabel:      'HIGH',
     glb:           'models/Standard_Vanguard_high.glb',
     hdri:          'studio_vanguard_2k.hdr',
@@ -351,6 +367,8 @@ export const MODELS = {
     AVIATORHIGH: {
     label:         'Aviator H',
     group:         'Aviator',
+    section:       'qc',
+    color:         'orange',
     subLabel:      'HIGH',
     glb:           'models/Standard_Aviator_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -394,6 +412,8 @@ export const MODELS = {
     FURYHIGH: {
     label:         'Fury H',
     group:         'Fury',
+    section:       'qc',
+    color:         'orange',
     subLabel:      'HIGH',
     glb:           'models/Standard_Fury_high.glb',
     hdri:          'studio_fury_8k.hdr',
@@ -413,6 +433,8 @@ export const MODELS = {
   STARFIREHIGH: {
     label:         'Starfire H',
     group:         'Starfire',
+    section:       'qc',
+    color:         'orange',
     glb:           'models/Standard_Starfire_high.glb',
     hdri:          'studio_starfire_4k.hdr',
     hdriIntensity: 0.7,
@@ -591,6 +613,7 @@ export const MODELS = {
     AVIATORPLOW: {
     label:         'Aviator polycount LOW 100k',
     group:         'Aviator Polycount',
+    section:       'polycount',
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/Aviator_polycount_low_01.glb',
@@ -611,6 +634,7 @@ export const MODELS = {
     AVIATORPMID: {
     label:         'Aviator polycount  MID 250k',
     group:         'Aviator Polycount',
+    section:       'polycount',
     subLabel:      'MID',
 	color:         'blue',
     glb:           'models/Aviator_polycount_mid_01.glb',
@@ -631,6 +655,7 @@ export const MODELS = {
     AVIATORPHIGH: {
     label:         'Aviator polycount HIGH 500k',
     group:         'Aviator Polycount',
+    section:       'polycount',
     subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/Aviator_polycount_high_01.glb',
@@ -651,6 +676,7 @@ export const MODELS = {
       CLUBMASTERPLOW: {
     label:         'Clubmaster polycount LOW 100k',
     group:         'Clubmaster Polyc',
+    section:       'polycount',
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/Clubmaster_polycount_low_01.glb',
@@ -671,6 +697,7 @@ export const MODELS = {
     CLUBMASTERPMID: {
     label:         'Clubmaster polycount MID 250k',
     group:         'Clubmaster Polyc',
+    section:       'polycount',
     subLabel:      'MID',
 	color:         'blue',
     glb:           'models/Clubmaster_polycount_mid_01.glb',
@@ -692,6 +719,7 @@ export const MODELS = {
     CLUBMASTERPHIGH: {
     label:         'Clubmaster polycount HIGH 500k',
     group:         'Clubmaster Polyc',
+    section:       'polycount',
     subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/Clubmaster_polycount_high_01.glb',
@@ -713,6 +741,7 @@ export const MODELS = {
     FURYPLOW: {
     label:         'Fury polycount LOW 100k',
     group:         'Fury Polycount',
+    section:       'polycount',
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/Fury_polycount_low_01.glb',
@@ -733,6 +762,7 @@ export const MODELS = {
     FURYPMID: {
     label:         'Fury polycount MID 250k',
     group:         'Fury Polycount',
+    section:       'polycount',
     subLabel:      'MID',
 	color:         'blue',
     glb:           'models/Fury_polycount_mid_01.glb',
@@ -754,6 +784,7 @@ export const MODELS = {
     FURYPHIGH: {
     label:         'Fury polycount HIGH 500k',
     group:         'Fury Polycount',
+    section:       'polycount',
     subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/Fury_polycount_high_01.glb',
@@ -774,6 +805,7 @@ export const MODELS = {
   ZENAPLOW: {
     label:         'Zena polycount LOW 100k',
     group:         'Zena Polycount',
+    section:       'polycount',
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/ZENA_polycount_low_01.glb',
@@ -795,6 +827,7 @@ export const MODELS = {
   ZENAPMID: {
     label:         'Zena polycount MID 250k',
     group:         'Zena Polycount',
+    section:       'polycount',
     subLabel:      'MID',
 	color:         'blue',
     glb:           'models/ZENA_polycount_mid_01.glb',
@@ -817,6 +850,7 @@ export const MODELS = {
   ZENAPHIGH: {
     label:         'Zena polycount HIGH 500k',
     group:         'Zena Polycount',
+    section:       'polycount',
     subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/ZENA_polycount_high_01.glb',
@@ -840,6 +874,7 @@ export const MODELS = {
     HSTNPLOW: {
     label:         'HSTN polycount LOW 100k',
     group:         'HSTN Polycount',
+    section:       'polycount',
     subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/HSTN_polycount_low_01.glb',
@@ -860,6 +895,7 @@ export const MODELS = {
     HSTNPMID: {
     label:         'HSTN polycount MID 250k',
     group:         'HSTN Polycount',
+    section:       'polycount',
     subLabel:      'MID',
 	color:         'blue',
     glb:           'models/HSTN_polycount_mid_01.glb',
@@ -880,6 +916,7 @@ export const MODELS = {
     HSTNPHIGH: {
     label:         'HSTN polycount HIGH 500k',
     group:         'HSTN Polycount',
+    section:       'polycount',
     subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/HSTN_polycount_high_01.glb',
@@ -902,6 +939,7 @@ export const MODELS = {
   VANGUARDPLOW: {
     label:         'Vanguard polycount LOW 100k',
     group:         'Vanguard Polyc',
+    section:       'polycount',
 	subLabel:      'LOW',
 	color:         'blue',
     glb:           'models/Vanguard_polycount_low_01.glb',
@@ -923,6 +961,7 @@ export const MODELS = {
   VANGUARDPMID: {
     label:         'Vanguard polycount MID 250k',
     group:         'Vanguard Polyc',
+    section:       'polycount',
 	subLabel:      'MID',
 	color:         'blue',
     glb:           'models/Vanguard_polycount_mid_01.glb',
@@ -944,6 +983,7 @@ export const MODELS = {
   VANGUARDPHIGH: {
     label:         'Vanguard polycount HIGH 500k',
     group:         'Vanguard Polyc',
+    section:       'polycount',
 	subLabel:      'HIGH',
 	color:         'blue',
     glb:           'models/Vanguard_polycount_high_01.glb',
