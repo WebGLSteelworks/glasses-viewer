@@ -395,7 +395,7 @@ export const MODELS = {
     label:         'Fury H',
     group:         'Fury',
     subLabel:      'HIGH',
-    glb:           'models/Fury_polycount_high_01.glb',
+    glb:           'models/Standard_Fury_high.glb',
     hdri:          'studio_fury_8k.hdr',
     hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
