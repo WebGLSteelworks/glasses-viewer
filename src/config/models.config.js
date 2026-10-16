@@ -371,7 +371,7 @@ export const MODELS = {
     color:         'orange',
     subLabel:      'HIGH',
     glb:           'models/Standard_Aviator_high.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
+    hdri:          'studio_aviator_4k.hdr',
     hdriIntensity: 0.75,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
