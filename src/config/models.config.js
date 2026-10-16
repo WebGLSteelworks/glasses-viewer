@@ -449,6 +449,27 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
+
+  BURBANKHIGH: {
+    label:         'Burbank H',
+    group:         'Burbank ',
+    section:       'qc',
+    color:         'orange',
+    glb:           'models/Standard_Burbank_high.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.7,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Classic_Black', 'Frame_Dark_Havana', 'Lens_Black', 'Lens_Chocolate' , 'Lenses_Transitions_Grey'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
   
     // SKYLERGEN1: {
     // label:         'Skyler',
