@@ -462,7 +462,7 @@ export const MODELS = {
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Black', 'Frame_Dark_Havana', 'Lens_Black', 'Lens_Chocolate' , 'Lenses_Transitions_Grey'],
+	variantOrder: ['Frame_Matte_Black', 'Lenses_Polar_Grey',],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
