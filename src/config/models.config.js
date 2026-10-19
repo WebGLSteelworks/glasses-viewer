@@ -474,7 +474,7 @@ export const MODELS = {
     // label:         'Capri H',
     // group:         'Capri',
     // section:       'qc',
-    subLabel:      'HIGH',
+    //// subLabel:      'HIGH',
 	// color:         'orange',
     // glb:           'models/Standard_Capri_high.glb',
     // hdri:          'studio_clubmaster_4k.hdr',
