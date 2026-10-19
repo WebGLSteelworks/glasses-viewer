@@ -470,6 +470,28 @@ export const MODELS = {
 	},
   },
 
+    CLUBMASTERHIGH: {
+    label:         'Clubmaster H',
+    group:         'Clubmaster',
+    section:       'qc',
+    // subLabel:      'HIGH',
+	color:         'orange',
+    glb:           'models/Standard_Clubmaster_high.glb',
+    hdri:          'studio_clubmaster_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
+
   
     // SKYLERGEN1: {
     // label:         'Skyler',
