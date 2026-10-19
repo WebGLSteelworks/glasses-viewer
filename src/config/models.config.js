@@ -470,26 +470,26 @@ export const MODELS = {
 	},
   },
 
-    CAPRIHIGH: {
-    label:         'Capri H',
-    group:         'Capri',
-    section:       'qc',
-    // subLabel:      'HIGH',
-	color:         'orange',
-    glb:           'models/Standard_Capri_high.glb',
-    hdri:          'studio_clubmaster_4k.hdr',
-    hdriIntensity: 0.75,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    fresnel:       HSTN_FRESNEL,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Black', 'Lenses_Grey'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
+    // CAPRIHIGH: {
+    // label:         'Capri H',
+    // group:         'Capri',
+    // section:       'qc',
+    subLabel:      'HIGH',
+	// color:         'orange',
+    // glb:           'models/Standard_Capri_high.glb',
+    // hdri:          'studio_clubmaster_4k.hdr',
+    // hdriIntensity: 0.75,
+    // startCamera:   'Cam_Front',
+    // cameras:       ADVENTURER_CAMERAS,
+    // fresnel:       HSTN_FRESNEL,
+    // glass:         { animate: true },
+	// variantOrder: ['Frame_Classic_Black', 'Lenses_Grey'],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },
 
 
     CLUBMASTERHIGH: {
