@@ -21,10 +21,12 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 //   subLabel: text of the small button for this member (S, L, LOW...).
 //   A model without group gets its own row using its label.
 //   section:  collapsible menu the model is listed in:
-//               'models'    → PRIORITY 0
-//               'qc'        → SteelWorks QC
+//               'batch1'    → PRIORITY 0 - BATCH 1
+//               'batch2'    → PRIORITY 0 - BATCH 2
+//               'qc'        → STEELWORKS QC
 //               'polycount' → POLYCOUNT TEST
-//             (if omitted: blue models → 'polycount', the rest → 'models')
+//             (if omitted: blue models → 'polycount', the rest → 'batch1')
+//             Sections and their titles are defined in MODEL_SECTIONS (main.js).
 //   color:    button color: black (default), orange, blue, green, red, yellow
 // ─────────────────────────────────────────────────────────────────
 
@@ -77,7 +79,7 @@ export const MODELS = {
   WAYFARERGEN2LOW: {
     label:         'Wayfarer_gen2_low',
     group:         'Wayfarer gen2',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'LOW',
     glb:           'models/Standard_Wayfarer_gen2_low.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -100,7 +102,7 @@ export const MODELS = {
   WAYFARERGEN2HIGH: {
     label:         'Wayfarer_gen2_high',
     group:         'Wayfarer gen2',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'HIGH',
     glb:           'models/Standard_Wayfarer_gen2_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -124,7 +126,7 @@ export const MODELS = {
   WAYFARERGEN2LLOW: {
     label:         'Wayfarer_gen2_large_low',
     group:         'Wayfarer gen2 L',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'LOW',
     glb:           'models/Standard_Wayfarer_gen2_large_low.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -147,7 +149,7 @@ export const MODELS = {
   WAYFARERGEN2LHIGH: {
     label:         'Wayfarer_gen2_large_high',
     group:         'Wayfarer gen2 L',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'HIGH',
     glb:           'models/Standard_Wayfarer_gen2_large_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
@@ -172,10 +174,10 @@ export const MODELS = {
   ADVENTURERLOW: {
     label:         'Adventurer',
     group:         'Adventurer',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'LOW',
     glb:           'models/Standard_Adventurer_low.glb',
-    hdri:          'studio_adventurer_2k.hdr',
+    hdri:          'studio_adventurer_4k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
@@ -195,10 +197,10 @@ export const MODELS = {
   ADVENTURERHIGH: {
     label:         'Adventurer',
     group:         'Adventurer',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'HIGH',
     glb:           'models/Standard_Adventurer_high.glb',
-    hdri:          'studio_adventurer_2k.hdr',
+    hdri:          'studio_adventurer_4k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
@@ -218,17 +220,17 @@ export const MODELS = {
   ADVENTURERLLOW: {
     label:         'Adventurer L LOW',
     group:         'Adventurer L',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'LOW',
     glb:           'models/Standard_Adventurer_Large_low.glb',
-    hdri:          'studio_adventurer_2k.hdr',
+    hdri:          'studio_adventurer_4k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
 	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
-	'Lenses_Clear', 'Lenses_Brown','Lenses_Polar_Grey', 'Lenses_Transitions_Grey', 'Lenses_Transitions_Merlot', 'Lenses_Transitions_Sapphire'],
+	'Lenses_Grey'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -240,17 +242,17 @@ export const MODELS = {
   ADVENTURERLHIGH: {
     label:         'Adventurer L HIGH',
     group:         'Adventurer L',
-    section:       'models',
+    section:       'batch1',
     subLabel:      'HIGH',
     glb:           'models/Standard_Adventurer_Large_high.glb',
-    hdri:          'studio_adventurer_2k.hdr',
+    hdri:          'studio_adventurer_4k.hdr',
     hdriIntensity: 1.0,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
     glass:         { animate: true },
 	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
-	'Lenses_Clear', 'Lenses_Brown','Lenses_Polar_Grey', 'Lenses_Transitions_Grey', 'Lenses_Transitions_Merlot', 'Lenses_Transitions_Sapphire'],
+	'Lenses_Grey'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -301,7 +303,7 @@ export const MODELS = {
   VANGUARDLOW: {
     label:         'Vanguard',
     group:         'Vanguard',
-    section:       'models',
+    section:       'batch1',
 	subLabel:      'LOW',
     glb:           'models/Standard_Vanguard_low.glb',
     hdri:          'studio_vanguard_2k.hdr',
@@ -323,7 +325,7 @@ export const MODELS = {
   VANGUARDHIGH: {
     label:         'Vanguard',
     group:         'Vanguard',
-    section:       'models',
+    section:       'batch1',
 	subLabel:      'HIGH',
     glb:           'models/Standard_Vanguard_high.glb',
     hdri:          'studio_vanguard_2k.hdr',
@@ -367,8 +369,8 @@ export const MODELS = {
     AVIATORHIGH: {
     label:         'Aviator H',
     group:         'Aviator',
-    section:       'qc',
-    color:         'orange',
+    section:       'batch2',
+    // color:         'orange',
     subLabel:      'HIGH',
     glb:           'models/Standard_Aviator_high.glb',
     hdri:          'studio_aviator_4k.hdr',
@@ -412,8 +414,8 @@ export const MODELS = {
     FURYHIGH: {
     label:         'Fury H',
     group:         'Fury',
-    section:       'qc',
-    color:         'orange',
+    section:       'batch2',
+    // color:         'orange',
     subLabel:      'HIGH',
     glb:           'models/Standard_Fury_high.glb',
     hdri:          'studio_fury_8k.hdr',
@@ -433,8 +435,8 @@ export const MODELS = {
   STARFIREHIGH: {
     label:         'Starfire H',
     group:         'Starfire',
-    section:       'qc',
-    color:         'orange',
+    section:       'batch2',
+    // color:         'orange',
     glb:           'models/Standard_Starfire_high.glb',
     hdri:          'studio_starfire_4k.hdr',
     hdriIntensity: 0.7,
