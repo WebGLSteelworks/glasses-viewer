@@ -458,7 +458,7 @@ export const MODELS = {
     section:       'qc',
     color:         'orange',
     glb:           'models/Standard_Burbank_high.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
+    hdri:          'studio_burbank_4k.hdr',
     hdriIntensity: 0.7,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
