@@ -1472,19 +1472,24 @@ const MODEL_COLORS = {
 };
 
 // ── Sections (accordion) ──────────────────
-// Each model belongs to a section via cfg.section ('models' | 'qc' | 'polycount').
+// Each model belongs to a section via cfg.section (one of the ids below).
 // Fallback when the config doesn't define it: blue models → 'polycount',
-// everything else → 'models'.
-// Only one section is open at a time, so on mobile one list fits on screen.
+// everything else → the first section.
+// At startup the first DEFAULT_OPEN_SECTIONS sections are open and the rest
+// closed. Clicking a closed header opens it and closes the others (accordion).
 // Sections are shown in this order.
 const MODEL_SECTIONS = [
-  { id: 'models',    title: 'PRIORITY 0'     },
+  { id: 'batch1',    title: 'PRIORITY 0 - BATCH 1'     },
+  { id: 'batch2',    title: 'PRIORITY 0 - BATCH 2'     },
   { id: 'qc',        title: 'STEELWORKS QC'  },
   { id: 'polycount', title: 'POLYCOUNT TEST' },
 ];
 
+// number of sections open at startup (counted from the top)
+const DEFAULT_OPEN_SECTIONS = 2;
+
 function getModelSection(cfg) {
-  return cfg.section ?? (cfg.color === 'blue' ? 'polycount' : 'models');
+  return cfg.section ?? (cfg.color === 'blue' ? 'polycount' : MODEL_SECTIONS[0].id);
 }
 
 const sectionEls = new Map(); // id → { header, body, chevron }
@@ -1496,6 +1501,15 @@ function openModelSection(id) {
     el.chevron.textContent = open ? '▾' : '▸';
     el.header.setAttribute('aria-expanded', String(open));
   });
+}
+
+// Opens or closes a single section without touching the others
+function setSectionOpen(id, open) {
+  const el = sectionEls.get(id);
+  if (!el) return;
+  el.body.style.display  = open ? 'flex' : 'none';
+  el.chevron.textContent = open ? '▾' : '▸';
+  el.header.setAttribute('aria-expanded', String(open));
 }
 
 MODEL_SECTIONS.forEach(({ id, title }) => {
@@ -1594,7 +1608,11 @@ modelGroups.forEach((group, groupId) => {
     });
   }
 
-  const sectionEl = sectionEls.get(group.section) ?? sectionEls.get('models');
+  // unknown section id → first section, so a typo in the config never breaks the menu
+  const sectionEl = sectionEls.get(group.section) ?? sectionEls.get(MODEL_SECTIONS[0].id);
+  if (!sectionEls.has(group.section)) {
+    console.warn(`[models] unknown section "${group.section}" for "${group.label}" — using "${MODEL_SECTIONS[0].id}"`);
+  }
   sectionEl.body.appendChild(row);
 });
 
@@ -1603,13 +1621,11 @@ sectionEls.forEach(el => {
   if (!el.body.children.length) el.header.parentElement.style.display = 'none';
 });
 
-// default: Models open, Polycount closed — unless the default model is a
-// polycount one, then open that section so its active button is visible
-openModelSection(
-  MODELS[DEFAULT_MODEL] ? getModelSection(MODELS[DEFAULT_MODEL]) : 'models'
-);
-
-// openModelSection('polycount');
+// default: the first DEFAULT_OPEN_SECTIONS visible sections open, the rest
+// closed (hidden empty sections are skipped so they don't take a slot)
+MODEL_SECTIONS
+  .filter(({ id }) => sectionEls.get(id)?.body.children.length)
+  .forEach(({ id }, i) => setSectionOpen(id, i < DEFAULT_OPEN_SECTIONS));
 
 function updateModelButtons(activeKey) {
   const activeCfg   = MODELS[activeKey];
