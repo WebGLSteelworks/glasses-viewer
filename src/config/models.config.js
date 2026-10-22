@@ -33,8 +33,8 @@ import { CAMERAS as ADVENTURER_CAMERAS }          from '../models/adventurer/adv
 export const MODELS = {
 
   // WAYFARERGEN1: {
-    // label:         'Wayfarergen1',
-    // group:         'Wayfarer gen1',
+    // label:         'Wayfarerg1',
+    // group:         'Wayfarer g1',
     // subLabel:      'LOW',
     // glb:           'models/Standard_Wayfarer_100k.glb',
     // hdri:          'studio_wayfarer_2k.hdr',
@@ -55,8 +55,8 @@ export const MODELS = {
   
 
   // WAYFARERGEN1_L: {
-    // label:         'Wayfarergen1 L',
-    // group:         'Wayfarer L gen1',
+    // label:         'Wayfarerg1 L',
+    // group:         'Wayfarer g1 L',
     // subLabel:      'LOW',
     // glb:           'models/Standard_Wayfarer_Large.glb',
     // hdri:          'studio_wayfarer_2k.hdr',
@@ -76,32 +76,32 @@ export const MODELS = {
   // },
 
 
-  WAYFARERGEN2LOW: {
-    label:         'Wayfarer_gen2_low',
-    group:         'Wayfarer gen2',
-    section:       'batch1',
-    subLabel:      'LOW',
-    glb:           'models/Standard_Wayfarer_gen2_low.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Havana', 'Frame_Transparent_Matte_Ocean_Blue', 'Frame_Transparent_Black', 
-	'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Grey_Transitions', 'Lenses_Clear_to_Graphite_Green_Transitions',  'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Aquamarine_Transitions', 
-	'Lenses_Clear_to_Brown_Transitions','Lenses_Clear_to_Emerald_Transitions', 'Lenses_Clear_to_Green_Transitions', 'Lenses_Clear_to_Grey_Transitions', 'Lenses_Clear_to_Sapphire_Transitions', 'Lenses_Charcoal_Black',
-	'Lenses_Polarized_Brown', 'Lenses_Polarized_Dusty_Blue', 'Lenses_Polarized_Dusty_Red',  'Lenses_Polarized_Gradient_Graphite', 'Lenses_Polarized_Green' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },  
+  // WAYFARERGEN2LOW: {
+    // label:         'Wayfarer_gen2_low',
+    // group:         'Wayfarer gen2',
+    // section:       'batch1',
+    // subLabel:      'LOW',
+    // glb:           'models/Standard_Wayfarer_gen2_low.glb',
+    // hdri:          'studio_wayfarer_2k.hdr',
+    // hdriIntensity: 1.0,
+    // startCamera:   'Cam_Front',
+    // cameras:       WAYFARER_CAMERAS,
+    // fresnel:       null,
+    // glass:         { animate: true },
+	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Havana', 'Frame_Transparent_Matte_Ocean_Blue', 'Frame_Transparent_Black', 
+	// 'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Grey_Transitions', 'Lenses_Clear_to_Graphite_Green_Transitions',  'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Aquamarine_Transitions', 
+	// 'Lenses_Clear_to_Brown_Transitions','Lenses_Clear_to_Emerald_Transitions', 'Lenses_Clear_to_Green_Transitions', 'Lenses_Clear_to_Grey_Transitions', 'Lenses_Clear_to_Sapphire_Transitions', 'Lenses_Charcoal_Black',
+	// 'Lenses_Polarized_Brown', 'Lenses_Polarized_Dusty_Blue', 'Lenses_Polarized_Dusty_Red',  'Lenses_Polarized_Gradient_Graphite', 'Lenses_Polarized_Green' ],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },  
 
   WAYFARERGEN2HIGH: {
-    label:         'Wayfarer_gen2_high',
-    group:         'Wayfarer gen2',
+    label:         'Wayfarer_g2_high',
+    group:         'Wayfarer g2',
     section:       'batch1',
     subLabel:      'HIGH',
     glb:           'models/Standard_Wayfarer_gen2_high.glb',
@@ -123,32 +123,32 @@ export const MODELS = {
   },  
 
 
-  WAYFARERGEN2LLOW: {
-    label:         'Wayfarer_gen2_large_low',
-    group:         'Wayfarer gen2 L',
-    section:       'batch1',
-    subLabel:      'LOW',
-    glb:           'models/Standard_Wayfarer_gen2_large_low.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Havana', 'Frame_Transparent_Matte_Ocean_Blue', 'Frame_Transparent_Black', 
-	'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Grey_Transitions', 'Lenses_Clear_to_Graphite_Green_Transitions',  'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Aquamarine_Transitions', 
-	'Lenses_Clear_to_Brown_Transitions','Lenses_Clear_to_Emerald_Transitions', 'Lenses_Clear_to_Green_Transitions', 'Lenses_Clear_to_Grey_Transitions', 'Lenses_Clear_to_Sapphire_Transitions', 'Lenses_Charcoal_Black',
-	'Lenses_Polarized_Brown', 'Lenses_Polarized_Dusty_Blue', 'Lenses_Polarized_Dusty_Red',  'Lenses_Polarized_Gradient_Graphite', 'Lenses_Polarized_Green' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },  
+  // WAYFARERGEN2LLOW: {
+    // label:         'Wayfarer_g2_large_low',
+    // group:         'Wayfarer g2 L',
+    // section:       'batch1',
+    // subLabel:      'LOW',
+    // glb:           'models/Standard_Wayfarer_gen2_large_low.glb',
+    // hdri:          'studio_wayfarer_2k.hdr',
+    // hdriIntensity: 1.0,
+    // startCamera:   'Cam_Front',
+    // cameras:       WAYFARER_CAMERAS,
+    // fresnel:       null,
+    // glass:         { animate: true },
+	// variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Havana', 'Frame_Transparent_Matte_Ocean_Blue', 'Frame_Transparent_Black', 
+	// 'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Grey_Transitions', 'Lenses_Clear_to_Graphite_Green_Transitions',  'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Aquamarine_Transitions', 
+	// 'Lenses_Clear_to_Brown_Transitions','Lenses_Clear_to_Emerald_Transitions', 'Lenses_Clear_to_Green_Transitions', 'Lenses_Clear_to_Grey_Transitions', 'Lenses_Clear_to_Sapphire_Transitions', 'Lenses_Charcoal_Black',
+	// 'Lenses_Polarized_Brown', 'Lenses_Polarized_Dusty_Blue', 'Lenses_Polarized_Dusty_Red',  'Lenses_Polarized_Gradient_Graphite', 'Lenses_Polarized_Green' ],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },  
 
   WAYFARERGEN2LHIGH: {
-    label:         'Wayfarer_gen2_large_high',
-    group:         'Wayfarer gen2 L',
+    label:         'Wayfarer_g2_large_high',
+    group:         'Wayfarer g2 L',
     section:       'batch1',
     subLabel:      'HIGH',
     glb:           'models/Standard_Wayfarer_gen2_large_high.glb',
@@ -171,27 +171,27 @@ export const MODELS = {
 
 
 
-  ADVENTURERLOW: {
-    label:         'Adventurer',
-    group:         'Adventurer',
-    section:       'batch1',
-    subLabel:      'LOW',
-    glb:           'models/Standard_Adventurer_low.glb',
-    hdri:          'studio_adventurer_4k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Tortoise', 'Frame_Merlot', 'Frame_Linen', 
-	'Lenses_Grey', 'Lenses_Grey_Gradient','Lenses_Polar_Grey', 'Lenses_Chocolate', 'Lenses_Clear_to_Amber_Transitions', 'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Emerald_Transitions',
-	'Lenses_Dark_Silver_Mirror', 'Lenses_Light_Blue_Atlantic', 'Lenses_Light_Burgundy', 'Lenses_Polarized_Brown'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
+  // ADVENTURERLOW: {
+    // label:         'Adventurer',
+    // group:         'Adventurer',
+    // section:       'batch1',
+    // subLabel:      'LOW',
+    // glb:           'models/Standard_Adventurer_low.glb',
+    // hdri:          'studio_adventurer_4k.hdr',
+    // hdriIntensity: 1.0,
+    // startCamera:   'Cam_Front',
+    // cameras:       ADVENTURER_CAMERAS,
+    // fresnel:       null,
+    // glass:         { animate: true },
+	// variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Tortoise', 'Frame_Merlot', 'Frame_Linen', 
+	// 'Lenses_Grey', 'Lenses_Grey_Gradient','Lenses_Polar_Grey', 'Lenses_Chocolate', 'Lenses_Clear_to_Amber_Transitions', 'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Emerald_Transitions',
+	// 'Lenses_Dark_Silver_Mirror', 'Lenses_Light_Blue_Atlantic', 'Lenses_Light_Burgundy', 'Lenses_Polarized_Brown'],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },
 
 
   ADVENTURERHIGH: {
@@ -217,26 +217,26 @@ export const MODELS = {
   },
 
 
-  ADVENTURERLLOW: {
-    label:         'Adventurer L LOW',
-    group:         'Adventurer L',
-    section:       'batch1',
-    subLabel:      'LOW',
-    glb:           'models/Standard_Adventurer_Large_low.glb',
-    hdri:          'studio_adventurer_4k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
-	'Lenses_Grey'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
+  // ADVENTURERLLOW: {
+    // label:         'Adventurer L LOW',
+    // group:         'Adventurer L',
+    // section:       'batch1',
+    // subLabel:      'LOW',
+    // glb:           'models/Standard_Adventurer_Large_low.glb',
+    // hdri:          'studio_adventurer_4k.hdr',
+    // hdriIntensity: 1.0,
+    // startCamera:   'Cam_Front',
+    // cameras:       ADVENTURER_CAMERAS,
+    // fresnel:       null,
+    // glass:         { animate: true },
+	// variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Havana', 'Frame_Merlot', 'Frame_Linen', 
+	// 'Lenses_Grey'],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
+	// },
+  // },
   
  
   ADVENTURERLHIGH: {
@@ -300,27 +300,27 @@ export const MODELS = {
 	// },
   // }, 
  
-  VANGUARDLOW: {
-    label:         'Vanguard',
-    group:         'Vanguard',
-    section:       'batch1',
-	subLabel:      'LOW',
-    glb:           'models/Standard_Vanguard_low.glb',
-    hdri:          'studio_vanguard_2k.hdr',
-    hdriIntensity: 0.75,
-    startCamera:   'Cam_Front',
-    cameras:       VANGUARD_CAMERAS,
-    fresnel:       VANGUARD_FRESNEL,
-    glass:         { animate: true },
-	variantOrder: ['Black_Prizm_Black', 'White_Prizm_Black', 'Black_Prizm_Clear', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
-						'Black_Prizm_Road', 'White_Prizm_Sapphire'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
+  // VANGUARDLOW: {
+    // label:         'Vanguard',
+    // group:         'Vanguard',
+    // section:       'batch1',
+	// subLabel:      'LOW',
+    // glb:           'models/Standard_Vanguard_low.glb',
+    // hdri:          'studio_vanguard_2k.hdr',
+    // hdriIntensity: 0.75,
+    // startCamera:   'Cam_Front',
+    // cameras:       VANGUARD_CAMERAS,
+    // fresnel:       VANGUARD_FRESNEL,
+    // glass:         { animate: true },
+	// variantOrder: ['Black_Prizm_Black', 'White_Prizm_Black', 'Black_Prizm_Clear', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
+						// 'Black_Prizm_Road', 'White_Prizm_Sapphire'],
+	// shadow: {
+	  // enabled:   true,
+	  // intensity: 1.0,
+	  // softness:  1.0,
 	  // floorMesh: 'Vanguard',
-	},				
-  },
+	// },				
+  // },
 
   VANGUARDHIGH: {
     label:         'Vanguard',
@@ -1072,5 +1072,5 @@ export const MODELS = {
 
 };
 
-export const DEFAULT_MODEL = 'WAYFARERGEN2LOW';
+export const DEFAULT_MODEL = 'WAYFARERGEN2HIGH';
 // export const DEFAULT_MODEL = 'AVIATORPLOW';
