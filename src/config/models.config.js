@@ -173,8 +173,9 @@ export const MODELS = {
   WAYFARERGEN3HIGH: {
     label:         'Wayfarer_g3_high',
     group:         'Wayfarer g3',
-    section:       'batch1',
+    section:       'qc',
     subLabel:      'HIGH',
+	color:         'orange',
     glb:           'models/Standard_Wayfarer_gen3_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
     hdriIntensity: 1.0,
@@ -763,7 +764,7 @@ export const MODELS = {
 	},
   },
   
-      CLUBMASTERPLOW: {
+    CLUBMASTERPLOW: {
     label:         'Clubmaster polycount LOW 100k',
     group:         'Clubmaster Polyc',
     section:       'polycount',
@@ -805,7 +806,6 @@ export const MODELS = {
 	},
   },
 
-
     CLUBMASTERPHIGH: {
     label:         'Clubmaster polycount HIGH 500k',
     group:         'Clubmaster Polyc',
@@ -826,7 +826,6 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
-
 
     FURYPLOW: {
     label:         'Fury polycount LOW 100k',
@@ -869,7 +868,6 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
-
 
     FURYPHIGH: {
     label:         'Fury polycount HIGH 500k',
@@ -936,7 +934,6 @@ export const MODELS = {
 	},
   },
 
-
   ZENAPHIGH: {
     label:         'Zena polycount HIGH 500k',
     group:         'Zena Polycount',
@@ -958,8 +955,6 @@ export const MODELS = {
 	  floorMesh: 'RBM_Zena_frame_HIGH',   // floor from frame, not drooping temples
 	},
   },
-
-
 
     HSTNPLOW: {
     label:         'HSTN polycount LOW 100k',
@@ -1023,8 +1018,6 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
-
-
 
   VANGUARDPLOW: {
     label:         'Vanguard polycount LOW 100k',
