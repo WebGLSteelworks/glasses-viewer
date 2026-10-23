@@ -517,7 +517,6 @@ export const MODELS = {
 	},
   },
 
-
     CLUBMASTERHIGH: {
     label:         'Clubmaster H',
     group:         'Clubmaster',
@@ -539,7 +538,26 @@ export const MODELS = {
 	},
   },
 
-
+    HSTNHIGH: {
+    label:         'HSTN H',
+    group:         'HSTN',
+    section:       'qc',
+    subLabel:      'HIGH',
+	color:         'orange',
+    glb:           'models/Standard_HSTN_high.glb',
+    hdri:          'studio_HSTN_4k.hdr',
+    hdriIntensity: 0.75,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
   
     // SKYLERGEN1: {
     // label:         'Skyler',
