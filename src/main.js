@@ -349,11 +349,17 @@ function selectVariant(scene, variantName) {
     if (!ext) return;
 
     ext.mappings.forEach((map) => {
+
+      // Skip mappings without a material index (the Blender exporter writes
+      // them when a variant entry has an empty material slot). Passing
+      // undefined to getDependency() crashes inside GLTFLoader.
+      if (map.material === undefined) return;
+
       map.variants.forEach((variantIndex) => {
 
         const variant = variantsExtension.variants[variantIndex];
 
-        if (variant.name === variantName) {
+        if (variant?.name === variantName) {
           gltfData.parser.getDependency('material', map.material)
             .then((material) => {
               obj.material = material;
