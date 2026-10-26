@@ -1481,12 +1481,14 @@ const MODEL_COLORS = {
 const MODEL_SECTIONS = [
   { id: 'batch1',    title: 'PRIORITY 0 - BATCH 1'     },
   { id: 'batch2',    title: 'PRIORITY 0 - BATCH 2'     },
+  { id: 'batch3',    title: 'PRIORITY 0 - BATCH 3'     },
+  { id: 'batch4',    title: 'PRIORITY 0 - BATCH 4'     },
   { id: 'qc',        title: 'STEELWORKS QC'  },
   { id: 'polycount', title: 'POLYCOUNT TEST' },
 ];
 
 // number of sections open at startup (counted from the top)
-const DEFAULT_OPEN_SECTIONS = 2;
+const DEFAULT_OPEN_SECTIONS = 3;
 
 function getModelSection(cfg) {
   return cfg.section ?? (cfg.color === 'blue' ? 'polycount' : MODEL_SECTIONS[0].id);
