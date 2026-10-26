@@ -397,7 +397,7 @@ export const MODELS = {
     subLabel:      'HIGH',
     glb:           'models/Standard_Aviator_high.glb',
     hdri:          'studio_aviator_4k.hdr',
-    hdriIntensity: 0.75,
+    hdriIntensity: 0.95,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       HSTN_FRESNEL,
