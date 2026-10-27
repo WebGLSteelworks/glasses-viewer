@@ -177,7 +177,7 @@ export const MODELS = {
     subLabel:      'HIGH',
     glb:           'models/Standard_Wayfarer_gen3_high.glb',
     hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 1.0,
+    hdriIntensity: 0.9,
     startCamera:   'Cam_Front',
     cameras:       WAYFARER_CAMERAS,
     fresnel:       null,
