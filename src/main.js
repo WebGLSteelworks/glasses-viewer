@@ -1494,7 +1494,7 @@ const MODEL_SECTIONS = [
 ];
 
 // number of sections open at startup (counted from the top)
-const DEFAULT_OPEN_SECTIONS = 3;
+const DEFAULT_OPEN_SECTIONS = 4;
 
 function getModelSection(cfg) {
   return cfg.section ?? (cfg.color === 'blue' ? 'polycount' : MODEL_SECTIONS[0].id);
