@@ -478,8 +478,7 @@ export const MODELS = {
   BURBANKHIGH: {
     label:         'Burbank H',
     group:         'Burbank ',
-    section:       'qc',
-    color:         'orange',
+    section:       'batch3',
     glb:           'models/Standard_Burbank_high.glb',
     hdri:          'studio_burbank_4k.hdr',
     hdriIntensity: 0.7,
@@ -498,9 +497,8 @@ export const MODELS = {
     CAPRIHIGH: {
     label:         'Capri H',
     group:         'Capri',
-    section:       'qc',
+    section:       'batch3',
     // subLabel:      'HIGH',
-	color:         'orange',
     glb:           'models/Standard_Capri_high.glb',
     hdri:          'studio_clubmaster_4k.hdr',
     hdriIntensity: 0.75,
@@ -519,9 +517,8 @@ export const MODELS = {
     CLUBMASTERHIGH: {
     label:         'Clubmaster H',
     group:         'Clubmaster',
-    section:       'qc',
+    section:       'batch3',
     // subLabel:      'HIGH',
-	color:         'orange',
     glb:           'models/Standard_Clubmaster_high.glb',
     hdri:          'studio_clubmaster_4k.hdr',
     hdriIntensity: 0.75,
