@@ -541,7 +541,7 @@ export const MODELS = {
 	subLabel:      'HIGH',
     glb:           'models/Standard_Burbank_high.glb',
     hdri:          'studio_burbank_4k.hdr',
-    hdriIntensity: 0.7,
+    hdriIntensity: 0.8,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
     fresnel:       null,
