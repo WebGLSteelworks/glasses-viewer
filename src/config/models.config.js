@@ -461,7 +461,7 @@ export const MODELS = {
     section:       'batch2',
     subLabel:      'HIGH',
     glb:           'models/Standard_Fury_high.glb',
-    hdri:          'studio_fury_8k.hdr',
+    hdri:          'studio_fury_4k.hdr',
     hdriIntensity: 1,
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
