@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-import { WebGPURenderer, MeshPhysicalNodeMaterial } from 'three/webgpu';
+import { WebGPURenderer, MeshPhysicalNodeMaterial, RenderPipeline } from 'three/webgpu';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader }    from 'three/addons/loaders/GLTFLoader.js';
 import { HDRLoader }     from 'three/addons/loaders/HDRLoader.js';
@@ -24,7 +24,25 @@ import {
   transformedNormalView, // r183: normal in view space post-transform, updated every frame
   positionViewDirection,
   smoothstep,
+  // GTAO render pipeline (WebGPU)
+  sample,
+  pass,
+  mrt,
+  screenUV,
+  normalView,
+  velocity,
+  vec4,
+  convertToTexture,
+  sRGBTransferOETF,
+  sRGBTransferEOTF,
+  directionToColor,
+  colorToDirection,
+  builtinAOContext,
 } from 'three/tsl';
+
+// ── Postprocessing — WebGPU only (TSL RenderPipeline: GTAO + TRAA) ───────────
+import { ao }   from 'three/addons/tsl/display/GTAONode.js';
+import { traa } from 'three/addons/tsl/display/TRAANode.js';
 
 import { Timer } from 'three';
 
@@ -110,6 +128,24 @@ const SSAO_CONFIG = {
   minDistance:  0.0001,
   maxDistance:  0.003,  // lowered: tighter and more contrasted occlusion zones
   kernelSize:   64,     // default 32 → denser and darker
+};
+
+// ── Postprocessing — WebGPU only (GTAO) ──────
+let renderPipeline  = null;  // RenderPipeline: pre-pass → GTAO → scene pass → TRAA
+let gtaoPass        = null;  // GTAONode (exposes radius/thickness/scale/samples uniforms)
+let gtaoOutputNode  = null;  // final node (TRAA output), restored after AO mask debug view
+let gtaoEnabled     = true;  // false → direct render with MSAA (A/B comparison)
+let isRenderingGTAO = false; // true only while renderPipeline.render() runs
+const _gtaoClearColor = new THREE.Color();
+
+// Tuned live in console. Radius/thickness are relative to the model's largest
+// dimension so the same look carries across models of different scale.
+const GTAO_CONFIG = {
+  radiusFactor:    0.08,  // search radius ≈ 8% of model size
+  thicknessFactor: 0.25,  // ignore occluders farther than this in depth (avoids halos)
+  scale:           2.5,   // exponent applied to AO: higher = darker
+  samples:         24,    // changing at runtime triggers a shader recompile
+  resolutionScale: 0.5,   // half-resolution AO is enough, TRAA smooths it
 };
 
 // ── Fresnel cache (WebGPU) ───────────────────
@@ -992,6 +1028,8 @@ function loadModel(config) {
     window._scene = scene;           // debug
     window._model = currentModel;    // debug
 
+    refitGTAO(); // AO radius/thickness follow the new model's size
+
   });
 }
 
@@ -1103,9 +1141,12 @@ async function initRenderer() {
   window._renderer = renderer;
   window._composer = null;
 
-  // SSAO on WebGL only — WebGPURenderer is not compatible with EffectComposer
+  // SSAO on WebGL only — WebGPURenderer is not compatible with EffectComposer.
+  // WebGPU uses GTAO through a TSL RenderPipeline instead.
   if (!renderer.isWebGPURenderer) {
     setupSSAO();
+  } else {
+    setupGTAO();
   }
 
   isRendererReady = true;
@@ -1152,6 +1193,157 @@ function setupSSAO() {
 
 
 // ─────────────────────────────────────────────
+// GTAO SETUP — WebGPU only
+// ─────────────────────────────────────────────
+//
+// Pipeline: opaque pre-pass (depth + normals + velocity) → GTAO → scene pass with
+// AO applied to indirect lighting → CSS background composite → TRAA → canvas.
+//
+// Validated live in console before integrating. Non-obvious points (r183):
+//  1. Pipeline passes use samples: 0. The renderer has antialias: true (MSAA x4)
+//     and TRAA cannot copy a multisampled depth texture into its history.
+//     TRAA provides the anti-aliasing on this path instead.
+//  2. TRAA resets the renderer clear color to opaque black while it renders,
+//     and the scene passes can run inside that window, making the empty
+//     background opaque. scene.onBeforeRender forces a transparent clear for
+//     pipeline passes (it runs before the clear value is captured).
+//  3. The final pipeline quad is opaque (alpha forced to 1), so the alpha
+//     canvas cannot show the CSS background anymore. The CSS background color
+//     is composited in-shader before TRAA, with the same math the browser uses
+//     for the direct path: sRGB(premultiplied linear) + bg * (1 - alpha).
+//     Lens colors match the direct render (verified pixel-wise).
+//  4. scene.background stays null (see notes in restartApp).
+
+function readCssBackground() {
+  // First non-transparent background behind the canvas (falls back to white)
+  let el = renderer.domElement.parentElement;
+  while (el) {
+    const c = getComputedStyle(el).backgroundColor;
+    const m = c.match(/rgba?\(([^)]+)\)/);
+    if (m) {
+      const [cr, cg, cb, ca = 1] = m[1].split(/[\s,\/]+/).filter(Boolean).map(Number);
+      if (ca > 0) return { css: c, srgb: [cr / 255, cg / 255, cb / 255] };
+    }
+    el = el.parentElement;
+  }
+  return { css: 'fallback white', srgb: [1, 1, 1] };
+}
+
+function setupGTAO() {
+
+  disposeGTAO();
+
+  renderPipeline = new RenderPipeline(renderer);
+
+  const passOptions = { samples: 0 }; // see note 1
+
+  // Pre-pass: opaque geometry only, so transparent lenses do not occlude
+  const prePass = pass(scene, camera, passOptions);
+  prePass.transparent = false;
+  prePass.setMRT(mrt({
+    output:   directionToColor(normalView),
+    velocity: velocity,
+  }));
+  const prePassNormal   = sample((uv) => colorToDirection(prePass.getTextureNode().sample(uv)));
+  const prePassDepth    = prePass.getTextureNode('depth');
+  const prePassVelocity = prePass.getTextureNode('velocity');
+  prePass.getTexture('output').type = THREE.UnsignedByteType; // bandwidth optimization
+
+  // GTAO, applied to indirect lighting of the scene pass (behaves like aoMap)
+  const scenePass = pass(scene, camera, passOptions);
+  gtaoPass = ao(prePassDepth, prePassNormal, camera);
+  gtaoPass.resolutionScale      = GTAO_CONFIG.resolutionScale;
+  gtaoPass.useTemporalFiltering = true;
+  refitGTAO();
+  scenePass.contextNode = builtinAOContext(gtaoPass.getTextureNode().sample(screenUV).r);
+
+  // CSS background composite (see note 3)
+  const bg = readCssBackground();
+  console.log('GTAO: compositing over CSS background', bg.css);
+  const bgSrgb          = vec3(...bg.srgb);
+  const alpha           = scenePass.a;
+  const compositeSrgb   = sRGBTransferOETF(scenePass.rgb).add(bgSrgb.mul(alpha.oneMinus()));
+  const compositeLinear = sRGBTransferEOTF(compositeSrgb); // back to linear for TRAA
+  const beauty          = convertToTexture(vec4(compositeLinear, 1));
+
+  // TRAA: resolves AO noise and replaces MSAA
+  const traaPass = traa(beauty, prePassDepth, prePassVelocity, camera);
+  traaPass.useSubpixelCorrection = false;
+
+  gtaoOutputNode = traaPass;
+  renderPipeline.outputNode = gtaoOutputNode;
+
+  // Transparent clear for pipeline passes (see note 2). Chains any existing hook.
+  const previousOnBeforeRender = scene.onBeforeRender;
+  scene.onBeforeRender = function (r, s, cam, renderTarget, ...rest) {
+    previousOnBeforeRender.call(this, r, s, cam, renderTarget, ...rest);
+    if (isRenderingGTAO && renderTarget !== null && cam === camera) {
+      r.setClearColor(0x000000, 0);
+    }
+  };
+
+  // debug: live GTAO tuning from console
+  window._gtao = {
+    get pass() { return gtaoPass; },
+    config: GTAO_CONFIG,
+    refit: () => refitGTAO(),
+    setEnabled(v) { gtaoEnabled = v; },        // false → direct render (A/B)
+    setScale(v) { gtaoPass.scale.value = v; },
+    setRadius(v) { gtaoPass.radius.value = v; },
+    setThickness(v) { gtaoPass.thickness.value = v; },
+    showAO(on = true) {                        // black & white AO mask
+      renderPipeline.outputNode = on ? vec4(vec3(gtaoPass.r), 1) : gtaoOutputNode;
+      renderPipeline.needsUpdate = true;
+    },
+  };
+}
+
+// Re-fit radius/thickness to the current model size (called after model load)
+function refitGTAO() {
+
+  if (!gtaoPass) return;
+
+  let maxDim = 0.15; // fallback until a model is loaded
+  if (currentModel) {
+    const size = new THREE.Box3().setFromObject(currentModel).getSize(new THREE.Vector3());
+    maxDim = Math.max(size.x, size.y, size.z);
+  }
+
+  gtaoPass.radius.value    = maxDim * GTAO_CONFIG.radiusFactor;
+  gtaoPass.thickness.value = maxDim * GTAO_CONFIG.thicknessFactor;
+  gtaoPass.scale.value     = GTAO_CONFIG.scale;
+  gtaoPass.samples.value   = GTAO_CONFIG.samples;
+}
+
+function renderWithGTAO() {
+
+  if (!renderPipeline || !gtaoEnabled) {
+    renderer.render(scene, camera);
+    return;
+  }
+
+  renderer.getClearColor(_gtaoClearColor);
+  const clearAlpha = renderer.getClearAlpha();
+
+  isRenderingGTAO = true;
+  try {
+    renderPipeline.render();
+  } finally {
+    isRenderingGTAO = false;
+    renderer.setClearColor(_gtaoClearColor, clearAlpha);
+  }
+}
+
+function disposeGTAO() {
+
+  if (gtaoPass)       { gtaoPass.dispose(); gtaoPass = null; }
+  if (renderPipeline) { renderPipeline.dispose(); renderPipeline = null; }
+  gtaoOutputNode = null;
+  window._gtao   = null;
+}
+
+
+// ─────────────────────────────────────────────
 // RESTART APP  (renderer mode change only)
 // ─────────────────────────────────────────────
 
@@ -1165,6 +1357,8 @@ async function restartApp() {
   console.log('Restarting app with mode:', renderMode);
 
   if (composer) { composer.dispose(); composer = null; }
+
+  disposeGTAO();
 
   if (contactShadow) { contactShadow.dispose(); contactShadow = null; }
 
@@ -1368,7 +1562,7 @@ function animate(time) {
   // ── render ────────────────────────────────
   if (!isRendererReady) return;
 
-  // WebGPU: direct render (EffectComposer not compatible)
+  // WebGPU: RenderPipeline with GTAO + TRAA (EffectComposer not compatible)
   // WebGL:  composer with SSAO
   if (composer) {
     if (contactShadow) {
@@ -1381,7 +1575,7 @@ function animate(time) {
   } else {
     // WebGPU
     if (contactShadow) contactShadow.render(renderer, scene);
-    renderer.render(scene, camera);
+    renderWithGTAO();
   }
 
 }
