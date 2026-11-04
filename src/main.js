@@ -495,9 +495,13 @@ function rebuildGlassMaterials() {
 
             obj.renderOrder = 1;
             m.transmission  = 0;
-            m.opacity       = 1.0;
-            m.depthWrite    = true;
-            m.transparent   = false;
+            // Back lens at 0.9: transparent is required for opacity to apply.
+            // Being transparent also keeps it out of GTAO (builtinAOContext skips
+            // transparent materials and the GTAO pre-pass renders opaque only),
+            // which removes the heavy AO on concave wraparound shields (Vanguard).
+            m.opacity       = 0.9;
+            m.depthWrite    = true;   // keep: contact shadow floor relies on lens depth
+            m.transparent   = true;
             m.side          = THREE.FrontSide;
             m.needsUpdate   = true;
 
