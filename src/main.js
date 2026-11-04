@@ -37,7 +37,7 @@ import {
   sRGBTransferEOTF,
   directionToColor,
   colorToDirection,
-  builtinAOContext,
+  context,
 } from 'three/tsl';
 
 // ── Postprocessing — WebGPU only (TSL RenderPipeline: GTAO + TRAA) ───────────
@@ -146,6 +146,10 @@ const GTAO_CONFIG = {
   scale:           9.5,   // exponent applied to AO: higher = darker
   samples:         24,    // changing at runtime triggers a shader recompile
   resolutionScale: 0.5,   // half-resolution AO is enough, TRAA smooths it
+  // AO is only applied to materials whose name contains this word (case-insensitive).
+  // Semi-transparent frames looked dirty with AO; hinge metals look right.
+  // Set to null to apply AO to every opaque material.
+  materialFilter:  'metal',
 };
 
 // ── Fresnel cache (WebGPU) ───────────────────
@@ -496,7 +500,7 @@ function rebuildGlassMaterials() {
             obj.renderOrder = 1;
             m.transmission  = 0;
             // Back lens at 0.9: transparent is required for opacity to apply.
-            // Being transparent also keeps it out of GTAO (builtinAOContext skips
+            // Being transparent also keeps it out of GTAO (the AO context skips
             // transparent materials and the GTAO pre-pass renders opaque only),
             // which removes the heavy AO on concave wraparound shields (Vanguard).
             m.opacity       = 0.9;
@@ -1259,7 +1263,19 @@ function setupGTAO() {
   gtaoPass.resolutionScale      = GTAO_CONFIG.resolutionScale;
   gtaoPass.useTemporalFiltering = true;
   refitGTAO();
-  scenePass.contextNode = builtinAOContext(gtaoPass.getTextureNode().sample(screenUV).r);
+  // Same as TSL builtinAOContext (skips transparent materials), plus a material
+  // name filter: only materials matching GTAO_CONFIG.materialFilter receive AO.
+  // Every opaque object still casts AO, since the pre-pass is unchanged.
+  // The filter is evaluated when a material's shader is built.
+  const aoValue  = gtaoPass.getTextureNode().sample(screenUV).r;
+  const aoFilter = GTAO_CONFIG.materialFilter?.toLowerCase() ?? null;
+  scenePass.contextNode = context({
+    getAO: (inputNode, { material }) => {
+      if (material.transparent === true) return inputNode;
+      if (aoFilter !== null && !material.name.toLowerCase().includes(aoFilter)) return inputNode;
+      return inputNode !== null ? inputNode.mul(aoValue) : aoValue;
+    },
+  });
 
   // CSS background composite (see note 3)
   const bg = readCssBackground();
