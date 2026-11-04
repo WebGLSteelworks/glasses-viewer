@@ -143,7 +143,7 @@ const _gtaoClearColor = new THREE.Color();
 const GTAO_CONFIG = {
   radiusFactor:    0.08,  // search radius ≈ 8% of model size
   thicknessFactor: 0.25,  // ignore occluders farther than this in depth (avoids halos)
-  scale:           2.5,   // exponent applied to AO: higher = darker
+  scale:           9.5,   // exponent applied to AO: higher = darker
   samples:         24,    // changing at runtime triggers a shader recompile
   resolutionScale: 0.5,   // half-resolution AO is enough, TRAA smooths it
 };
