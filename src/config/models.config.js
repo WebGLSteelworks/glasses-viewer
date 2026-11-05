@@ -326,26 +326,26 @@ export const MODELS = {
 	},
   }, 
 
-  // ADVENTURERLHIGHV: {
-    // label:         'Adventurer L HIGH',
-    // group:         'Adventurer Var L',
-    // section:       'qc',
-	// color:         'orange',
-    // subLabel:      'HIGH',
-    // glb:           'models/Standard_Adventurer_Large_v_high.glb',
-    // hdri:          'studio_adventurer_4k.hdr',
-    // hdriIntensity: 1.0,
-    // startCamera:   'Cam_Front',
-    // cameras:       ADVENTURER_CAMERAS,
-    // fresnel:       null,
-    // glass:         { animate: true },
-	// variantOrder: ['Frame_Classic_Black', 'Lenses_Grey'],
-	// shadow: {
-	  // enabled:   true,
-	  // intensity: 1.0,
-	  // softness:  1.0,
-	// },
-  // }, 
+  ADVENTURERLHIGHV: {
+    label:         'Adventurer L HIGH',
+    group:         'Adventurer Large Variations',
+    section:       'qc',
+	color:         'orange',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Adventurer_Large_v_high.glb',
+    hdri:          'studio_adventurer_4k.hdr',
+    hdriIntensity: 1.0,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Classic_Black', 'Lenses_Grey'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  }, 
  
 
   // ADVENTURERCREATORLOW: {
