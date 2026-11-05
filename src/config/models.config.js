@@ -431,7 +431,7 @@ export const MODELS = {
 	},				
   },
 
-  VANGUARDHIGH: {
+  VANGUARDHIGHV: {
     label:         'Vanguard',
     group:         'Vanguard Variants',
     section:       'qc',
