@@ -586,6 +586,26 @@ export const MODELS = {
 	},
   },
 
+    FURYHIGHV: {
+    label:         'Fury H',
+    group:         'Fury Variations',
+    section:       'qc',
+	color:         'orange',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Fury_v_high.glb',
+    hdri:          'studio_fury_4k.hdr',
+    hdriIntensity: 1,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
   // STARFIRELOW: {
     // label:         'Starfire L',
     // group:         'Starfire',
