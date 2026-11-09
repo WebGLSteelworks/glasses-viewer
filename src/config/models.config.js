@@ -626,6 +626,27 @@ export const MODELS = {
 	},
   },
 
+  STARFIREHIGHV: {
+    label:         'Starfire H',
+    group:         'Starfire Variations',
+    section:       'qc',
+	color:         'orange',
+	subLabel:      'HIGH',
+    glb:           'models/Standard_Starfire_v_high.glb',
+    hdri:          'studio_starfire_4k.hdr',
+    hdriIntensity: 0.7,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Classic_Black', 'Lenses_Transitions_Grey'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },
+
   // BURBANKLOW: {
     // label:         'Burbank L',
     // group:         'Burbank ',
