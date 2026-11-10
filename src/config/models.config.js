@@ -169,53 +169,7 @@ export const MODELS = {
 	},
   },  
 
-  WAYFARERGEN2HIGHV: {
-    label:         'Wayfarer_g2_high',
-    group:         'Wayfarer g2 Variations',
-    section:       'qc',
-	color:         'orange',
-    subLabel:      'HIGH',
-    glb:           'models/Standard_Wayfarer_gen2_v_high.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 0.8,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Havana', 'Frame_Transparent_Matte_Ocean_Blue', 'Frame_Transparent_Black', 
-	'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Grey_Transitions', 'Lenses_Clear_to_Graphite_Green_Transitions',  'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Aquamarine_Transitions', 
-	'Lenses_Clear_to_Brown_Transitions','Lenses_Clear_to_Emerald_Transitions', 'Lenses_Clear_to_Green_Transitions', 'Lenses_Clear_to_Grey_Transitions', 'Lenses_Clear_to_Sapphire_Transitions', 'Lenses_Charcoal_Black',
-	'Lenses_Polarized_Brown', 'Lenses_Polarized_Dusty_Blue', 'Lenses_Polarized_Dusty_Red',  'Lenses_Polarized_Gradient_Graphite', 'Lenses_Polarized_Green' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },  
 
-  WAYFARERGEN2LHIGHV: {
-    label:         'Wayfarer_g2_large_high',
-    group:         'Wayfarer g2 Large Varitations',
-    section:       'qc',
-	color:         'orange',
-    subLabel:      'HIGH',
-    glb:           'models/Standard_Wayfarer_gen2_large_v_high.glb',
-    hdri:          'studio_wayfarer_2k.hdr',
-    hdriIntensity: 0.8,
-    startCamera:   'Cam_Front',
-    cameras:       WAYFARER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Havana', 'Frame_Transparent_Matte_Ocean_Blue', 'Frame_Transparent_Black', 
-	'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Grey_Transitions', 'Lenses_Clear_to_Graphite_Green_Transitions',  'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Aquamarine_Transitions', 
-	'Lenses_Clear_to_Brown_Transitions','Lenses_Clear_to_Emerald_Transitions', 'Lenses_Clear_to_Green_Transitions', 'Lenses_Clear_to_Grey_Transitions', 'Lenses_Clear_to_Sapphire_Transitions', 'Lenses_Charcoal_Black',
-	'Lenses_Polarized_Brown', 'Lenses_Polarized_Dusty_Blue', 'Lenses_Polarized_Dusty_Red',  'Lenses_Polarized_Gradient_Graphite', 'Lenses_Polarized_Green' ],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },  
 
 
   // WAYFARERGEN3LOW: {
@@ -310,28 +264,6 @@ export const MODELS = {
 	},
   },
 
-  ADVENTURERHIGHV: {
-    label:         'Adventurer',
-    group:         'Adventurer Variations',
-    section:       'qc',
-	color:         'orange',
-    subLabel:      'HIGH',
-    glb:           'models/Standard_Adventurer_v_high.glb',
-    hdri:          'studio_adventurer_4k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Black', 'Frame_Classic_Tortoise', 'Frame_Merlot', 'Frame_Linen', 
-	'Lenses_Grey', 'Lenses_Grey_Gradient','Lenses_Polar_Grey', 'Lenses_Chocolate', 'Lenses_Clear_to_Amber_Transitions', 'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Emerald_Transitions',
-	'Lenses_Dark_Silver_Mirror', 'Lenses_Light_Blue_Atlantic', 'Lenses_Light_Burgundy', 'Lenses_Polarized_Brown'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
 
   // ADVENTURERLLOW: {
     // label:         'Adventurer L LOW',
@@ -375,27 +307,7 @@ export const MODELS = {
 	},
   }, 
 
-  ADVENTURERLHIGHV: {
-    label:         'Adventurer L HIGH',
-    group:         'Adventurer Large Variations',
-    section:       'qc',
-	color:         'orange',
-    subLabel:      'HIGH',
-    glb:           'models/Standard_Adventurer_Large_v_high.glb',
-    hdri:          'studio_adventurer_4k.hdr',
-    hdriIntensity: 1.0,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Black', 'Lenses_Grey'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  }, 
- 
+
 
   // ADVENTURERCREATORLOW: {
     // label:         'Adventurer Creator LOW',
@@ -480,28 +392,6 @@ export const MODELS = {
 	},				
   },
 
-  VANGUARDHIGHV: {
-    label:         'Vanguard',
-    group:         'Vanguard Variants',
-    section:       'qc',
-	color:         'orange',
-	subLabel:      'HIGH',
-    glb:           'models/Standard_Vanguard_v_high.glb',
-    hdri:          'studio_vanguard_2k.hdr',
-    hdriIntensity: 0.75,
-    startCamera:   'Cam_Front',
-    cameras:       VANGUARD_CAMERAS,
-    fresnel:       VANGUARD_FRESNEL,
-    glass:         { animate: true },
-	variantOrder: ['Black_Prizm_Black', 'White_Prizm_Black', 'Black_Prizm_Clear', 'Black_Prizm_Transitions_Ember', 'White_Prizm_Rose_Gold', 'Black_Prizm_24k',
-						'Black_Prizm_Road', 'White_Prizm_Sapphire'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	  // floorMesh: 'Vanguard',
-	},				
-  },
  
     // AVIATORLOW: {
     // label:         'Aviator L',
