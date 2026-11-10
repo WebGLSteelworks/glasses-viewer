@@ -598,7 +598,7 @@ export const MODELS = {
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
     glass:         { animate: true },
-	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	variantOrder: ['Frame_Clear', 'Lenses_Siilver_Mirror'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
@@ -618,7 +618,7 @@ export const MODELS = {
     startCamera:   'Cam_Front',
     cameras:       ADVENTURER_CAMERAS,
     glass:         { animate: true },
-	variantOrder: ['Frame_Black_Gunmetal', 'Lenses_Clear_Amethyst'],
+	variantOrder: ['Frame_Clear', 'Lenses_Siilver_Mirror'],
 	shadow: {
 	  enabled:   true,
 	  intensity: 1.0,
