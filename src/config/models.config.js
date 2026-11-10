@@ -545,7 +545,27 @@ export const MODELS = {
 	},
   },
 
- 
+     AVIATORHIGHV: {
+    label:         'Aviator H',
+    group:         'Aviator Variations',
+    section:       'qc',
+	color:         'orange',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Aviator_v_high.glb',
+    hdri:          'studio_aviator_4k.hdr',
+    hdriIntensity: 0.95,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Classic_Havana'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	  floorMesh: 'RBM_Zena_frame_LOW',
+	},
+  },
 
   // FURYLOW: {
     // label:         'Fury L',
@@ -607,7 +627,7 @@ export const MODELS = {
   },
 
 
-//
+
   // STARFIRELOW: {
     // label:         'Starfire L',
     // group:         'Starfire',
