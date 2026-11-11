@@ -742,6 +742,28 @@ export const MODELS = {
 	},
   },
 
+    CLUBMASTERHIGHV: {
+    label:         'Clubmaster H',
+    group:         'Clubmaster Variations',
+    section:       'qc',
+	color:         'orange',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Clubmaster_v_high.glb',
+    hdri:          'studio_clubmaster_4k.hdr',
+    hdriIntensity: 0.95,
+    startCamera:   'Cam_Front',
+    cameras:       ADVENTURER_CAMERAS,
+    fresnel:       HSTN_FRESNEL,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Shiny_Black', 'Lenses_Clear'],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	  floorMesh: 'Frame',
+	},
+  },
+
     // HSTNHIGH: {
     // label:         'HSTN H',
     // group:         'HSTN',
