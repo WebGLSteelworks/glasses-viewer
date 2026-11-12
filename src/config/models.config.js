@@ -219,6 +219,8 @@ export const MODELS = {
   },  
 
 
+
+
   // ADVENTURERLOW: {
     // label:         'Adventurer',
     // group:         'Adventurer',
@@ -763,6 +765,30 @@ export const MODELS = {
 	  floorMesh: 'Frame',
 	},
   },
+
+  WAYFARERGEN3HIGHV: {
+    label:         'Wayfarer_g3_high',
+    group:         'Wayfarer g3 variations',
+    section:       'qc',
+	color:         'orange',
+    subLabel:      'HIGH',
+    glb:           'models/Standard_Wayfarer_gen3_v_high.glb',
+    hdri:          'studio_wayfarer_2k.hdr',
+    hdriIntensity: 0.8,
+    startCamera:   'Cam_Front',
+    cameras:       WAYFARER_CAMERAS,
+    fresnel:       null,
+    glass:         { animate: true },
+	variantOrder: ['Frame_Matte_Black', 'Frame_Shiny_Black', 'Frame_Havana', 'Frame_Transparent_Matte_Ocean_Blue', 'Frame_Transparent_Black', 
+	'Lenses_Clear', 'Lenses_Green', 'Lenses_Grey', 'Lenses_Grey_Transitions', 'Lenses_Clear_to_Graphite_Green_Transitions',  'Lenses_Clear_to_Amethyst_Transitions', 'Lenses_Clear_to_Aquamarine_Transitions', 
+	'Lenses_Clear_to_Brown_Transitions','Lenses_Clear_to_Emerald_Transitions', 'Lenses_Clear_to_Green_Transitions', 'Lenses_Clear_to_Grey_Transitions', 'Lenses_Clear_to_Sapphire_Transitions', 'Lenses_Charcoal_Black',
+	'Lenses_Polarized_Brown', 'Lenses_Polarized_Dusty_Blue', 'Lenses_Polarized_Dusty_Red',  'Lenses_Polarized_Gradient_Graphite', 'Lenses_Polarized_Green' ],
+	shadow: {
+	  enabled:   true,
+	  intensity: 1.0,
+	  softness:  1.0,
+	},
+  },  
 
     // HSTNHIGH: {
     // label:         'HSTN H',
