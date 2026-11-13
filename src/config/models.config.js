@@ -437,27 +437,6 @@ export const MODELS = {
 	},
   },
 
-     AVIATORHIGHV: {
-    label:         'Aviator H',
-    group:         'Aviator Variations',
-    section:       'qc',
-	color:         'orange',
-    subLabel:      'HIGH',
-    glb:           'models/Standard_Aviator_v_high.glb',
-    hdri:          'studio_aviator_4k.hdr',
-    hdriIntensity: 0.95,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    fresnel:       HSTN_FRESNEL,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Havana'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	  floorMesh: 'RBM_Zena_frame_LOW',
-	},
-  },
 
   // FURYLOW: {
     // label:         'Fury L',
@@ -497,27 +476,6 @@ export const MODELS = {
 	  softness:  1.0,
 	},
   },
-
-    FURYHIGHV: {
-    label:         'Fury H',
-    group:         'Fury Variations',
-    section:       'qc',
-	color:         'orange',
-    subLabel:      'HIGH',
-    glb:           'models/Standard_Fury_v_high.glb',
-    hdri:          'studio_fury_4k.hdr',
-    hdriIntensity: 1,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Clear', 'Lenses_Siilver_Mirror'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
-
 
 
   // STARFIRELOW: {
@@ -560,26 +518,6 @@ export const MODELS = {
 	},
   },
 
-  STARFIREHIGHV: {
-    label:         'Starfire H',
-    group:         'Starfire Variations',
-    section:       'qc',
-	color:         'orange',
-	subLabel:      'HIGH',
-    glb:           'models/Standard_Starfire_v_high.glb',
-    hdri:          'studio_starfire_4k.hdr',
-    hdriIntensity: 0.7,
-    startCamera:   'Cam_Front',
-    cameras:       ADVENTURER_CAMERAS,
-    fresnel:       null,
-    glass:         { animate: true },
-	variantOrder: ['Frame_Classic_Black', 'Lenses_Transitions_Grey'],
-	shadow: {
-	  enabled:   true,
-	  intensity: 1.0,
-	  softness:  1.0,
-	},
-  },
 
   // BURBANKLOW: {
     // label:         'Burbank L',
